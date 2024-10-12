@@ -101,10 +101,11 @@ void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = FollowCamera->GetComponentTransform().Rotator();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
+		//const FVector ForwardDirection(1, 0, 0);
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
 		// get right vector 
