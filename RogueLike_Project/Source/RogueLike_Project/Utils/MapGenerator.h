@@ -30,6 +30,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
 	int MaxRoom;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	int MapSeed = -1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	FRandomStream RandomStream;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
 	TArray<TObjectPtr<ABaseRoom>> RoomList;
@@ -52,6 +58,8 @@ protected:
 	virtual bool IsOverlaping();
 
 	virtual void CloseRemainingExits();
+
+	virtual void SetSeed();
 
 	virtual TSubclassOf<ABaseRoom> GetRandomRoomType();
 	

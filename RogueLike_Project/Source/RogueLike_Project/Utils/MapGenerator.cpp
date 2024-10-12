@@ -22,12 +22,14 @@ void AMapGenerator::BeginPlay()
 
 	if (MaxRoom <= 0)
 		MaxRoom = 8;
+
 	
 }
 
 // Called every frame
 void AMapGenerator::GenerateRooms()
 {
+	SetSeed();
 
 	if (MaxRoom <= 0 || MaxRoom >= 20)
 	{
@@ -154,7 +156,7 @@ TSubclassOf<ABaseRoom> AMapGenerator::GetRandomRoomType()
 		
 	}
 	
-	return RoomTypeList[rand() % RoomTypeList.Num()];
+	return RoomTypeList[RandomStream.RandRange(0, RoomList.Num() - 1)];
 	
 }
 
@@ -169,8 +171,25 @@ USceneComponent* AMapGenerator::GetRandomExit()
 		return nullptr;
 		
 	}
+
+		return ExitsLists[RandomStream.RandRange(0, ExitsLists.Num() - 1)];
 	
-	return ExitsLists[rand() % ExitsLists.Num()];
+}
+
+void AMapGenerator::SetSeed()
+{
+
+	if (MapSeed == -1)
+	{
+
+		RandomStream.GenerateNewSeed();
+		MapSeed = RandomStream.GetCurrentSeed();
+		
+	}
+	else
+	{
+		RandomStream.Initialize(MapSeed);
+	}
 	
 }
 
