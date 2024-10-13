@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -62,11 +63,51 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
+		PlayerController->bShowMouseCursor = true;
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+}
+
+void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+
+		FVector2D mousePos = FVector2D::ZeroVector;
+		FHitResult* hit = new FHitResult();
+		FVector startTrace;
+		FVector direction;
+		FCollisionQueryParams* params = new FCollisionQueryParams();
+		
+		PlayerController->GetMousePosition(mousePos.X, mousePos.Y);
+
+		PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
+
+		FVector endTrace = direction * (CameraBoom->TargetArmLength * 3) + startTrace;
+
+		if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Visibility, *params))
+		{
+
+			if (hit->GetActor() != nullptr)
+			{
+
+				SetActorRotation( FRotator(
+					0,
+					UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), hit->Location).Yaw,
+					0));
+				
+			}
+			
+		}
+		
+	}
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,8 +165,10 @@ void ARogueLike_ProjectCharacter::Look(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
+
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+		
 	}
 }
