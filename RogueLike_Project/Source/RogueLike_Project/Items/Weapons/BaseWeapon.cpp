@@ -9,8 +9,10 @@ ABaseWeapon::ABaseWeapon()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
-
 	RootScene->SetupAttachment(RootComponent);
+	
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(RootScene);
 
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/Player/InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "RogueLike_ProjectCharacter.generated.h"
@@ -32,9 +33,9 @@ class ARogueLike_ProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
+	/** Fire Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* JumpAction;
+	UInputAction* FireAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -46,7 +47,6 @@ class ARogueLike_ProjectCharacter : public ACharacter
 
 public:
 	ARogueLike_ProjectCharacter();
-	
 
 protected:
 
@@ -55,6 +55,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for fire input **/
+	void Fire(const FInputActionValue& Value);
 			
 
 protected:
@@ -67,9 +70,15 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	
+	/** Inventory component **/
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Components", meta = ( AllowPrivateAccess = "true" ))
+	UInventoryComponent* InventoryComponent;
+	
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
 };
 

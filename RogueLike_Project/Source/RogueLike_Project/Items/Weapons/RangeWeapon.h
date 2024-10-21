@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
-#include "Components/ArrowComponent.h"
+#include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Actor.h"
+#include "Projectiles/BaseProjectile.h"
 #include "RangeWeapon.generated.h"
 
 UCLASS()
@@ -36,8 +37,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
 	float CurrentMagazine;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	const UStaticMeshSocket* FirePoint;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	TSubclassOf<ABaseProjectile> ProjectileType;
+
 	virtual void Fire() override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload();
+
+private:
+
+	bool CanFire() const;
+	
+	bool CanReload() const;
+
+	static void SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile);
 };

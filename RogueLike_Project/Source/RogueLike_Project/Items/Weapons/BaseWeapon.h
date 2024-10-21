@@ -26,6 +26,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* RootScene;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* WeaponMesh;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General Variables")
 	float Damage;
 	
