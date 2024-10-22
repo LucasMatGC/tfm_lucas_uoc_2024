@@ -19,28 +19,28 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> RootScene = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<USceneComponent*> ExitsLists;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TSubclassOf<ABaseRoom> StartRoomType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TSubclassOf<ABaseRoom>> RoomTypeList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	int MaxRoom;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	int MapSeed = -1;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	FRandomStream RandomStream;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TObjectPtr<ABaseRoom>> RoomList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GenerateVariables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TSubclassOf<AActor> DoorBP;
 
 	UFUNCTION(BlueprintCallable)

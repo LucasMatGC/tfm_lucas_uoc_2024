@@ -24,16 +24,29 @@ void ARangeWeapon::BeginPlay()
 	}
 }
 
+void ARangeWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (CurrentFireRate > 0)
+	{
+
+		CurrentFireRate -= DeltaTime;
+		
+	}
+	
+}
+
 void ARangeWeapon::Fire()
 {
 	Super::Fire();
 
-	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, "Fire!!!!!!");
-
 	if (CanFire())
 	{
+
+		CurrentFireRate = MaxFireRate;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, "FIRINGGGGG!!!!!!");
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "FIRINGGGGG!!!!!!");
 		
 		FTransform projectileStartTransform;
 		FirePoint->GetSocketTransform(projectileStartTransform, WeaponMesh);
@@ -69,11 +82,11 @@ void ARangeWeapon::Reload()
 bool ARangeWeapon::CanFire() const
 {
 
-	return CurrentMagazine > 0 && FirePoint != nullptr;
+	return CurrentMagazine > 0 && FirePoint != nullptr && CurrentFireRate <= 0;
 	
 }
 
-bool ARangeWeapon::CanReload() const
+bool ARangeWeapon::CanReload()
 {
 
 	return CurrentMagazine < MaxMagazine && CurrentMagazine < CurrentAmmo;
@@ -84,7 +97,8 @@ void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
 {
 
 	newProjectile->ProjectileComponent->ProjectileGravityScale = 0;
-	newProjectile->ProjectileComponent->MaxSpeed = 300.f;
-	newProjectile->ProjectileComponent->InitialSpeed = 300.f;
+	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
+	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
+	newProjectile->InitialLifeSpan = 1.0f;
 	
 }

@@ -3,6 +3,8 @@
 
 #include "InventoryComponent.h"
 
+#include "GameFramework/Character.h"
+
 // Sets default values
 UInventoryComponent::UInventoryComponent()
 {
@@ -12,7 +14,6 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
@@ -23,8 +24,11 @@ void UInventoryComponent::BeginPlay()
 		FRotator spawnRotation = FRotator::ZeroRotator;
 		
 		ABaseWeapon* weapon = GetWorld()->SpawnActor<ABaseWeapon>(weaponType, spawnLocation, spawnRotation, spawnInfo);
-		weapon->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "WeaponSocket");
-		Weapons.Add(weapon);
+		if (ACharacter* character = Cast<ACharacter>(GetOwner()))
+		{
+			weapon->AttachToComponent(character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "WeaponSocket");
+			Weapons.Add(weapon);
+		}
 		
 	}
 }

@@ -20,6 +20,10 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool CanFire() const;
 
 public:
 	
@@ -29,13 +33,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* WeaponMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float Damage;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General Variables")
-	float FireRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	float MaxFireRate;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	float CurrentFireRate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float Range;
 
 	UFUNCTION(BlueprintCallable)

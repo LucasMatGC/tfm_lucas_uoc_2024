@@ -23,24 +23,30 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool CanFire() const override;
+
+	virtual bool CanReload();
+
 public:
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	float MaxAmmo;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	float CurrentAmmo;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	float MaxMagazine;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	float CurrentMagazine;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	const UStaticMeshSocket* FirePoint;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;
 
 	virtual void Fire() override;
@@ -49,10 +55,6 @@ public:
 	virtual void Reload();
 
 private:
-
-	bool CanFire() const;
 	
-	bool CanReload() const;
-
 	static void SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile);
 };

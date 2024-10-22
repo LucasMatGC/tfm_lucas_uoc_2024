@@ -16,19 +16,19 @@ public:
 	// Sets default values for this actor's properties
 	UInventoryComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	FTransform WeaponTransform;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	TArray<TSubclassOf<ABaseWeapon>> WeaponTypes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Weapons")
 	TArray<ABaseWeapon*> Weapons;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void ChangeWeapon(bool MoveForward);
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void FireCurrentWeapon();
 
 protected:
