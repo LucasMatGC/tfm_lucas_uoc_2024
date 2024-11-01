@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetComponent.h"
 #include "Components/Player/InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -28,6 +29,10 @@ class ARogueLike_ProjectCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	/** Fire point */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* FirePoint;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -45,9 +50,44 @@ class ARogueLike_ProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Change Weapon Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ChangeWeaponAction;
+
+	/** Force Damage Input Action (for debug purposes) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ForceDamageAction;
+
+	/** Reload Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration|Player Values", meta = (AllowPrivateAccess = "true"))
+	float PlayerMaxHealth = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration|Player Values", meta = (AllowPrivateAccess = "true"))
+	float PlayerHealth = 200.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool m_IsPlayerAlive = true;
+
 public:
 	ARogueLike_ProjectCharacter();
 
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(float Damage);
+	
+	UFUNCTION(BlueprintCallable)
+	void KillPlayer();
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerHealth, float, health);
+	UPROPERTY(BlueprintAssignable, Category = "Configuration")
+	FUpdatePlayerHealth FUpdatePlayerHealthDeletate;
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerCurrentWeapon, ABaseWeapon*, newWeapon);
+	UPROPERTY(BlueprintAssignable, Category = "Configuration")
+	FUpdatePlayerCurrentWeapon FUpdatePlayerCurrentWeaponDelegate;
+	
 protected:
 
 	/** Called for movement input */
@@ -58,17 +98,24 @@ protected:
 
 	/** Called for fire input **/
 	void Fire(const FInputActionValue& Value);
-			
 
-protected:
+	/** Called for change weapon input **/
+	void ChangeWeapon(const FInputActionValue& Value);
+
+	/** Called for weapon reload input **/
+	void Reload(const FInputActionValue& Value);
+
+	/** Called for force damage input (debug purpose) **/
+	void ForceDamage(const FInputActionValue& Value);
+	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// To add mapping context
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
-
+	
 public:
 	
 	/** Inventory component **/

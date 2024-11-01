@@ -15,13 +15,6 @@ ARangeWeapon::ARangeWeapon()
 void ARangeWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (WeaponMesh)
-	{
-
-		FirePoint = WeaponMesh->GetSocketByName("FirePoint");
-		
-	}
 }
 
 void ARangeWeapon::Tick(float DeltaTime)
@@ -46,24 +39,23 @@ void ARangeWeapon::Fire()
 
 		CurrentFireRate = MaxFireRate;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "FIRINGGGGG!!!!!!");
-		
-		FTransform projectileStartTransform;
-		FirePoint->GetSocketTransform(projectileStartTransform, WeaponMesh);
 		FActorSpawnParameters spawnInfo;
 		
 		TObjectPtr<ABaseProjectile> newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
 			ProjectileType,
-			projectileStartTransform,
+			FirePoint->GetComponentTransform(),
 			nullptr,
 			nullptr);
 
 		SetupProjectile(newProjectile);		
 		
-		newProjectile->FinishSpawning(projectileStartTransform, false, nullptr);
+		newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
 
 		CurrentMagazine--;
 		CurrentAmmo--;
+			
+		FUpdateAmmo.Broadcast(CurrentMagazine, CurrentAmmo - CurrentMagazine);
+	
 	}
 }
 
@@ -79,10 +71,24 @@ void ARangeWeapon::Reload()
 	
 }
 
+int ARangeWeapon::GetMaxAmmo()
+{
+
+	return MaxAmmo;
+	
+}
+
+int ARangeWeapon::GetMaxMagazine()
+{
+
+	return MaxMagazine;
+	
+}
+
 bool ARangeWeapon::CanFire() const
 {
 
-	return CurrentMagazine > 0 && FirePoint != nullptr && CurrentFireRate <= 0;
+	return CurrentMagazine > 0 && CurrentFireRate <= 0;
 	
 }
 
@@ -90,6 +96,20 @@ bool ARangeWeapon::CanReload()
 {
 
 	return CurrentMagazine < MaxMagazine && CurrentMagazine < CurrentAmmo;
+	
+}
+
+int ARangeWeapon::GetCurrentAmmo()
+{
+
+	return CurrentAmmo;
+	
+}
+
+int ARangeWeapon::GetCurrentMagazine()
+{
+
+	return CurrentMagazine;
 	
 }
 

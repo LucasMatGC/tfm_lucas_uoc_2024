@@ -12,6 +12,7 @@ ABaseProjectile::ABaseProjectile()
 	RootScene->SetupAttachment(RootComponent);
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	ProjectileMesh->SetupAttachment(RootScene);
+	ProjectileMesh->SetCollisionProfileName("Projectile");
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 

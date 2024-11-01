@@ -52,12 +52,54 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	// Defines the Fire point of the weapons (Spawn point for projectiles)
+	FirePoint = CreateDefaultSubobject<USceneComponent>(TEXT("FirePoint"));
+	FirePoint->SetupAttachment(GetMesh());
+	
+	// Add Inventory Component and define the weapon socket
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
 	FTransform weaponSocketTransform;
 	weaponSocketTransform = GetMesh()->GetSocketTransform("WeaponSocket");
+	GetMesh()->SetCollisionProfileName("Pawn");
+	InventoryComponent->FirePoint = FirePoint;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void ARogueLike_ProjectCharacter::TakeDamage(float Damage)
+{
+
+	PlayerHealth -= Damage;
+	
+	FUpdatePlayerHealthDeletate.Broadcast(PlayerHealth/PlayerMaxHealth);
+	
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "DAMAGE!!!!!!");
+
+	if (PlayerHealth <= 0)
+	{
+
+		m_IsPlayerAlive = false;
+		KillPlayer();
+		
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::KillPlayer()
+{
+
+	// Hides visible components
+	SetActorHiddenInGame(true);
+
+	// Disables collision components
+	SetActorEnableCollision(false);
+
+	// Stops the Actor from ticking
+	SetActorTickEnabled(false);
+
+	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
+	
 }
 
 void ARogueLike_ProjectCharacter::BeginPlay()
@@ -80,32 +122,38 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	
+	if (m_IsPlayerAlive)
 	{
-
-		FVector2D mousePos = FVector2D::ZeroVector;
-		FHitResult* hit = new FHitResult();
-		FVector startTrace;
-		FVector direction;
-		FCollisionQueryParams* params = new FCollisionQueryParams();
 		
-		PlayerController->GetMousePosition(mousePos.X, mousePos.Y);
-
-		PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
-
-		FVector endTrace = direction * (CameraBoom->TargetArmLength * 3) + startTrace;
-
-		if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Visibility, *params))
+		//Add Input Mapping Context
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 		{
 
-			if (hit->GetActor() != nullptr)
+			FVector2D mousePos = FVector2D::ZeroVector;
+			FHitResult* hit = new FHitResult();
+			FVector startTrace;
+			FVector direction;
+			FCollisionQueryParams* params = new FCollisionQueryParams();
+			
+			PlayerController->GetMousePosition(mousePos.X, mousePos.Y);
+
+			PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
+
+			FVector endTrace = direction * (CameraBoom->TargetArmLength * 3) + startTrace;
+
+			if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Visibility, *params))
 			{
 
-				SetActorRotation( FRotator(
-					0,
-					UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), hit->Location).Yaw,
-					0));
+				if (hit->GetActor() != nullptr)
+				{
+
+					SetActorRotation( FRotator(
+						0,
+						UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), hit->Location).Yaw,
+						0));
+					
+				}
 				
 			}
 			
@@ -131,6 +179,15 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		
 		// Fire
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Fire);
+		
+		// Fire
+		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ChangeWeapon);
+		
+		// Debug Take Damage
+		EnhancedInputComponent->BindAction(ForceDamageAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ForceDamage);
+		
+		// Debug Take Damage
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Reload);
 	}
 	else
 	{
@@ -140,46 +197,95 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 
 void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	if (m_IsPlayerAlive)
 	{
-		// find out which way is forward
-		const FRotator Rotation = FollowCamera->GetComponentTransform().Rotator();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		// input is a Vector2D
+		FVector2D MovementVector = Value.Get<FVector2D>();
 
-		// get forward vector
-		//const FVector ForwardDirection(1, 0, 0);
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		if (Controller != nullptr)
+		{
+			// find out which way is forward
+			const FRotator Rotation = FollowCamera->GetComponentTransform().Rotator();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+			// get forward vector
+			//const FVector ForwardDirection(1, 0, 0);
+			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		
+			// get right vector 
+			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+			// add movement 
+			AddMovementInput(ForwardDirection, MovementVector.Y);
+			AddMovementInput(RightDirection, MovementVector.X);
+		}
 	}
 }
 
 void ARogueLike_ProjectCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (m_IsPlayerAlive)
 	{
+		// input is a Vector2D
+		FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-		
+		if (Controller != nullptr)
+		{
+
+			// add yaw and pitch input to controller
+			AddControllerYawInput(LookAxisVector.X);
+			AddControllerPitchInput(LookAxisVector.Y);
+			
+		}
 	}
 }
 
 void ARogueLike_ProjectCharacter::Fire(const FInputActionValue& Value)
 {
+	if (m_IsPlayerAlive)
+	{
+		InventoryComponent->FireCurrentWeapon();
+	}
 	
-	InventoryComponent->FireCurrentWeapon();
+}
+
+void ARogueLike_ProjectCharacter::ChangeWeapon(const FInputActionValue& Value)
+{
+
+	if (m_IsPlayerAlive)
+	{		
+		InventoryComponent->ChangeWeapon(Value.Get<float>() < 0);
+		
+		FUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::Reload(const FInputActionValue& Value)
+{
+
+	if (m_IsPlayerAlive)
+	{
+		
+		InventoryComponent->GetCurrentWeapon()->Reload();	
+			
+		FUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
+	
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::ForceDamage(const FInputActionValue& Value)
+{
+
+	if (m_IsPlayerAlive)
+	{
+		
+		float forceDamageValue = 20.0f;
+	
+		TakeDamage(forceDamageValue);
+	
+	}
 	
 }

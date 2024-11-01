@@ -32,27 +32,38 @@ protected:
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	float MaxAmmo;
+	int MaxAmmo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	float CurrentAmmo;
+	int CurrentAmmo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	float MaxMagazine;
+	int MaxMagazine;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	float CurrentMagazine;
+	int CurrentMagazine;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	const UStaticMeshSocket* FirePoint;
+	USceneComponent* FirePoint;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;
-
+	
 	virtual void Fire() override;
+	
+	virtual void Reload() override;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Reload();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual int GetMaxAmmo();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual int GetMaxMagazine();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual int GetCurrentAmmo();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual int GetCurrentMagazine();
 
 private:
 	

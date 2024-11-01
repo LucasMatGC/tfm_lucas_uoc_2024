@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	FTransform WeaponTransform;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Weapons")
+	USceneComponent* FirePoint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	TArray<TSubclassOf<ABaseWeapon>> WeaponTypes;
 
@@ -30,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void FireCurrentWeapon();
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons", BlueprintPure)
+	ABaseWeapon* GetCurrentWeapon();
 
 protected:
 

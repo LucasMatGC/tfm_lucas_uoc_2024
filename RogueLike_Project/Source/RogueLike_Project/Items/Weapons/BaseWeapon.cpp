@@ -39,3 +39,20 @@ bool ABaseWeapon::CanFire() const
 void ABaseWeapon::Fire()
 {
 }
+
+void ABaseWeapon::Reload()
+{
+}
+
+void ABaseWeapon::DisableWeapon(bool toHide) 
+{
+	// Hides visible components
+	SetActorHiddenInGame(toHide);
+
+	// Disables collision components
+	//SetActorEnableCollision(!toHide);
+
+	// Stops the Actor from ticking
+	SetActorTickEnabled(!toHide);
+
+}

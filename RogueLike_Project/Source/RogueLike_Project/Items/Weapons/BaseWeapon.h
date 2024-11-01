@@ -47,4 +47,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void DisableWeapon(bool toHide);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateAmmo, int, currentMagazine, int, remainingAmmo);
+	UPROPERTY(BlueprintAssignable, Category = "Weapon")
+	FUpdateAmmo FUpdateAmmo;
 };
