@@ -44,6 +44,7 @@ void ARangeWeapon::Fire()
 		TObjectPtr<ABaseProjectile> newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
 			ProjectileType,
 			FirePoint->GetComponentTransform(),
+			//TODO: Definir como owner el player.
 			nullptr,
 			nullptr);
 

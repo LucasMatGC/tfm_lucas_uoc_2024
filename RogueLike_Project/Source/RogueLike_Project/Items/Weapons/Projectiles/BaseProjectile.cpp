@@ -3,25 +3,37 @@
 
 #include "BaseProjectile.h"
 
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 ABaseProjectile::ABaseProjectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
-	RootScene->SetupAttachment(RootComponent);
+	RootCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RootCollider"));
+	SetRootComponent(RootCollider);
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
-	ProjectileMesh->SetupAttachment(RootScene);
-	ProjectileMesh->SetCollisionProfileName("Projectile");
+	ProjectileMesh->SetupAttachment(RootCollider);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 
 }
 
+
 // Called when the game starts or when spawned
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RootCollider->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnProjectileHit);
+	
+}
+
+float ABaseProjectile::CalculateDamage()
+{
+
+	return (BaseDamage + AddedDamage) * DamageMultiplier;
 	
 }
 
@@ -29,5 +41,29 @@ void ABaseProjectile::Tick(float DeltaTime)
 {
 
 	Super::Tick(DeltaTime);
+	
+}
+
+void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+
+	if (OtherActor != nullptr)
+	{
+
+		AController* controller = nullptr;
+		
+		if (ACharacter* Character = Cast<ACharacter>(GetOuter()))
+		{
+
+			controller = Character->GetController();
+			
+		}
+		
+		//TODO: ultimo parametro define el tipo de daño (ej: electrico, fuego, hielo, etc)
+		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), controller, this, UDamageType::StaticClass());
+		
+		
+	}
 	
 }

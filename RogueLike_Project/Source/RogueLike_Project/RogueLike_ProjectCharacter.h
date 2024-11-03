@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/WidgetComponent.h"
+#include "Components/HealthComponent.h"
 #include "Components/Player/InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -61,34 +61,33 @@ class ARogueLike_ProjectCharacter : public ACharacter
 	/** Reload Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ReloadAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration|Player Values", meta = (AllowPrivateAccess = "true"))
-	float PlayerMaxHealth = 200.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration|Player Values", meta = (AllowPrivateAccess = "true"))
-	float PlayerHealth = 200.0f;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool m_IsPlayerAlive = true;
 
 public:
+	
 	ARogueLike_ProjectCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	void TakeDamage(float Damage);
+	void TakeDamage(float oldHealth, float currentHealth, float normalizedHealth);
 	
 	UFUNCTION(BlueprintCallable)
 	void KillPlayer();
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerHealth, float, health);
-	UPROPERTY(BlueprintAssignable, Category = "Configuration")
-	FUpdatePlayerHealth FUpdatePlayerHealthDeletate;
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerCurrentWeapon, ABaseWeapon*, newWeapon);
 	UPROPERTY(BlueprintAssignable, Category = "Configuration")
-	FUpdatePlayerCurrentWeapon FUpdatePlayerCurrentWeaponDelegate;
+	FUpdatePlayerCurrentWeapon OnUpdatePlayerCurrentWeaponDelegate;
 	
 protected:
+	
+	// To add mapping context
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+	
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -108,19 +107,15 @@ protected:
 	/** Called for force damage input (debug purpose) **/
 	void ForceDamage(const FInputActionValue& Value);
 	
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	// To add mapping context
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-	
 public:
 	
 	/** Inventory component **/
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Components", meta = ( AllowPrivateAccess = "true" ))
 	UInventoryComponent* InventoryComponent;
+	
+	/** Health component **/
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Components", meta = ( AllowPrivateAccess = "true" ))
+	UHealthComponent* HealthComponent;
 	
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

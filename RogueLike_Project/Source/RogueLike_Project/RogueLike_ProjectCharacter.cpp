@@ -11,6 +11,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Components/Player/InventoryComponent.h"
+#include "Components/HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -58,6 +60,7 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	
 	// Add Inventory Component and define the weapon socket
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	FTransform weaponSocketTransform;
 	weaponSocketTransform = GetMesh()->GetSocketTransform("WeaponSocket");
 	GetMesh()->SetCollisionProfileName("Pawn");
@@ -67,28 +70,37 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void ARogueLike_ProjectCharacter::TakeDamage(float Damage)
+void ARogueLike_ProjectCharacter::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+
+	HealthComponent->OnUpdatePlayerCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
+	HealthComponent->OnProcessDeath.AddDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
+	
+	//Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		PlayerController->bShowMouseCursor = true;
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+}
+
+void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
 {
 
-	PlayerHealth -= Damage;
-	
-	FUpdatePlayerHealthDeletate.Broadcast(PlayerHealth/PlayerMaxHealth);
-	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "DAMAGE!!!!!!");
 
-	if (PlayerHealth <= 0)
-	{
-
-		m_IsPlayerAlive = false;
-		KillPlayer();
-		
-	}
 	
 }
 
 void ARogueLike_ProjectCharacter::KillPlayer()
 {
 
+	m_IsPlayerAlive = false;
+	
 	// Hides visible components
 	SetActorHiddenInGame(true);
 
@@ -100,22 +112,6 @@ void ARogueLike_ProjectCharacter::KillPlayer()
 
 	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
 	
-}
-
-void ARogueLike_ProjectCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		PlayerController->bShowMouseCursor = true;
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
@@ -257,7 +253,7 @@ void ARogueLike_ProjectCharacter::ChangeWeapon(const FInputActionValue& Value)
 	{		
 		InventoryComponent->ChangeWeapon(Value.Get<float>() < 0);
 		
-		FUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
+		OnUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
 	}
 	
 }
@@ -270,7 +266,7 @@ void ARogueLike_ProjectCharacter::Reload(const FInputActionValue& Value)
 		
 		InventoryComponent->GetCurrentWeapon()->Reload();	
 			
-		FUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
+		OnUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
 	
 	}
 	
@@ -284,7 +280,7 @@ void ARogueLike_ProjectCharacter::ForceDamage(const FInputActionValue& Value)
 		
 		float forceDamageValue = 20.0f;
 	
-		TakeDamage(forceDamageValue);
+		UGameplayStatics::ApplyDamage(this, forceDamageValue, GetController(), this, UDamageType::StaticClass());
 	
 	}
 	
