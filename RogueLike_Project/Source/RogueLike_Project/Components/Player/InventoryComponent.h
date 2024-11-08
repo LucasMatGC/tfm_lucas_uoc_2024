@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RogueLike_Project/Items/Weapons/BaseWeapon.h"
+#include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
 #include "InventoryComponent.generated.h"
 
 UCLASS()

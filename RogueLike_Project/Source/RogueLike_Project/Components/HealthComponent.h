@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RogueLike_Project/Items/Weapons/BaseWeapon.h"
+#include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
 #include "HealthComponent.generated.h"
 
 UCLASS()
@@ -19,6 +19,8 @@ public:
 	void TakeDamage(float Damage);
 
 	void ProcessDeath();
+
+	void SetMaxHealth(float health);
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdatePlayerCurrentHealth, float, oldHealth, float, newHealth, float, normalizedHealth);
 	UPROPERTY(BlueprintAssignable, Category = "Health")

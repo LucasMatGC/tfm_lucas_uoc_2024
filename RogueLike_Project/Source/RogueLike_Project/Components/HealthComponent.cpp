@@ -5,7 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/RogueLike_ProjectCharacter.h"
-#include "RogueLike_Project/Items/Weapons/RangeWeapon.h"
+#include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
 
 // Sets default values
 UHealthComponent::UHealthComponent()
@@ -64,4 +64,11 @@ void UHealthComponent::ProcessDeath()
 
 	OnProcessDeath.Broadcast();
 	
+}
+
+void UHealthComponent::SetMaxHealth(float health)
+{
+
+	MaxHealth = health;	
+
 }

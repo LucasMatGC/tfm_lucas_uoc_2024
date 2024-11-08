@@ -28,11 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TSubclassOf<ABaseRoom>> RoomTypeList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
-	int MaxRoom;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
-	int MapSeed = -1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	int MaxRoom = 10;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	FRandomStream RandomStream;
@@ -43,6 +40,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TSubclassOf<AActor> DoorBP;
 
+public:
+	
+	UFUNCTION(BlueprintCallable)
+	void Initialize(int maxRooms, FRandomStream seed);
+	
 	UFUNCTION(BlueprintCallable)
 	void GenerateRooms();
 	
@@ -58,8 +60,6 @@ protected:
 	virtual bool IsOverlaping();
 
 	virtual void CloseRemainingExits();
-
-	virtual void SetSeed();
 
 	virtual TSubclassOf<ABaseRoom> GetRandomRoomType();
 	

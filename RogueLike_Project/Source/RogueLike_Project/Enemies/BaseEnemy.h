@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
-#include "../Items/Weapons/Projectiles/BaseProjectile.h"
+#include "../Objects/Weapons/Projectiles/BaseProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/Components/HealthComponent.h"
@@ -15,21 +15,6 @@ UCLASS()
 class ROGUELIKE_PROJECT_API ABaseEnemy : public ACharacter
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABaseEnemy();
-
-protected:
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual bool CanFire() const;
 
 public:
 
@@ -43,12 +28,6 @@ public:
 	UHealthComponent* HealthComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
-	float MaxHealth;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
-	float Health;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float BaseDamage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
@@ -59,10 +38,27 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float Range;
+	
+public:	
+	// Sets default values for this actor's properties
+	ABaseEnemy();
+
+	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewMaxFireRate, float NewRange);
+	
+	virtual bool CanFire() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void KillEnemy();
+
+protected:
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	virtual void Tick(float DeltaTime) override;
 };

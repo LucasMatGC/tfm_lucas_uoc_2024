@@ -4,7 +4,7 @@
 #include "InventoryComponent.h"
 
 #include "GameFramework/Character.h"
-#include "RogueLike_Project/Items/Weapons/RangeWeapon.h"
+#include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
 
 // Sets default values
 UInventoryComponent::UInventoryComponent()

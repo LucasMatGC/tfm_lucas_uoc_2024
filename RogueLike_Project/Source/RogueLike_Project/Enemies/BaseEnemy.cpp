@@ -16,6 +16,16 @@ ABaseEnemy::ABaseEnemy()
 	
 }
 
+void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewMaxFireRate, float NewRange)
+{
+
+	HealthComponent->SetMaxHealth(NewMaxHealth);
+	BaseDamage = NewDamage;
+	MaxFireRate = NewMaxFireRate;
+	Range = NewRange;
+	
+}
+
 // Called when the game starts or when spawned
 void ABaseEnemy::BeginPlay()
 {
