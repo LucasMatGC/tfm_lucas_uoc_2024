@@ -3,6 +3,7 @@
 
 #include "MapGenerator.h"
 
+#include "BaseDoor.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -81,6 +82,8 @@ void AMapGenerator::SpawnNextRoom()
 	if (IsOverlaping())
 	{
 
+		TArray<USceneComponent*> Exits;
+
 		ExitsLists.Remove(exit);
 		m_LatestRoom->Destroy();
 		SpawnNextRoom();
@@ -138,13 +141,10 @@ void AMapGenerator::CloseRemainingExits()
 	for (USceneComponent* exit : ExitsLists)
 	{
 
-		FActorSpawnParameters spawnInfo;
-		
-		GetWorld()->SpawnActor<AActor>(
-			DoorBP,
-			exit->GetComponentTransform().GetLocation(),
-			exit->GetComponentRotation(),
-			spawnInfo);
+		if (ABaseDoor* exitDoor = Cast<ABaseDoor>(exit->GetChildComponent(0)))
+		{
+			exitDoor->SetLocked(true);
+		}
 		
 	}
 	

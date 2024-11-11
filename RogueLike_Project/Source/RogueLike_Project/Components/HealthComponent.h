@@ -22,9 +22,9 @@ public:
 
 	void SetMaxHealth(float health);
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdatePlayerCurrentHealth, float, oldHealth, float, newHealth, float, normalizedHealth);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float, normalizedHealth);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
-	FUpdatePlayerCurrentHealth OnUpdatePlayerCurrentHealth;
+	FUpdateCurrentHealth OnUpdateCurrentHealth;
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FProcessDeath);
 	UPROPERTY(BlueprintAssignable, Category = "Health")

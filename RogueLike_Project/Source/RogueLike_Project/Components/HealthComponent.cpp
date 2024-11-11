@@ -47,9 +47,9 @@ void UHealthComponent::TakeDamage(float Damage)
 	
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
 	
-	OnUpdatePlayerCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
+	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
 	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "DAMAGE!!!!!!");
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("DAMAGE Taken: %f, oldHealth: %f, currentHealth: %f"), Damage, oldHealth, CurrentHealth));
 
 	if (CurrentHealth <= 0)
 	{
@@ -69,6 +69,7 @@ void UHealthComponent::ProcessDeath()
 void UHealthComponent::SetMaxHealth(float health)
 {
 
-	MaxHealth = health;	
+	MaxHealth = health;
+	CurrentHealth = MaxHealth;
 
 }

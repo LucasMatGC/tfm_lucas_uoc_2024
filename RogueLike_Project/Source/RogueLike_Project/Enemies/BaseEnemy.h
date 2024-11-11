@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "../Objects/Weapons/Projectiles/BaseProjectile.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/Components/HealthComponent.h"
 #include "BaseEnemy.generated.h"
@@ -27,16 +28,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|General Variables")
 	UHealthComponent* HealthComponent;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float BaseDamage;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float MaxFireRate;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float CurrentFireRate;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
 	float Range;
 	
 public:	
@@ -51,8 +52,15 @@ public:
 	virtual void Fire();
 
 	UFUNCTION(BlueprintCallable)
+	virtual void TakeDamage(float oldHealth, float currentHealth, float normalizedHealth);
+
+	UFUNCTION(BlueprintCallable)
 	virtual void KillEnemy();
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyKilled, ABaseEnemy*, enemyKilled);
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnEnemyKilled OnEnemyKilled;
+	
 protected:
 
 	// Called when the game starts or when spawned
@@ -61,4 +69,5 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void Tick(float DeltaTime) override;
+	
 };

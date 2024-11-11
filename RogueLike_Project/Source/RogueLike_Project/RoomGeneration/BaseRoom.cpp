@@ -3,6 +3,7 @@
 
 #include "BaseRoom.h"
 
+#include "BaseDoor.h"
 #include "Chaos/DebugDrawQueue.h"
 #include "Components/BoxComponent.h"
 #include "RogueLike_Project/RogueLike_ProjectCharacter.h"
@@ -73,6 +74,10 @@ void ABaseRoom::SpawnEnemies()
 		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseFireRate, enemyData->BaseRange);
 
 		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+		
+		newEnemy->OnEnemyKilled.AddDynamic(this, &ABaseRoom::EnemyKilled);
+
+		SpawnedEnemies.Add(newEnemy);
 	}
 	
 }
@@ -127,11 +132,39 @@ void ABaseRoom::OpenDoors()
 	
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Opening doors.......");
 	
+	for (ABaseDoor* door : Doors)
+	{
+		
+		door->OpenDoor();
+		
+	}
+	
 }
 
 void ABaseRoom::CloseDoors()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Closing doors.......");
+	
+	for (ABaseDoor* door : Doors)
+	{
+		
+		door->CloseDoor();
+		
+	}
+}
+
+void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled)
+{
+
+	SpawnedEnemies.Remove(enemyKilled);
+
+	if (SpawnedEnemies.Num() == 0)
+	{
+
+		OpenDoors();
+		
+	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -154,6 +187,39 @@ void ABaseRoom::BeginPlay()
 		}
 		
 	}
+
+	//Spawn doors an all exits
+	FActorSpawnParameters spawnInfo;
+	TArray<USceneComponent*> Exits;
+	ExitsFolder->GetChildrenComponents(false, Exits);
+	for (USceneComponent* exit : Exits)
+	{
+
+		
+		ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
+			DoorBP,
+			exit->GetComponentTransform().GetLocation(),
+			exit->GetComponentRotation(),
+			spawnInfo);
+
+		Doors.Add(door);
+		door->AttachToComponent(exit, FAttachmentTransformRules::KeepWorldTransform, "Door");
+
+		door->SetLocked(false);
+		
+	}
+
+	//Spawn a door on the entry
+	ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
+		DoorBP,
+		this->GetTransform().GetLocation(),
+		this->GetActorRotation(),
+		spawnInfo);
+
+	Doors.Add(door);
+	door->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "Door");
+
+	door->SetLocked(false);
 	
 }
 
@@ -184,8 +250,31 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 		{
 			SpawnCustom();
 		}
+
+		DeactivateTriggers();
 		
 	}
+
+	
 }
 
+void ABaseRoom::DeactivateTriggers()
+{
+	
+	TArray<USceneComponent*> TriggerBoxes;
+	TriggersFolder->GetChildrenComponents(false, TriggerBoxes);
+	
+	for (USceneComponent* trigger : TriggerBoxes)
+	{
 
+		if (UBoxComponent* boxColliderTrigger = Cast<UBoxComponent>(trigger))
+		{
+			
+			boxColliderTrigger->OnComponentBeginOverlap.RemoveDynamic(this, &ABaseRoom::PlayerEnters);
+			boxColliderTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			
+		}
+		
+	}
+	
+}

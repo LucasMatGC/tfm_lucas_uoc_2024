@@ -75,7 +75,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	HealthComponent->OnUpdatePlayerCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
+	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.AddDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
 	
 	//Add Input Mapping Context

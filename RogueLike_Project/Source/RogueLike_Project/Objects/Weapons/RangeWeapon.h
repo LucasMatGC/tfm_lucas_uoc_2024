@@ -67,5 +67,5 @@ public:
 
 private:
 	
-	static void SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile);
+	void SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile);
 };

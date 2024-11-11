@@ -121,5 +121,6 @@ void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
 	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
 	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
 	newProjectile->InitialLifeSpan = 1.0f;
+	newProjectile->BaseDamage = Damage;
 	
 }

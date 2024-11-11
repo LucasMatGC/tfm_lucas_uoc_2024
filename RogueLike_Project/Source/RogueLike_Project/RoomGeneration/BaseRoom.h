@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseDoor.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "RogueLike_Project/Enemies/BaseEnemy.h"
@@ -51,31 +52,34 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UArrowComponent* Direction;
 
-	UPROPERTY(EditDefaultsOnly, meta=(RowType=EnemyDataRow))
+	UPROPERTY(EditDefaultsOnly, meta=(RowType=EnemyDataRow), Category = "Room|Configuration")
 	FDataTableRowHandle EnemyRowHandle;
 
-	UPROPERTY(EditDefaultsOnly, meta=(RowType=ItemDataRow))
+	UPROPERTY(EditDefaultsOnly, meta=(RowType=ItemDataRow), Category = "Room|Configuration")
 	FDataTableRowHandle ItemRowHandle;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Room|Configuration")
 	ERoomFunctionality Functionality = ERoomFunctionality::RandomEnemies;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room|Configuration")
+	TSubclassOf<ABaseDoor> DoorBP;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
 		meta = (EditCondition = "Functionality == ERoomFunctionality::RandomEnemies || Functionality == ERoomFunctionality::FullyRandom",
-			EditConditionHides))
+			EditConditionHides), Category = "Room|Configuration")
 	TArray<FText> EnemiesToSpawn;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
 		meta = (EditCondition = "Functionality == ERoomFunctionality::RandomItems || Functionality == ERoomFunctionality::FullyRandom",
-			EditConditionHides))
+			EditConditionHides), Category = "Room|Configuration")
 	TArray<FText> ItemsToSpawn;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
-		meta = (EditCondition = "Functionality == ERoomFunctionality::Customized", EditConditionHides))
+		meta = (EditCondition = "Functionality == ERoomFunctionality::Customized", EditConditionHides), Category = "Room|Configuration")
 	TMap<USceneComponent*, FText> EnemiesPerSpawnPoint;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
-		meta = (EditCondition = "Functionality == ERoomFunctionality::Customized", EditConditionHides))
+		meta = (EditCondition = "Functionality == ERoomFunctionality::Customized", EditConditionHides), Category = "Room|Configuration")
 	TMap<USceneComponent*, FText> ItemsPerSpawnPoint;
 
 	UPROPERTY(Transient)
@@ -103,6 +107,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CloseDoors();
 	
+	UFUNCTION(BlueprintCallable)
+	void EnemyKilled(ABaseEnemy* enemyKilled);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -112,10 +119,14 @@ protected:
 	UFUNCTION()
 	void PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void DeactivateTriggers();
+
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Room|Configuration")
 	bool bHasBeenVisited = false;
 
+	TArray<TObjectPtr<ABaseDoor>> Doors;
 
 };
