@@ -7,7 +7,7 @@
 #include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
 #include "InventoryComponent.generated.h"
 
-UCLASS()
+UCLASS(meta=(BlueprintSpawnableComponent))
 class ROGUELIKE_PROJECT_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -15,6 +15,7 @@ class ROGUELIKE_PROJECT_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this actor's properties
 	UInventoryComponent();
+	void SetupInventory(USceneComponent* newFirePoint);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	FTransform WeaponTransform;

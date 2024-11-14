@@ -16,8 +16,13 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+}
 
+void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
+{
+
+	FirePoint = newFirePoint;
+	
 	for (TSubclassOf<ABaseWeapon> weaponType : WeaponTypes)
 	{
 		FActorSpawnParameters spawnInfo;
@@ -59,12 +64,23 @@ void UInventoryComponent::ChangeWeapon(bool MoveForward)
 
 void UInventoryComponent::FireCurrentWeapon()
 {
-	Weapons[m_CurrentWeapon]->Fire();
+
+	if (Weapons.IsValidIndex(m_CurrentWeapon))
+	{
+		
+		Weapons[m_CurrentWeapon]->Fire();
+		
+	}
+	
 }
 
 ABaseWeapon* UInventoryComponent::GetCurrentWeapon()
 {
 
-	return Weapons[m_CurrentWeapon];
-	
+	if (Weapons.IsValidIndex(m_CurrentWeapon))
+	{
+		return Weapons[m_CurrentWeapon];
+	}
+
+	return  nullptr;
 }

@@ -17,6 +17,7 @@ ABaseProjectile::ABaseProjectile()
 	ProjectileMesh->SetupAttachment(RootCollider);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
+	ProjectileComponent->ProjectileGravityScale = 0;
 
 }
 
@@ -61,8 +62,8 @@ void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor*
 		}
 		
 		//TODO: ultimo parametro define el tipo de daño (ej: electrico, fuego, hielo, etc)
-		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), controller, this, UDamageType::StaticClass());
-		
+		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), controller, this, DamageType.GetClass());
+		Destroy();
 		
 	}
 	

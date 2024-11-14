@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
 #include "HealthComponent.generated.h"
 
-UCLASS()
+UCLASS(meta=(BlueprintSpawnableComponent))
 class ROGUELIKE_PROJECT_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()

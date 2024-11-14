@@ -238,6 +238,8 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 
 		CloseDoors();
 
+		//TODO: Needs rework. Right now spawns enemies an ALL spawn points, as well as items. An enemy cannot spawn where an item has, and neither can do items where enemies have.
+		
 		if (Functionality == ERoomFunctionality::RandomEnemies || Functionality == ERoomFunctionality::FullyRandom)
 		{
 			SpawnEnemies();

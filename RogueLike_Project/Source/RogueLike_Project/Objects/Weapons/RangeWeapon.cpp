@@ -116,11 +116,18 @@ int ARangeWeapon::GetCurrentMagazine()
 
 void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
 {
+	for (TObjectPtr<ABaseItem> upgrade : Upgrades)
+	{
 
-	newProjectile->ProjectileComponent->ProjectileGravityScale = 0;
+		upgrade->ApplyUpgrade(newProjectile);
+		
+	}
+	
 	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
 	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
 	newProjectile->InitialLifeSpan = 1.0f;
-	newProjectile->BaseDamage = Damage;
+	newProjectile->BaseDamage = BaseDamage;
+	newProjectile->AddedDamage = AddedDamage;
+	newProjectile->DamageMultiplier = DamageMultiplier;
 	
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
+#include "RogueLike_Project/Objects/Items/BaseItem.h"
 #include "BaseWeapon.generated.h"
 
 UCLASS()
@@ -14,36 +15,37 @@ class ROGUELIKE_PROJECT_API ABaseWeapon : public AActor
 	
 public:	
 	// Sets default values for this actor's properties
-	ABaseWeapon();
-
-protected:
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual bool CanFire() const;
-
-public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* RootScene;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMeshComponent* WeaponMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
-	float Damage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	float BaseDamage;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	float AddedDamage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	float DamageMultiplier;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float MaxFireRate;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float CurrentFireRate;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float Range;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	TArray<TObjectPtr<ABaseItem>> Upgrades;
+
+public:
+	
+	ABaseWeapon();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
@@ -57,4 +59,13 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateAmmo, int, currentMagazine, int, remainingAmmo);
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")
 	FUpdateAmmo FUpdateAmmo;
+
+protected:
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool CanFire() const;
 };

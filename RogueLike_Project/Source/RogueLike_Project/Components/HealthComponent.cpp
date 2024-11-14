@@ -2,10 +2,7 @@
 
 
 #include "HealthComponent.h"
-
 #include "GameFramework/Character.h"
-#include "RogueLike_Project/RogueLike_ProjectCharacter.h"
-#include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
 
 // Sets default values
 UHealthComponent::UHealthComponent()

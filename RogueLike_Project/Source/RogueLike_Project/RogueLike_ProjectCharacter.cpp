@@ -59,12 +59,9 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	FirePoint->SetupAttachment(GetMesh());
 	
 	// Add Inventory Component and define the weapon socket
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-	FTransform weaponSocketTransform;
-	weaponSocketTransform = GetMesh()->GetSocketTransform("WeaponSocket");
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));	
 	GetMesh()->SetCollisionProfileName("Pawn");
-	InventoryComponent->FirePoint = FirePoint;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -74,6 +71,8 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	InventoryComponent->SetupInventory(FirePoint);
 
 	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.AddDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
@@ -87,6 +86,8 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	OnPlayerReady.Broadcast();
 }
 
 void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
@@ -114,6 +115,35 @@ void ARogueLike_ProjectCharacter::KillPlayer()
 	
 }
 
+void ARogueLike_ProjectCharacter::AddInteractable(UInteractComponent* InteractComponent)
+{
+
+	if (!Interactables.Contains(InteractComponent))
+	{
+		
+		Interactables.Add(InteractComponent);
+		
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::RemoveInteractable(UInteractComponent* InteractComponent)
+{
+
+	if (Interactables.Contains(InteractComponent))
+	{
+		
+		Interactables.Add(InteractComponent);
+		
+	}
+
+	if (m_CurrentInteractable >= Interactables.Num() || m_CurrentInteractable < 0)
+	{
+		m_CurrentInteractable = 0;
+	}
+	
+}
+
 void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -136,7 +166,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 
 			PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
 
-			FVector endTrace = direction * (CameraBoom->TargetArmLength * 3) + startTrace;
+			FVector endTrace = direction * (CameraBoom->TargetArmLength * 30) + startTrace;
 
 			if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Visibility, *params))
 			{
@@ -176,14 +206,21 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		// Fire
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Fire);
 		
-		// Fire
+		// Change Weapon
 		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ChangeWeapon);
+		
+		// Reload
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Reload);
+
+		// Change Interactable
+		EnhancedInputComponent->BindAction(ChangeInteracionAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ChangeInteractable);
+
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Interact);
 		
 		// Debug Take Damage
 		EnhancedInputComponent->BindAction(ForceDamageAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ForceDamage);
 		
-		// Debug Take Damage
-		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Reload);
 	}
 	else
 	{
@@ -267,6 +304,37 @@ void ARogueLike_ProjectCharacter::Reload(const FInputActionValue& Value)
 		InventoryComponent->GetCurrentWeapon()->Reload();	
 			
 		OnUpdatePlayerCurrentWeaponDelegate.Broadcast(InventoryComponent->GetCurrentWeapon());
+	
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::ChangeInteractable(const FInputActionValue& Value)
+{
+
+	if (m_IsPlayerAlive && Interactables.Num() > 1)
+	{		
+		Value.Get<float>() < 0 ? m_CurrentInteractable-- : m_CurrentInteractable++;
+		
+		if (m_CurrentInteractable < 0)
+		{
+			m_CurrentInteractable = Interactables.Num() - 1;
+		}
+		else if (m_CurrentInteractable >= Interactables.Num())
+		{
+			m_CurrentInteractable = 0;
+		}
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::Interact(const FInputActionValue& Value)
+{
+
+	if (m_IsPlayerAlive && Interactables.Num() >= 1)
+	{
+		
+		Interactables[m_CurrentInteractable]->Interact();
 	
 	}
 	

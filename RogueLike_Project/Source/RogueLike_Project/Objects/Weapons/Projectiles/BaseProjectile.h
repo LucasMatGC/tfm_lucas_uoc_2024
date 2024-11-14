@@ -25,6 +25,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float DamageMultiplier = 1.0f;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration")
+	TObjectPtr<UDamageType> DamageType;
+	
 public:
 	// Sets default values for this actor's properties
 	ABaseProjectile();
