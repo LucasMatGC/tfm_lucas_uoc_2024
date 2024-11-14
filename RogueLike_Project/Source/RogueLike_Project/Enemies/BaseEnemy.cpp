@@ -3,6 +3,8 @@
 
 #include "BaseEnemy.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 ABaseEnemy::ABaseEnemy()
 {
@@ -54,17 +56,49 @@ void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (CurrentFireRate > 0)
+	{
+
+		CurrentFireRate -= DeltaTime;
+		
+	}
+	else
+	{
+		Fire();
+	}
 }
 
 bool ABaseEnemy::CanFire() const
 {
 
-	return true;
+	return CurrentFireRate <= 0;
 	
 }
 
 void ABaseEnemy::Fire()
 {
+
+	if (CanFire())
+	{
+
+		CurrentFireRate = MaxFireRate;
+		
+		FActorSpawnParameters spawnInfo;
+		
+		TObjectPtr<ABaseProjectile> newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
+			ProjectileType,
+			FirePoint->GetComponentTransform(),
+			//TODO: Definir como owner el player.
+			nullptr,
+			nullptr);
+		
+		newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
+
+		//UGameplayStatics::ApplyDamage(this, 10, GetController(), this, UDamageType::StaticClass());
+		
+	}	
+	
 }
 
 void ABaseEnemy::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)

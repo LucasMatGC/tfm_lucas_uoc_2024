@@ -129,5 +129,6 @@ void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
 	newProjectile->BaseDamage = BaseDamage;
 	newProjectile->AddedDamage = AddedDamage;
 	newProjectile->DamageMultiplier = DamageMultiplier;
+	newProjectile->OwnerController = GetWorld()->GetFirstPlayerController();
 	
 }

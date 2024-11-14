@@ -26,6 +26,9 @@ public:
 	float DamageMultiplier = 1.0f;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration")
+	AController* OwnerController;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration")
 	TObjectPtr<UDamageType> DamageType;
 	
 public:

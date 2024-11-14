@@ -51,20 +51,11 @@ void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor*
 
 	if (OtherActor != nullptr)
 	{
-
-		AController* controller = nullptr;
-		
-		if (ACharacter* Character = Cast<ACharacter>(GetOuter()))
-		{
-
-			controller = Character->GetController();
-			
-		}
 		
 		//TODO: ultimo parametro define el tipo de daño (ej: electrico, fuego, hielo, etc)
-		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), controller, this, DamageType.GetClass());
-		Destroy();
-		
+		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), OwnerController, this, UDamageType::StaticClass());
+		//Destroy();
+	
 	}
 	
 }

@@ -93,10 +93,10 @@ public:
 	ABaseRoom();
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnEnemies();
+	void SpawnEnemies(int NumberOfEnemiesToSpawn);
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnItems();
+	void SpawnItems(int NumberOfItemsToSpawn);
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnCustom();
@@ -129,4 +129,10 @@ protected:
 
 	TArray<TObjectPtr<ABaseDoor>> Doors;
 
+private:
+
+	FRandomStream seed;	
+	
+	TArray<USceneComponent*> SpawnPoints;
+	
 };

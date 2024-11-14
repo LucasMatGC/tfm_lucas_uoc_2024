@@ -34,139 +34,6 @@ ABaseRoom::ABaseRoom()
 
 }
 
-void ABaseRoom::SpawnEnemies()
-{
-
-	TArray<USceneComponent*> SpawnPoints;
-	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
-
-	if (SpawnPoints.Num() > 0 || EnemiesToSpawn.Num() > 0)
-	{
-
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No enemies were defined to spawn");
-		
-	}
-
-	FRandomStream seed;
-	
-	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-
-		seed = gameMode->RandomStream;
-		
-	}
-	
-	TArray<FName> RowNames = EnemyRowHandle.DataTable->GetRowNames();
-	
-	for (USceneComponent* spawnPoint : SpawnPoints)
-	{
-		
-		FActorSpawnParameters spawnInfo;
-
-		FEnemyDataRow* enemyData = EnemyRowHandle.GetRow<FEnemyDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
-		
-		TObjectPtr<ABaseEnemy> newEnemy = GetWorld()->SpawnActorDeferred<ABaseEnemy>(
-					enemyData->EnemyBP,
-					spawnPoint->GetComponentTransform(),
-					nullptr,
-					nullptr);
-		
-		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseFireRate, enemyData->BaseRange);
-
-		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
-		
-		newEnemy->OnEnemyKilled.AddDynamic(this, &ABaseRoom::EnemyKilled);
-
-		SpawnedEnemies.Add(newEnemy);
-	}
-	
-}
-
-void ABaseRoom::SpawnItems()
-{
-
-	TArray<USceneComponent*> SpawnPoints;
-	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
-
-	if (SpawnPoints.Num() > 0 || EnemiesToSpawn.Num() > 0)
-	{
-
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No items were defined to spawn");
-		
-	}
-
-	FRandomStream seed;
-	
-	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-
-		seed = gameMode->RandomStream;
-		
-	}
-	
-	TArray<FName> RowNames = ItemRowHandle.DataTable->GetRowNames();
-	
-	for (USceneComponent* spawnPoint : SpawnPoints)
-	{
-		
-		FActorSpawnParameters spawnInfo;
-
-		FItemDataRow* itemData = ItemRowHandle.GetRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
-		
-		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
-					itemData->ItemBP,
-					spawnPoint->GetComponentTransform(),
-					nullptr,
-					nullptr);
-
-		newItem->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
-	}
-}
-
-void ABaseRoom::SpawnCustom()
-{
-}
-
-void ABaseRoom::OpenDoors()
-{
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Opening doors.......");
-	
-	for (ABaseDoor* door : Doors)
-	{
-		
-		door->OpenDoor();
-		
-	}
-	
-}
-
-void ABaseRoom::CloseDoors()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Closing doors.......");
-	
-	for (ABaseDoor* door : Doors)
-	{
-		
-		door->CloseDoor();
-		
-	}
-}
-
-void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled)
-{
-
-	SpawnedEnemies.Remove(enemyKilled);
-
-	if (SpawnedEnemies.Num() == 0)
-	{
-
-		OpenDoors();
-		
-	}
-	
-}
-
 // Called when the game starts or when spawned
 void ABaseRoom::BeginPlay()
 {
@@ -220,6 +87,15 @@ void ABaseRoom::BeginPlay()
 	door->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "Door");
 
 	door->SetLocked(false);
+
+	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
+	
+	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+
+		seed = gameMode->RandomStream;
+		
+	}
 	
 }
 
@@ -239,24 +115,154 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 		CloseDoors();
 
 		//TODO: Needs rework. Right now spawns enemies an ALL spawn points, as well as items. An enemy cannot spawn where an item has, and neither can do items where enemies have.
-		
-		if (Functionality == ERoomFunctionality::RandomEnemies || Functionality == ERoomFunctionality::FullyRandom)
+
+		int numberOfEnemiesToSpawn = 0;
+		int numberOfItemsToSpawn = 0;
+
+		switch (Functionality)
 		{
-			SpawnEnemies();
-		}
-		if (Functionality == ERoomFunctionality::RandomItems || Functionality == ERoomFunctionality::FullyRandom)
-		{
-			SpawnItems();
-		}
-		if (Functionality == ERoomFunctionality::Customized)
-		{
-			SpawnCustom();
+			case ERoomFunctionality::RandomEnemies:
+				SpawnEnemies(SpawnPoints.Num());
+				break;
+			
+			case ERoomFunctionality::RandomItems:
+				SpawnItems(SpawnPoints.Num());
+				break;
+
+			
+			case ERoomFunctionality::FullyRandom:
+				numberOfEnemiesToSpawn = seed.RandRange(0, SpawnPoints.Num());
+				numberOfItemsToSpawn = SpawnPoints.Num() - numberOfEnemiesToSpawn;
+				SpawnEnemies(numberOfEnemiesToSpawn);
+				SpawnItems(numberOfItemsToSpawn);
+				break;
+			
+			// Customized
+			default:
+				SpawnCustom();
+				break;
+				
 		}
 
 		DeactivateTriggers();
 		
 	}
 
+	
+}
+
+void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
+{
+
+	if (SpawnPoints.Num() < 0 || NumberOfEnemiesToSpawn < 0)
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No enemies were defined to spawn");
+		
+	}
+	
+	TArray<FName> RowNames = EnemyRowHandle.DataTable->GetRowNames();
+	
+	for (int iterator = 0; iterator < NumberOfEnemiesToSpawn; iterator++)
+	{
+
+		USceneComponent* spawnPoint = SpawnPoints[seed.RandRange(0, SpawnPoints.Num() - 1)];
+		
+		FActorSpawnParameters spawnInfo;
+
+		FEnemyDataRow* enemyData = EnemyRowHandle.GetRow<FEnemyDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
+		
+		TObjectPtr<ABaseEnemy> newEnemy = GetWorld()->SpawnActorDeferred<ABaseEnemy>(
+					enemyData->EnemyBP,
+					spawnPoint->GetComponentTransform(),
+					nullptr,
+					nullptr);
+		
+		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseFireRate, enemyData->BaseRange);
+
+		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+		
+		newEnemy->OnEnemyKilled.AddDynamic(this, &ABaseRoom::EnemyKilled);
+
+		SpawnedEnemies.Add(newEnemy);
+		SpawnPoints.Remove(spawnPoint);
+	}
+	
+}
+
+void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
+{
+
+	if (SpawnPoints.Num() < 0 || NumberOfItemsToSpawn < 0)
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No items were defined to spawn");
+		
+	}
+	
+	TArray<FName> RowNames = ItemRowHandle.DataTable->GetRowNames();
+	
+	for (int iterator = 0; iterator < NumberOfItemsToSpawn; iterator++)
+	{
+		
+		USceneComponent* spawnPoint = SpawnPoints[seed.RandRange(0, SpawnPoints.Num() - 1)];
+		
+		FActorSpawnParameters spawnInfo;
+
+		FItemDataRow* itemData = ItemRowHandle.GetRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
+		
+		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
+					itemData->ItemBP,
+					spawnPoint->GetComponentTransform(),
+					nullptr,
+					nullptr);
+
+		newItem->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+		SpawnPoints.Remove(spawnPoint);
+	}
+}
+
+void ABaseRoom::SpawnCustom()
+{
+}
+
+void ABaseRoom::OpenDoors()
+{
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Opening doors.......");
+	
+	for (ABaseDoor* door : Doors)
+	{
+		
+		door->OpenDoor();
+		
+	}
+	
+}
+
+void ABaseRoom::CloseDoors()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Closing doors.......");
+	
+	for (ABaseDoor* door : Doors)
+	{
+		
+		door->CloseDoor();
+		
+	}
+}
+
+void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled)
+{
+
+	SpawnedEnemies.Remove(enemyKilled);
+
+	if (SpawnedEnemies.Num() == 0)
+	{
+
+		OpenDoors();
+		
+	}
 	
 }
 

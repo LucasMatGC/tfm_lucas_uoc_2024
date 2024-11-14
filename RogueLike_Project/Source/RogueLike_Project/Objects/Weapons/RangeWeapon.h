@@ -31,13 +31,13 @@ protected:
 
 public:
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables", meta = (ClampMin = "1", UIMin = "1"))
 	int MaxAmmo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	int CurrentAmmo;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables", meta = (ClampMin = "1", UIMin = "1"))
 	int MaxMagazine;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
