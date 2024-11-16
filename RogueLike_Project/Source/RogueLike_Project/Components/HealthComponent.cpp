@@ -44,7 +44,7 @@ void UHealthComponent::TakeDamage(float Damage)
 	
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
 	
-	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
+	UpdateHUD(oldHealth);
 	
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("DAMAGE Taken: %f, oldHealth: %f, currentHealth: %f"), Damage, oldHealth, CurrentHealth));
 
@@ -69,4 +69,34 @@ void UHealthComponent::SetMaxHealth(float health)
 	MaxHealth = health;
 	CurrentHealth = MaxHealth;
 
+}
+
+void UHealthComponent::UpgradeMaxHealth(float HealthUpgrade)
+{
+
+	float oldHealth = CurrentHealth;
+	
+	MaxHealth += HealthUpgrade;
+	CurrentHealth += HealthUpgrade;
+	
+	UpdateHUD(oldHealth);
+	
+}
+
+void UHealthComponent::Heal(float ConsumableHealth)
+{
+
+	float oldHealth = CurrentHealth;
+	
+	(CurrentHealth + ConsumableHealth) >= MaxHealth ? CurrentHealth = MaxHealth : CurrentHealth += ConsumableHealth;
+	
+	UpdateHUD(oldHealth);
+	
+}
+
+void UHealthComponent::UpdateHUD(float oldHealth)
+{
+	
+	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
+	
 }

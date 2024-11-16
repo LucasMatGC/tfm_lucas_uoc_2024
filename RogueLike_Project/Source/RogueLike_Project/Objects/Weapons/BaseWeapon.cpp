@@ -56,3 +56,10 @@ void ABaseWeapon::DisableWeapon(bool toHide)
 	SetActorTickEnabled(!toHide);
 
 }
+
+void ABaseWeapon::AddUpgrade(ABaseItem* newUpgrade)
+{
+
+	Upgrades.Add(newUpgrade);
+	
+}

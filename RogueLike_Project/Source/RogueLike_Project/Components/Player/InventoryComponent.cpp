@@ -84,3 +84,67 @@ ABaseWeapon* UInventoryComponent::GetCurrentWeapon()
 
 	return  nullptr;
 }
+
+void UInventoryComponent::AddAmmo(float ConsumableAmmo)
+{
+
+	for (ABaseWeapon* weapon : Weapons)
+	{
+		if (ARangeWeapon* rangedWeapon = Cast<ARangeWeapon>(weapon))
+		{
+
+			rangedWeapon->AddAmmo(ConsumableAmmo);
+			
+		}
+	}
+
+	if (ARangeWeapon* rangedWeapon = Cast<ARangeWeapon>(Weapons[m_CurrentWeapon]))
+	{
+
+		rangedWeapon->UpdateHUD();
+			
+	}
+}
+
+void UInventoryComponent::PickUpItem(ABaseItem* NewPickedUpItem)
+{
+
+	PickedUpItem = NewPickedUpItem;
+			
+	//TODO: Mostrar UI de elegir mejora
+	if ( APlayerController* const player = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController()) )
+	{
+		player->SetPause(true);
+	}
+
+	OnUpgradeSelection.Broadcast(PickedUpItem, true);
+	
+}
+
+void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
+{
+	if (indexOfWeapon == -1)
+	{
+		CommonUpgrades.Add(PickedUpItem);
+		PickedUpItem->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepRelativeTransform, "PickedUpItem");
+		OnUpgradeMaxHealth.Broadcast(PickedUpItem->ExtraHealth);
+		PickedUpItem = nullptr;
+	}
+	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
+	{
+		Weapons[indexOfWeapon]->AddUpgrade(PickedUpItem);
+		PickedUpItem->AttachToActor(Weapons[indexOfWeapon], FAttachmentTransformRules::KeepRelativeTransform, "PickedUpItem");
+		PickedUpItem = nullptr;
+	}
+
+			
+	//TODO: Mostrar UI de elegir mejora
+	if ( APlayerController* const player = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController()) )
+	{
+		player->SetPause(false);
+	}
+
+	OnUpgradeSelection.Broadcast(nullptr, false);
+	
+	
+}

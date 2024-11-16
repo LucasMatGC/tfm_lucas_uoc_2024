@@ -15,21 +15,6 @@ class ROGUELIKE_PROJECT_API ARangeWeapon : public ABaseWeapon
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
-	ARangeWeapon();
-
-protected:
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual bool CanFire() const override;
-
-	virtual bool CanReload();
-
-public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables", meta = (ClampMin = "1", UIMin = "1"))
 	int MaxAmmo;
@@ -48,6 +33,11 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;
+
+public:
+	
+	// Sets default values for this actor's properties
+	ARangeWeapon();
 	
 	virtual void Fire() override;
 	
@@ -64,6 +54,25 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	virtual int GetCurrentMagazine();
+
+	UFUNCTION(BlueprintCallable)
+	void AddAmmo(float ConsumableAmmo);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateHUD();
+
+	virtual void AddUpgrade(ABaseItem* newUpgrade) override;
+
+protected:
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool CanFire() const override;
+
+	virtual bool CanReload();
 
 private:
 	

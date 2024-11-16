@@ -10,6 +10,11 @@ UCLASS(meta=(BlueprintSpawnableComponent))
 class ROGUELIKE_PROJECT_API UInteractComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Interactable")
+	FName InteractableName;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -22,25 +27,16 @@ public:
 	void IsNoLongerInteractable(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(BlueprintCallable)
-	void Interact();
+	void Interact(ACharacter* interactor);
 
-	/*
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInteractable, UInteractComponent*, newInteractable);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteract, ACharacter*, interactor);
 	UPROPERTY(BlueprintAssignable, Category = "Interactable")
-	FUpdateInteractable OnUpdateInteractable;
-	*/
+	FOnInteract OnInteract;
 	
 protected:
 	
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-
-	
-protected:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Health Values", meta = (ClampMin = "0", UIMin = "0"))
-	float MaxHealth = 200.0f;
 	
 };

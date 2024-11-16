@@ -111,6 +111,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerCurrentWeapon, ABaseWeapon*, newWeapon);
 	UPROPERTY(BlueprintAssignable, Category = "Configuration")
 	FUpdatePlayerCurrentWeapon OnUpdatePlayerCurrentWeaponDelegate;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerCurrentInteractable, FName, interactName);
+	UPROPERTY(BlueprintAssignable, Category = "Configuration")
+	FUpdatePlayerCurrentInteractable OnUpdatePlayerCurrentInteractableDelegate;
 	
 public:
 	
@@ -118,11 +122,19 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintCallable)
+	void HealPlayer(float ConsumableHealth);
+
+	UFUNCTION(BlueprintCallable)
+	void AddAmmo(float ConsumableAmmo);
 	
 protected:
 	
 	// To add mapping context
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(float DeltaTime) override;
 

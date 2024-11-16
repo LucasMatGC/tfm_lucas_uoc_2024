@@ -211,12 +211,14 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 
 		FItemDataRow* itemData = ItemRowHandle.GetRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
 		
+		
 		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
 					itemData->ItemBP,
 					spawnPoint->GetComponentTransform(),
 					nullptr,
 					nullptr);
-
+		
+		newItem->ItemName = itemData->DisplayName;
 		newItem->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
 		SpawnPoints.Remove(spawnPoint);
 	}

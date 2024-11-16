@@ -50,9 +50,10 @@ void UInteractComponent::IsNoLongerInteractable(UPrimitiveComponent* OverlappedC
 	
 }
 
-void UInteractComponent::Interact()
+void UInteractComponent::Interact(ACharacter* interactor)
 {
 
 	//TODO: Actual interaction (call owner function 'Interact')
+	OnInteract.Broadcast(interactor);
 	
 }

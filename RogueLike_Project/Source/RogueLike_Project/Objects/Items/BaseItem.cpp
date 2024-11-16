@@ -3,6 +3,9 @@
 
 #include "BaseItem.h"
 
+#include "GameFramework/GameModeBase.h"
+#include "RogueLike_Project/RogueLike_ProjectCharacter.h"
+
 // Sets default values
 ABaseItem::ABaseItem()
 {
@@ -18,13 +21,76 @@ ABaseItem::ABaseItem()
 	
 }
 
-void ABaseItem::PickUpItem()
+// Called when the game starts or when spawned
+void ABaseItem::BeginPlay()
+{
+	
+	Super::BeginPlay();
+
+	RootCollider->OnComponentBeginOverlap.AddDynamic(InteractComponent, &UInteractComponent::IsInteractable);
+	RootCollider->OnComponentEndOverlap.AddDynamic(InteractComponent, &UInteractComponent::IsNoLongerInteractable);
+	InteractComponent->OnInteract.AddDynamic(this, &ABaseItem::ABaseItem::PickUpItem);
+
+	InteractComponent->InteractableName = ItemName;
+	
+}
+
+void ABaseItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+
+	RootCollider->OnComponentBeginOverlap.RemoveDynamic(InteractComponent, &UInteractComponent::IsInteractable);
+	RootCollider->OnComponentEndOverlap.RemoveDynamic(InteractComponent, &UInteractComponent::IsNoLongerInteractable);
+	InteractComponent->OnInteract.RemoveDynamic(this, &ABaseItem::ABaseItem::PickUpItem);
+	
+	Super::EndPlay(EndPlayReason);
+}
+
+void ABaseItem::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void ABaseItem::PickUpItem(ACharacter* interactor)
 {
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, "Item Picked Up!!!!!!");
 
-	HideItem();
+	if (ItemType == EItemType::Consumable)
+	{
+
+		if (ARogueLike_ProjectCharacter* player = Cast<ARogueLike_ProjectCharacter>(interactor))
+		{
+
+			if (ConsumableHealth > 0)
+			{
+				
+				player->HealPlayer(ConsumableHealth);
+				
+			}
+
+			if (ConsumableAmmo > 0)
+			{
+				
+				player->AddAmmo(ConsumableAmmo);
+				
+			}
+			
+		}
+		
+	}
+	else
+	{
+
+		if (ARogueLike_ProjectCharacter* player = Cast<ARogueLike_ProjectCharacter>(interactor))
+		{
+
+			player->InventoryComponent->PickUpItem(this);
+			
+		}
+		
+	}
 	
+	HideItem();
 }
 
 void ABaseItem::ApplyUpgrade(ABaseProjectile* projectile)
@@ -48,31 +114,6 @@ void ABaseItem::ApplyUpgrade(ABaseProjectile* projectile)
 	
 }
 
-// Called when the game starts or when spawned
-void ABaseItem::BeginPlay()
-{
-	
-	Super::BeginPlay();
-
-	RootCollider->OnComponentBeginOverlap.AddDynamic(InteractComponent, &UInteractComponent::IsInteractable);
-	RootCollider->OnComponentEndOverlap.AddDynamic(InteractComponent, &UInteractComponent::IsNoLongerInteractable);
-	
-}
-
-void ABaseItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-
-	RootCollider->OnComponentBeginOverlap.RemoveDynamic(InteractComponent, &UInteractComponent::IsInteractable);
-	RootCollider->OnComponentEndOverlap.RemoveDynamic(InteractComponent, &UInteractComponent::IsNoLongerInteractable);
-	
-	Super::EndPlay(EndPlayReason);
-}
-
-void ABaseItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void ABaseItem::HideItem()
 {
 
@@ -81,5 +122,12 @@ void ABaseItem::HideItem()
 
 	// Disables collision components
 	SetActorEnableCollision(false);
+		
+	if (ItemType == EItemType::Consumable)
+	{
+
+		Destroy();
+		
+	}
 	
 }

@@ -12,10 +12,8 @@ class ROGUELIKE_PROJECT_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	UInventoryComponent();
-	void SetupInventory(USceneComponent* newFirePoint);
+public:
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Configuration")
 	FTransform WeaponTransform;
@@ -28,6 +26,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Weapons")
 	TArray<ABaseWeapon*> Weapons;
+	
+	UPROPERTY(Transient, EditDefaultsOnly, BlueprintReadWrite, Category = "Inventory|Upgrades")
+	TArray<TObjectPtr<ABaseItem>> CommonUpgrades;
+
+public:
+	
+	UInventoryComponent();
+	
+	// Sets default values for this actor's properties
+	UFUNCTION(Blueprintable)
+	void SetupInventory(USceneComponent* newFirePoint);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void ChangeWeapon(bool MoveForward);
@@ -38,6 +47,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons", BlueprintPure)
 	ABaseWeapon* GetCurrentWeapon();
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
+	void AddAmmo(float ConsumableAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
+	void PickUpItem(ABaseItem* NewPickedUpItem);
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
+	void AttachPickedUpItem(int indexOfWeapon);
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpgradeSelection, ABaseItem*, pickedUpgrade, bool, bShowUpgradeHUD);
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|Upgrades")
+	FOnUpgradeSelection OnUpgradeSelection;
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpgradeMaxHealth, float, healthUpgrade);
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|Upgrades")
+	FOnUpgradeMaxHealth OnUpgradeMaxHealth;
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -45,5 +71,8 @@ protected:
 private:
 
 	int m_CurrentWeapon = 0;
+
+	UPROPERTY(Transient)
+	ABaseItem* PickedUpItem;
 
 };

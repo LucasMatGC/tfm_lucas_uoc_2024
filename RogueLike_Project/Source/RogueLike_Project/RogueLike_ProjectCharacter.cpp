@@ -76,6 +76,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 
 	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.AddDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
+	InventoryComponent->OnUpgradeMaxHealth.AddDynamic(HealthComponent, &UHealthComponent::UpgradeMaxHealth);
 	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -90,58 +91,14 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	OnPlayerReady.Broadcast();
 }
 
-void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
+void ARogueLike_ProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
-
+	HealthComponent->OnUpdateCurrentHealth.RemoveDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
+	HealthComponent->OnProcessDeath.RemoveDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
+	InventoryComponent->OnUpgradeMaxHealth.RemoveDynamic(HealthComponent, &UHealthComponent::UpgradeMaxHealth);
 	
-}
-
-void ARogueLike_ProjectCharacter::KillPlayer()
-{
-
-	m_IsPlayerAlive = false;
-	
-	// Hides visible components
-	SetActorHiddenInGame(true);
-
-	// Disables collision components
-	SetActorEnableCollision(false);
-
-	// Stops the Actor from ticking
-	SetActorTickEnabled(false);
-
-	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
-	
-}
-
-void ARogueLike_ProjectCharacter::AddInteractable(UInteractComponent* InteractComponent)
-{
-
-	if (!Interactables.Contains(InteractComponent))
-	{
-		
-		Interactables.Add(InteractComponent);
-		
-	}
-	
-}
-
-void ARogueLike_ProjectCharacter::RemoveInteractable(UInteractComponent* InteractComponent)
-{
-
-	if (Interactables.Contains(InteractComponent))
-	{
-		
-		Interactables.Add(InteractComponent);
-		
-	}
-
-	if (m_CurrentInteractable >= Interactables.Num() || m_CurrentInteractable < 0)
-	{
-		m_CurrentInteractable = 0;
-	}
-	
+	Super::EndPlay(EndPlayReason);
 }
 
 void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
@@ -186,6 +143,77 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 		}
 		
 	}
+	
+}
+
+void ARogueLike_ProjectCharacter::HealPlayer(float ConsumableHealth)
+{
+
+	HealthComponent->Heal(ConsumableHealth);
+	
+}
+
+void ARogueLike_ProjectCharacter::AddAmmo(float ConsumableAmmo)
+{
+
+	InventoryComponent->AddAmmo(ConsumableAmmo);
+	
+}
+
+void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
+{
+
+
+	
+}
+
+void ARogueLike_ProjectCharacter::KillPlayer()
+{
+
+	m_IsPlayerAlive = false;
+	
+	// Hides visible components
+	SetActorHiddenInGame(true);
+
+	// Disables collision components
+	SetActorEnableCollision(false);
+
+	// Stops the Actor from ticking
+	SetActorTickEnabled(false);
+
+	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
+	
+}
+
+void ARogueLike_ProjectCharacter::AddInteractable(UInteractComponent* InteractComponent)
+{
+
+	if (!Interactables.Contains(InteractComponent))
+	{
+		
+		Interactables.Add(InteractComponent);
+		OnUpdatePlayerCurrentInteractableDelegate.Broadcast(Interactables[m_CurrentInteractable]->InteractableName);
+		
+	}
+	
+}
+
+void ARogueLike_ProjectCharacter::RemoveInteractable(UInteractComponent* InteractComponent)
+{
+
+	if (Interactables.Contains(InteractComponent))
+	{
+		
+		Interactables.Remove(InteractComponent);
+		
+	}
+
+	if (m_CurrentInteractable >= Interactables.Num() || m_CurrentInteractable < 0)
+	{
+		m_CurrentInteractable = 0;
+	}
+
+	Interactables.Num() == 0 ? OnUpdatePlayerCurrentInteractableDelegate.Broadcast("") : OnUpdatePlayerCurrentInteractableDelegate.Broadcast(Interactables[m_CurrentInteractable]->InteractableName);
 	
 }
 
@@ -325,6 +353,8 @@ void ARogueLike_ProjectCharacter::ChangeInteractable(const FInputActionValue& Va
 			m_CurrentInteractable = 0;
 		}
 	}
+
+	OnUpdatePlayerCurrentInteractableDelegate.Broadcast(Interactables[m_CurrentInteractable]->InteractableName);
 	
 }
 
@@ -334,7 +364,7 @@ void ARogueLike_ProjectCharacter::Interact(const FInputActionValue& Value)
 	if (m_IsPlayerAlive && Interactables.Num() >= 1)
 	{
 		
-		Interactables[m_CurrentInteractable]->Interact();
+		Interactables[m_CurrentInteractable]->Interact(this);
 	
 	}
 	

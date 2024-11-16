@@ -55,7 +55,7 @@ void ARangeWeapon::Fire()
 		CurrentMagazine--;
 		CurrentAmmo--;
 			
-		FUpdateAmmo.Broadcast(CurrentMagazine, CurrentAmmo - CurrentMagazine);
+		UpdateHUD();
 	
 	}
 }
@@ -111,6 +111,33 @@ int ARangeWeapon::GetCurrentMagazine()
 {
 
 	return CurrentMagazine;
+	
+}
+
+void ARangeWeapon::AddAmmo(float ConsumableAmmo)
+{
+
+	(CurrentAmmo + ConsumableAmmo) >= MaxAmmo ? CurrentAmmo = MaxAmmo : CurrentAmmo += ConsumableAmmo;
+	
+}
+
+void ARangeWeapon::UpdateHUD()
+{
+
+	FUpdateAmmo.Broadcast(CurrentMagazine, CurrentAmmo - CurrentMagazine);
+	
+}
+
+void ARangeWeapon::AddUpgrade(ABaseItem* newUpgrade)
+{
+	Super::AddUpgrade(newUpgrade);
+
+	AddedDamage += newUpgrade->AddedDamage;
+	DamageMultiplier += newUpgrade->AddedDamageMultiplier;
+	Range += newUpgrade->AddedRange;
+	MaxFireRate -= newUpgrade->ReducedFireRate;
+	MaxAmmo += newUpgrade->AddedMaxAmmo;
+	MaxMagazine += newUpgrade->AddedMaxMagazine;
 	
 }
 

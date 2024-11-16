@@ -12,7 +12,7 @@ struct ROGUELIKE_PROJECT_API FItemDataRow : public FTableRowBase
 public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Data")
-	FText DisplayName;
+	FName DisplayName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Data")
 	TSubclassOf<ABaseItem> ItemBP;

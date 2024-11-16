@@ -38,77 +38,86 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USphereComponent* RootCollider;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMeshComponent* ItemMesh;
 	
 	/** Health component **/
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	UInteractComponent* InteractComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
+	FName ItemName;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EItemType ItemType = EItemType::Consumable;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "ItemType == EItemType::Consumable", EditConditionHides), Category = "Configuration|Upgrade")
+	float ConsumableHealth;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "ItemType == EItemType::Consumable", EditConditionHides), Category = "Configuration|Upgrade")
+	float ConsumableAmmo;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float ExtraHealth;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float AddedDamage;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float AddedDamageMultiplier;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float AddedRange;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float ReducedFireRate;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float AddedMaxAmmo;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::BaseVariablesUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	float AddedMaxMagazine;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::DamageTypeUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	UDamageType* DamageType;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::ModifierUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	UStaticMesh* NewProjectileMesh;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::ModifierUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
 	FCollisionProfileName NewCollisionProfile;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "ItemType == EItemType::ModifierUpgrade || ItemType == EItemType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
@@ -120,14 +129,14 @@ public:
 	ABaseItem();
 	
 	UFUNCTION(BlueprintCallable)
-	void PickUpItem();
+	void PickUpItem(ACharacter* interactor);
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyUpgrade(ABaseProjectile* projectile);
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPickUpItem);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUseConsumable, float, health, float, ammo);
 	UPROPERTY(BlueprintAssignable, Category = "Item")
-	FPickUpItem OnPickUpItem;
+	FOnUseConsumable OnUseConsumable;
 
 protected:
 

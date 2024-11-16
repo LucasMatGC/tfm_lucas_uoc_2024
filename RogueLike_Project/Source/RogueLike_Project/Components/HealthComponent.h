@@ -21,7 +21,17 @@ public:
 
 	void SetMaxHealth(float health);
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float, normalizedHealth);
+	UFUNCTION(BlueprintCallable)
+	void UpgradeMaxHealth(float HealthUpgrade);
+	
+	UFUNCTION(BlueprintCallable)
+	void Heal(float ConsumableHealth);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateHUD(float oldHealth);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float,
+	                                               normalizedHealth);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FUpdateCurrentHealth OnUpdateCurrentHealth;
 	

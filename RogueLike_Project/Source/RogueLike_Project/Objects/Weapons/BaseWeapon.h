@@ -55,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DisableWeapon(bool toHide);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void AddUpgrade(ABaseItem* newUpgrade);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateAmmo, int, currentMagazine, int, remainingAmmo);
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")
