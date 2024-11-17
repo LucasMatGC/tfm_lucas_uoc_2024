@@ -96,6 +96,9 @@ void ABaseRoom::BeginPlay()
 		seed = gameMode->RandomStream;
 		
 	}
+
+	EnemyTable.LoadSynchronous();
+	ItemTable.LoadSynchronous();
 	
 }
 
@@ -147,7 +150,6 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 		DeactivateTriggers();
 		
 	}
-
 	
 }
 
@@ -161,7 +163,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 		
 	}
 	
-	TArray<FName> RowNames = EnemyRowHandle.DataTable->GetRowNames();
+	TArray<FName> RowNames = EnemyTable->GetRowNames();
 	
 	for (int iterator = 0; iterator < NumberOfEnemiesToSpawn; iterator++)
 	{
@@ -170,7 +172,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 		
 		FActorSpawnParameters spawnInfo;
 
-		FEnemyDataRow* enemyData = EnemyRowHandle.GetRow<FEnemyDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
+		FEnemyDataRow* enemyData = EnemyTable->FindRow<FEnemyDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)], nullptr, true ); 
 		
 		TObjectPtr<ABaseEnemy> newEnemy = GetWorld()->SpawnActorDeferred<ABaseEnemy>(
 					enemyData->EnemyBP,
@@ -200,7 +202,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		
 	}
 	
-	TArray<FName> RowNames = ItemRowHandle.DataTable->GetRowNames();
+	TArray<FName> RowNames = ItemTable->GetRowNames();
 	
 	for (int iterator = 0; iterator < NumberOfItemsToSpawn; iterator++)
 	{
@@ -209,8 +211,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		
 		FActorSpawnParameters spawnInfo;
 
-		FItemDataRow* itemData = ItemRowHandle.GetRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)].ToString() ); 
-		
+		FItemDataRow* itemData = ItemTable->FindRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)], nullptr, true ); 
 		
 		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
 					itemData->ItemBP,

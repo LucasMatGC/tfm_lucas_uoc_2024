@@ -52,11 +52,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UArrowComponent* Direction;
 
-	UPROPERTY(EditDefaultsOnly, meta=(RowType=EnemyDataRow), Category = "Room|Configuration")
-	FDataTableRowHandle EnemyRowHandle;
+	UPROPERTY(EditDefaultsOnly, meta=(RowType = "EnemyDataRow"), Category = "Room|Configuration")
+	TSoftObjectPtr<UDataTable> EnemyTable;
 
-	UPROPERTY(EditDefaultsOnly, meta=(RowType=ItemDataRow), Category = "Room|Configuration")
-	FDataTableRowHandle ItemRowHandle;
+	UPROPERTY(EditDefaultsOnly, meta=(RowType = "ItemDataRow"), Category = "Room|Configuration")
+	TSoftObjectPtr<UDataTable> ItemTable;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Room|Configuration")
 	ERoomFunctionality Functionality = ERoomFunctionality::RandomEnemies;
