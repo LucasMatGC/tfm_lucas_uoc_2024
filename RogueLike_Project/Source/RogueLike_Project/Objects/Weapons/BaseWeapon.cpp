@@ -3,6 +3,8 @@
 
 #include "BaseWeapon.h"
 
+#include "RogueLike_Project/Objects/Items/Upgrades/UpgradeStruct.h"
+
 // Sets default values
 ABaseWeapon::ABaseWeapon()
 {
@@ -15,6 +17,13 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh->SetupAttachment(RootScene);
 
 	PrimaryActorTick.bCanEverTick = true;	
+}
+
+void ABaseWeapon::SetUpWeapon(TArray<FUpgradeStruct> NewCommonUpgrades)
+{
+
+	CommonUpgrades = NewCommonUpgrades;
+	
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +45,10 @@ bool ABaseWeapon::CanFire() const
 	
 }
 
+void ABaseWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
+{
+}
+
 void ABaseWeapon::Fire()
 {
 }
@@ -50,16 +63,24 @@ void ABaseWeapon::DisableWeapon(bool toHide)
 	SetActorHiddenInGame(toHide);
 
 	// Disables collision components
-	//SetActorEnableCollision(!toHide);
+	SetActorEnableCollision(!toHide);
 
 	// Stops the Actor from ticking
 	SetActorTickEnabled(!toHide);
 
 }
 
-void ABaseWeapon::AddUpgrade(ABaseItem* newUpgrade)
+
+void ABaseWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 
-	Upgrades.Add(newUpgrade);
+	if (bIsCommonUpgrade)
+	{
+		CommonUpgrades.Add(newUpgrade);
+	}
+	else
+	{
+		Upgrades.Add(newUpgrade);
+	}
 	
 }

@@ -25,6 +25,7 @@ void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
 	
 	for (TSubclassOf<ABaseWeapon> weaponType : WeaponTypes)
 	{
+		
 		FActorSpawnParameters spawnInfo;
 		FVector spawnLocation = FVector::ZeroVector;
 		FRotator spawnRotation = FRotator::ZeroRotator;
@@ -34,6 +35,7 @@ void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
 		{
 			weapon->AttachToComponent(character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "WeaponSocket");
 			Cast<ARangeWeapon>(weapon)->FirePoint = FirePoint;
+			weapon->SetUpWeapon(CommonUpgrades);
 			weapon->DisableWeapon(true);
 			Weapons.Add(weapon);
 		}
@@ -111,7 +113,6 @@ void UInventoryComponent::PickUpItem(ABaseItem* NewPickedUpItem)
 
 	PickedUpItem = NewPickedUpItem;
 			
-	//TODO: Mostrar UI de elegir mejora
 	if ( APlayerController* const player = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController()) )
 	{
 		player->SetPause(true);
@@ -125,20 +126,23 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 {
 	if (indexOfWeapon == -1)
 	{
-		CommonUpgrades.Add(PickedUpItem);
-		PickedUpItem->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepRelativeTransform, "PickedUpItem");
-		OnUpgradeMaxHealth.Broadcast(PickedUpItem->ExtraHealth);
-		PickedUpItem = nullptr;
+		FUpgradeStruct newUpgrade = PickedUpItem->DefaultUpgrade;
+		CommonUpgrades.Add(newUpgrade);
+		for (ABaseWeapon* weapon : Weapons)
+		{
+			weapon->AddUpgrade(newUpgrade, true);
+		}
+		OnUpgradeMaxHealth.Broadcast(newUpgrade.ExtraHealth);
 	}
 	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
 	{
-		Weapons[indexOfWeapon]->AddUpgrade(PickedUpItem);
-		PickedUpItem->AttachToActor(Weapons[indexOfWeapon], FAttachmentTransformRules::KeepRelativeTransform, "PickedUpItem");
-		PickedUpItem = nullptr;
+		FUpgradeStruct newUpgrade = *PickedUpItem->UpgradeMapping.Find(Weapons[indexOfWeapon]->GetClass());
+		Weapons[indexOfWeapon]->AddUpgrade(newUpgrade, false);
 	}
-
-			
-	//TODO: Mostrar UI de elegir mejora
+	
+	PickedUpItem->Destroy();
+	PickedUpItem = nullptr;
+	
 	if ( APlayerController* const player = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController()) )
 	{
 		player->SetPause(false);
@@ -146,5 +150,12 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 
 	OnUpgradeSelection.Broadcast(nullptr, false);
 	
+	
+}
+
+TArray<FUpgradeStruct> UInventoryComponent::GetCommonUpgrades()
+{
+
+	return CommonUpgrades;
 	
 }

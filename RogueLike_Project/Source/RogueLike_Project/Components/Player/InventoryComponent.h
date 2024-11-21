@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RogueLike_Project/Objects/Items/BaseItem.h"
 #include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
 #include "InventoryComponent.generated.h"
 
@@ -28,7 +29,7 @@ public:
 	TArray<ABaseWeapon*> Weapons;
 	
 	UPROPERTY(Transient, EditDefaultsOnly, BlueprintReadWrite, Category = "Inventory|Upgrades")
-	TArray<TObjectPtr<ABaseItem>> CommonUpgrades;
+	TArray<FUpgradeStruct> CommonUpgrades;
 
 public:
 	
@@ -56,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void AttachPickedUpItem(int indexOfWeapon);
 	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrades")
+	TArray<FUpgradeStruct> GetCommonUpgrades();
+	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpgradeSelection, ABaseItem*, pickedUpgrade, bool, bShowUpgradeHUD);
 	UPROPERTY(BlueprintAssignable, Category = "Inventory|Upgrades")
 	FOnUpgradeSelection OnUpgradeSelection;
@@ -67,6 +71,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+
 	
 private:
 

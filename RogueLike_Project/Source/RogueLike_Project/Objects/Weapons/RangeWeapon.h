@@ -61,7 +61,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHUD();
 
-	virtual void AddUpgrade(ABaseItem* newUpgrade) override;
+	virtual void AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade) override;
 
 protected:
 
@@ -74,7 +74,14 @@ protected:
 
 	virtual bool CanReload();
 
+	virtual void ApplyUpgrade(const FUpgradeStruct& Upgrade) override;
+	
 private:
 	
-	void SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile);
+	
+	void SetupProjectile();
+
+	UPROPERTY(Transient)
+	TObjectPtr<ABaseProjectile> newProjectile;
+	
 };

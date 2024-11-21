@@ -41,14 +41,14 @@ void ARangeWeapon::Fire()
 		
 		FActorSpawnParameters spawnInfo;
 		
-		TObjectPtr<ABaseProjectile> newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
+		newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
 			ProjectileType,
 			FirePoint->GetComponentTransform(),
 			//TODO: Definir como owner el player.
 			nullptr,
 			nullptr);
 
-		SetupProjectile(newProjectile);		
+		SetupProjectile();		
 		
 		newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
 
@@ -128,27 +128,45 @@ void ARangeWeapon::UpdateHUD()
 	
 }
 
-void ARangeWeapon::AddUpgrade(ABaseItem* newUpgrade)
+void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
-	Super::AddUpgrade(newUpgrade);
+	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);
 
-	AddedDamage += newUpgrade->AddedDamage;
-	DamageMultiplier += newUpgrade->AddedDamageMultiplier;
-	Range += newUpgrade->AddedRange;
-	MaxFireRate -= newUpgrade->ReducedFireRate;
-	MaxAmmo += newUpgrade->AddedMaxAmmo;
-	MaxMagazine += newUpgrade->AddedMaxMagazine;
+	AddedDamage += newUpgrade.AddedDamage;
+	DamageMultiplier += newUpgrade.AddedDamageMultiplier;
+	Range += newUpgrade.AddedRange;
+	MaxFireRate -= newUpgrade.ReducedFireRate;
+	MaxAmmo += newUpgrade.AddedMaxAmmo;
+	MaxMagazine += newUpgrade.AddedMaxMagazine;
 	
 }
 
-void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
+void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 {
-	for (TObjectPtr<ABaseItem> upgrade : Upgrades)
+	
+	switch (Upgrade.UpgradeType)
 	{
 
-		upgrade->ApplyUpgrade(newProjectile);
-		
+		case EUpgradeType::DamageTypeUpgrade:
+
+			newProjectile->DamageType = Upgrade.DamageType;
+			break;
+				
+		case EUpgradeType::ModifierUpgrade:
+
+			newProjectile->ProjectileMesh->SetStaticMesh(Upgrade.NewProjectileMesh);
+			//TODO: Modify Collision profile
+			//TODO: Modify Trajectory of Projectile
+			break;
+			
+		default:
+			break;
 	}
+	
+}
+
+void ARangeWeapon::SetupProjectile()
+{
 	
 	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
 	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
@@ -157,5 +175,20 @@ void ARangeWeapon::SetupProjectile(TObjectPtr<ABaseProjectile> newProjectile)
 	newProjectile->AddedDamage = AddedDamage;
 	newProjectile->DamageMultiplier = DamageMultiplier;
 	newProjectile->OwnerController = GetWorld()->GetFirstPlayerController();
+	
+	for (FUpgradeStruct commonUpgrade : CommonUpgrades)
+	{
+
+		ApplyUpgrade(commonUpgrade);
+		
+	}
+	
+	for (FUpgradeStruct upgrade : Upgrades)
+	{
+
+		ApplyUpgrade(upgrade);
+		
+	}
+	
 	
 }

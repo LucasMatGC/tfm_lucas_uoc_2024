@@ -93,27 +93,6 @@ void ABaseItem::PickUpItem(ACharacter* interactor)
 	HideItem();
 }
 
-void ABaseItem::ApplyUpgrade(ABaseProjectile* projectile)
-{
-	switch (ItemType)
-	{
-
-		case EItemType::DamageTypeUpgrade:
-
-			projectile->DamageType = DamageType;
-			break;
-		
-		case EItemType::ModifierUpgrade:
-
-			projectile->ProjectileMesh->SetStaticMesh(NewProjectileMesh);
-			//TODO: Modify Collision profile
-			//TODO: Modify Trajectory of Projectile
-			break;
-		
-	}
-	
-}
-
 void ABaseItem::HideItem()
 {
 

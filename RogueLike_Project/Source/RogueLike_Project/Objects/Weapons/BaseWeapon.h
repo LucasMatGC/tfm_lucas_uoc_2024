@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
-#include "RogueLike_Project/Objects/Items/BaseItem.h"
+#include "RogueLike_Project/Objects/Items/Upgrades/UpgradeStruct.h"
 #include "BaseWeapon.generated.h"
 
 UCLASS()
@@ -21,6 +20,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	FName WeaponName;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables", meta = (ClampMin = "1", UIMin = "1"))
 	float BaseDamage;
@@ -41,11 +43,18 @@ public:
 	float Range;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
-	TArray<TObjectPtr<ABaseItem>> Upgrades;
+	TArray<FUpgradeStruct> CommonUpgrades;
+
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	TArray<FUpgradeStruct> Upgrades;
 
 public:
 	
 	ABaseWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetUpWeapon(TArray<FUpgradeStruct> NewCommonUpgrades);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
@@ -57,7 +66,7 @@ public:
 	virtual void DisableWeapon(bool toHide);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void AddUpgrade(ABaseItem* newUpgrade);
+	virtual void AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateAmmo, int, currentMagazine, int, remainingAmmo);
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")
@@ -71,4 +80,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual bool CanFire() const;
+
+	virtual void ApplyUpgrade(const FUpgradeStruct& Upgrade);
+	
 };

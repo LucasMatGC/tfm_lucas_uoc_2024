@@ -352,9 +352,10 @@ void ARogueLike_ProjectCharacter::ChangeInteractable(const FInputActionValue& Va
 		{
 			m_CurrentInteractable = 0;
 		}
+		
+		OnUpdatePlayerCurrentInteractableDelegate.Broadcast(Interactables[m_CurrentInteractable]->InteractableName);
 	}
 
-	OnUpdatePlayerCurrentInteractableDelegate.Broadcast(Interactables[m_CurrentInteractable]->InteractableName);
 	
 }
 
