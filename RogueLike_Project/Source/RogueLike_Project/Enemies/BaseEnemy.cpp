@@ -23,7 +23,6 @@ void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewMaxFir
 
 	HealthComponent->SetMaxHealth(NewMaxHealth);
 	BaseDamage = NewDamage;
-	MaxFireRate = NewMaxFireRate;
 	Range = NewRange;
 	
 }
@@ -56,48 +55,33 @@ void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (CurrentFireRate > 0)
-	{
-
-		CurrentFireRate -= DeltaTime;
-		
-	}
-	else
-	{
-		Fire();
-	}
-}
-
-bool ABaseEnemy::CanFire() const
-{
-
-	return CurrentFireRate <= 0;
-	
 }
 
 void ABaseEnemy::Fire()
 {
 
-	if (CanFire())
-	{
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "FIRE!!!!!!");
+	
+	FActorSpawnParameters spawnInfo;
+	
+	newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
+		ProjectileType,
+		FirePoint->GetComponentTransform(),
+		this,
+		nullptr);
 
-		CurrentFireRate = MaxFireRate;
-		
-		FActorSpawnParameters spawnInfo;
-		
-		TObjectPtr<ABaseProjectile> newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
-			ProjectileType,
-			FirePoint->GetComponentTransform(),
-			//TODO: Definir como owner el player.
-			nullptr,
-			nullptr);
-		
-		newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
+	SetupProjectile();
+	
+	newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
+	
+}
 
-		//UGameplayStatics::ApplyDamage(this, 10, GetController(), this, UDamageType::StaticClass());
-		
-	}	
+void ABaseEnemy::SetupProjectile()
+{
+	
+	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
+	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
+	newProjectile->BaseDamage = BaseDamage;
 	
 }
 

@@ -100,5 +100,5 @@ public:
 		meta = (EditCondition = "UpgradeType == EUpgradeType::ModifierUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
-	ETrajectoryType NewTrajectoryType;
+	UETrajectoryType NewTrajectoryType;
 };

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 UENUM(BlueprintType)
-enum class ETrajectoryType
+enum class UETrajectoryType
 {
 	Linear = 0,
 	Wavy = 1,

@@ -44,7 +44,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> CommonUpgrades;
-
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> Upgrades;

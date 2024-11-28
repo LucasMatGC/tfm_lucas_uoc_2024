@@ -28,28 +28,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|General Variables")
 	UHealthComponent* HealthComponent;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float BaseDamage;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
-	float MaxFireRate;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
-	float CurrentFireRate;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float Range;
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ABaseEnemy();
 
 	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewMaxFireRate, float NewRange);
-	
-	virtual bool CanFire() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetupProjectile();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void TakeDamage(float oldHealth, float currentHealth, float normalizedHealth);
@@ -69,5 +64,8 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<ABaseProjectile>  newProjectile;
 	
 };

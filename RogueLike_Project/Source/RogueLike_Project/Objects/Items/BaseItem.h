@@ -3,19 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "RogueLike_Project/Components/InteractComponent.h"
 #include "RogueLike_Project/Objects/Weapons/BaseWeapon.h"
-#include "RogueLike_Project/Objects/Weapons/Projectiles/BaseProjectile.h"
-#include "RogueLike_Project/Utils/Upgrades/BaseTrajectoryType.h"
 #include "Upgrades/UpgradeStruct.h"
 #include "BaseItem.generated.h"
 
 /* Different types of items
- *	Consumable:				Items that are instantly use to refill the player's health or ammunition
- *	Upgrade:	Item that applies an upgrade to the player or a weapon
+ *	Consumable:		Items that are instantly use to refill the player's health or ammunition
+ *	Upgrade:		Item that applies an upgrade to the player or a weapon
  */
 UENUM(BlueprintType)
 enum class EItemType
