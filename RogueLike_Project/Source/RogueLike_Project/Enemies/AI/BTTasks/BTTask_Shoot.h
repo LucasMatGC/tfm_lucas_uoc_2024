@@ -16,6 +16,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UEnemyState NextState;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.1", UIMin = "0.1"))
+	float AimTime = 0.2;
 	
 	UBTTask_Shoot();
 
@@ -32,5 +35,7 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<APawn> m_PlayerPawn;
+
+	bool m_ReachedTarget;
 	
 };

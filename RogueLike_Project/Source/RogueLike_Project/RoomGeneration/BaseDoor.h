@@ -39,7 +39,9 @@ public:
 	void SetLocked(bool IsLocked);
 
 private:
-
+	
+	UPROPERTY(VisibleAnywhere)
 	bool m_bIsLocked = false;
+
 
 };

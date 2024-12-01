@@ -89,13 +89,6 @@ void ABaseRoom::BeginPlay()
 	door->SetLocked(false);
 
 	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
-	
-	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-
-		seed = gameMode->RandomStream;
-		
-	}
 
 	EnemyTable.LoadSynchronous();
 	ItemTable.LoadSynchronous();
@@ -118,6 +111,13 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 		CloseDoors();
 
 		//TODO: Needs rework. Right now spawns enemies an ALL spawn points, as well as items. An enemy cannot spawn where an item has, and neither can do items where enemies have.
+		
+		if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+
+			seed = gameMode->RandomStream;
+			
+		}
 
 		int numberOfEnemiesToSpawn = 0;
 		int numberOfItemsToSpawn = 0;
@@ -180,7 +180,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 					nullptr,
 					nullptr);
 		
-		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseFireRate, enemyData->BaseRange);
+		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseRange);
 
 		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
 		

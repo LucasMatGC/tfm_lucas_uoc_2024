@@ -38,7 +38,7 @@ public:
 	// Sets default values for this actor's properties
 	ABaseEnemy();
 
-	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewMaxFireRate, float NewRange);
+	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewRange);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();

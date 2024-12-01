@@ -141,8 +141,11 @@ void AMapGenerator::CloseRemainingExits()
 	for (USceneComponent* exit : ExitsLists)
 	{
 
+		//TODO: Las puertas no se estan cerrando ni bloqueando. El if de debajo no funciona
 		if (ABaseDoor* exitDoor = Cast<ABaseDoor>(exit->GetChildComponent(0)))
 		{
+			
+			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "Closed!");
 			exitDoor->SetLocked(true);
 		}
 		

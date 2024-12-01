@@ -18,7 +18,7 @@ ABaseEnemy::ABaseEnemy()
 	
 }
 
-void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewMaxFireRate, float NewRange)
+void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewRange)
 {
 
 	HealthComponent->SetMaxHealth(NewMaxHealth);
@@ -60,7 +60,7 @@ void ABaseEnemy::Tick(float DeltaTime)
 void ABaseEnemy::Fire()
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "FIRE!!!!!!");
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, this->GetFullName());
 	
 	FActorSpawnParameters spawnInfo;
 	
