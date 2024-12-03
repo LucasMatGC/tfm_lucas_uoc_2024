@@ -3,8 +3,9 @@
 
 #include "BaseRoom.h"
 
+#include "AIController.h"
 #include "BaseDoor.h"
-#include "Chaos/DebugDrawQueue.h"
+#include "BrainComponent.h"
 #include "Components/BoxComponent.h"
 #include "RogueLike_Project/RogueLike_ProjectCharacter.h"
 #include "RogueLike_Project/GameModes/BaseGameMode.h"
@@ -34,6 +35,58 @@ ABaseRoom::ABaseRoom()
 
 }
 
+void ABaseRoom::PrepareRoom(ABaseGameMode* GameMode)
+{
+
+	m_GameMode = GameMode;
+	
+	int numberOfEnemiesToSpawn = 0;
+	int numberOfItemsToSpawn = 0;
+
+	switch (Functionality)
+	{
+	case ERoomFunctionality::RandomEnemies:
+		SpawnEnemies(SpawnPoints.Num());
+		break;
+			
+	case ERoomFunctionality::RandomItems:
+		SpawnItems(SpawnPoints.Num());
+		break;
+
+			
+	case ERoomFunctionality::FullyRandom:
+		numberOfEnemiesToSpawn = m_GameMode->RandomRangeInt(0, SpawnPoints.Num());
+		numberOfItemsToSpawn = SpawnPoints.Num() - numberOfEnemiesToSpawn;
+		SpawnEnemies(numberOfEnemiesToSpawn);
+		SpawnItems(numberOfItemsToSpawn);
+		break;
+			
+		// Customized
+	default:
+		SpawnCustom();
+		break;
+				
+	}
+	
+}
+
+void ABaseRoom::SpawnDoor(FVector DoorLocation, FRotator DoorRotation, bool IsDoorLocked)
+{
+
+	FActorSpawnParameters spawnInfo;
+	
+	ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
+			DoorBP,
+			DoorLocation,
+			DoorRotation,
+			spawnInfo);
+
+	Doors.Add(door);
+	door->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "Door");
+	door->SetLocked(IsDoorLocked);
+	
+}
+
 // Called when the game starts or when spawned
 void ABaseRoom::BeginPlay()
 {
@@ -55,26 +108,7 @@ void ABaseRoom::BeginPlay()
 		
 	}
 
-	//Spawn doors an all exits
 	FActorSpawnParameters spawnInfo;
-	TArray<USceneComponent*> Exits;
-	ExitsFolder->GetChildrenComponents(false, Exits);
-	for (USceneComponent* exit : Exits)
-	{
-
-		
-		ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
-			DoorBP,
-			exit->GetComponentTransform().GetLocation(),
-			exit->GetComponentRotation(),
-			spawnInfo);
-
-		Doors.Add(door);
-		door->AttachToComponent(exit, FAttachmentTransformRules::KeepWorldTransform, "Door");
-
-		door->SetLocked(false);
-		
-	}
 
 	//Spawn a door on the entry
 	ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
@@ -105,51 +139,36 @@ void ABaseRoom::Tick(float DeltaTime)
 void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
+	if (SpawnedEnemies.Num() > 0)
 	{
-
-		CloseDoors();
-
-		//TODO: Needs rework. Right now spawns enemies an ALL spawn points, as well as items. An enemy cannot spawn where an item has, and neither can do items where enemies have.
 		
-		if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+		if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 		{
 
-			seed = gameMode->RandomStream;
-			
-		}
+			CloseDoors();
 
-		int numberOfEnemiesToSpawn = 0;
-		int numberOfItemsToSpawn = 0;
-
-		switch (Functionality)
-		{
-			case ERoomFunctionality::RandomEnemies:
-				SpawnEnemies(SpawnPoints.Num());
-				break;
-			
-			case ERoomFunctionality::RandomItems:
-				SpawnItems(SpawnPoints.Num());
-				break;
-
-			
-			case ERoomFunctionality::FullyRandom:
-				numberOfEnemiesToSpawn = seed.RandRange(0, SpawnPoints.Num());
-				numberOfItemsToSpawn = SpawnPoints.Num() - numberOfEnemiesToSpawn;
-				SpawnEnemies(numberOfEnemiesToSpawn);
-				SpawnItems(numberOfItemsToSpawn);
-				break;
-			
-			// Customized
-			default:
-				SpawnCustom();
-				break;
+			for (ABaseEnemy* Enemy : SpawnedEnemies)
+			{
+				Enemy->SetActorHiddenInGame(false);
+				Enemy->SetActorTickEnabled(true);
 				
-		}
+				if (AAIController* Controller = Cast<AAIController>(Enemy->GetController()))
+				{
+					Controller->BrainComponent->StartLogic();
+				}
+			}
 
-		DeactivateTriggers();
+		
+		}
 		
 	}
+	
+	for (ABaseItem* Item : SpawnedItems)
+	{
+		Item->SetActorHiddenInGame(false);
+	}
+	
+	DeactivateTriggers();
 	
 }
 
@@ -168,11 +187,11 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 	for (int iterator = 0; iterator < NumberOfEnemiesToSpawn; iterator++)
 	{
 
-		USceneComponent* spawnPoint = SpawnPoints[seed.RandRange(0, SpawnPoints.Num() - 1)];
+		USceneComponent* spawnPoint = SpawnPoints[m_GameMode->RandomRangeInt(0, SpawnPoints.Num() - 1)];
 		
 		FActorSpawnParameters spawnInfo;
 
-		FEnemyDataRow* enemyData = EnemyTable->FindRow<FEnemyDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)], nullptr, true ); 
+		FEnemyDataRow* enemyData = EnemyTable->FindRow<FEnemyDataRow>( RowNames[m_GameMode->RandomRangeInt(0, RowNames.Num() - 1)], nullptr, true ); 
 		
 		TObjectPtr<ABaseEnemy> newEnemy = GetWorld()->SpawnActorDeferred<ABaseEnemy>(
 					enemyData->EnemyBP,
@@ -183,6 +202,15 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseRange);
 
 		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+
+		newEnemy->SetActorHiddenInGame(true);
+		newEnemy->SetActorTickEnabled(false);
+		
+		if (AAIController* Controller = Cast<AAIController>(newEnemy->GetController()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "TEST");
+			Controller->BrainComponent->StopLogic("Spawn");
+		}
 		
 		newEnemy->OnEnemyKilled.AddDynamic(this, &ABaseRoom::EnemyKilled);
 
@@ -207,11 +235,11 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 	for (int iterator = 0; iterator < NumberOfItemsToSpawn; iterator++)
 	{
 		
-		USceneComponent* spawnPoint = SpawnPoints[seed.RandRange(0, SpawnPoints.Num() - 1)];
+		USceneComponent* spawnPoint = SpawnPoints[m_GameMode->RandomRangeInt(0, SpawnPoints.Num() - 1)];
 		
 		FActorSpawnParameters spawnInfo;
 
-		FItemDataRow* itemData = ItemTable->FindRow<FItemDataRow>( RowNames[seed.RandRange(0, RowNames.Num() - 1)], nullptr, true ); 
+		FItemDataRow* itemData = ItemTable->FindRow<FItemDataRow>( RowNames[m_GameMode->RandomRangeInt(0, RowNames.Num() - 1)], nullptr, true ); 
 		
 		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
 					itemData->ItemBP,
@@ -221,6 +249,8 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		
 		newItem->ItemName = itemData->DisplayName;
 		newItem->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+		newItem->SetActorHiddenInGame(true);
+		SpawnedItems.Add(newItem);
 		SpawnPoints.Remove(spawnPoint);
 	}
 }

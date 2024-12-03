@@ -30,9 +30,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	int MaxRoom = 10;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
-	FRandomStream RandomStream;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TObjectPtr<ABaseRoom>> RoomList;
@@ -43,7 +40,7 @@ public:
 public:
 	
 	UFUNCTION(BlueprintCallable)
-	void Initialize(int maxRooms, FRandomStream seed);
+	void Initialize(int maxRooms, ABaseGameMode* GameMode);
 	
 	UFUNCTION(BlueprintCallable)
 	void GenerateRooms();
@@ -69,6 +66,9 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<ABaseRoom> m_LatestRoom;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<ABaseGameMode> m_GameMode;
 
 	UPROPERTY(Transient)
 	int CurrentRooms = 0;

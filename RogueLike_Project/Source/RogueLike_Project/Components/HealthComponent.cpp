@@ -38,7 +38,10 @@ void UHealthComponent::OnTakeDamage(AActor* DamagedActor, float Damage, const cl
 void UHealthComponent::TakeDamage(float Damage)
 {
 
-	//TODO Return si daño negativo
+	if (Damage <= 0)
+	{
+		return;
+	}
 
 	float oldHealth = CurrentHealth;
 	

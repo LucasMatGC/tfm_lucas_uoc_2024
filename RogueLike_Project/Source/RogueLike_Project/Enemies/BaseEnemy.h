@@ -38,6 +38,9 @@ public:
 	// Sets default values for this actor's properties
 	ABaseEnemy();
 
+	virtual void SetActorTickEnabled(bool bEnabled) override;
+
+	UFUNCTION(BlueprintCallable)
 	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewRange);
 
 	UFUNCTION(BlueprintCallable)
@@ -64,6 +67,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void Tick(float DeltaTime) override;
+
 	
 	UPROPERTY(Transient)
 	TObjectPtr<ABaseProjectile>  newProjectile;

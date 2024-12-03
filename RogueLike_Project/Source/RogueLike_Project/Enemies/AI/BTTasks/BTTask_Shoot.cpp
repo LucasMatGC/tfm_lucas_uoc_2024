@@ -13,7 +13,6 @@ UBTTask_Shoot::UBTTask_Shoot()
 	NodeName = TEXT("Shoot");
 }
 
-//TODO: Cambiar la logica del Shoot para que primero se asegure de tener linea de objetivo al player
 EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);

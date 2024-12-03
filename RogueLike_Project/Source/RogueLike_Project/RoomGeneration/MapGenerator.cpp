@@ -2,8 +2,7 @@
 
 
 #include "MapGenerator.h"
-
-#include "BaseDoor.h"
+#include "RogueLike_Project/GameModes/BaseGameMode.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -27,10 +26,10 @@ void AMapGenerator::BeginPlay()
 	
 }
 
-void AMapGenerator::Initialize(int maxRooms, FRandomStream seed)
+void AMapGenerator::Initialize(int maxRooms, ABaseGameMode* GameMode)
 {
 
-	RandomStream = seed;
+	m_GameMode = GameMode;
 	MaxRoom = maxRooms;
 	
 }
@@ -77,7 +76,6 @@ void AMapGenerator::SpawnNextRoom()
 		exit->GetComponentRotation(),
 		spawnInfo);
 
-	ExitsLists.Remove(exit);
 	
 	if (IsOverlaping())
 	{
@@ -89,20 +87,29 @@ void AMapGenerator::SpawnNextRoom()
 		SpawnNextRoom();
 		
 	}
+	//TODO: Preparar la generación interna de elementos/enemigos de cada sala en este punto para asegurar una aleatoriedad
+	// continua
 	else
 	{
 
+		m_LatestRoom->PrepareRoom(m_GameMode);
 		CurrentRooms++;
 		AddExits();
 		if (CurrentRooms < MaxRoom && ExitsLists.Num() > 0)
 		{
 
+			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
+			{
+				room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), false);
+			}
+			ExitsLists.Remove(exit);
 			SpawnNextRoom();
 			
 		}
 		else
 		{
 
+			ExitsLists.Remove(exit);
 			CloseRemainingExits();
 			
 		}
@@ -141,12 +148,10 @@ void AMapGenerator::CloseRemainingExits()
 	for (USceneComponent* exit : ExitsLists)
 	{
 
-		//TODO: Las puertas no se estan cerrando ni bloqueando. El if de debajo no funciona
-		if (ABaseDoor* exitDoor = Cast<ABaseDoor>(exit->GetChildComponent(0)))
+		if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
 		{
 			
-			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "Closed!");
-			exitDoor->SetLocked(true);
+			room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), true);
 		}
 		
 	}
@@ -166,7 +171,7 @@ TSubclassOf<ABaseRoom> AMapGenerator::GetRandomRoomType()
 		
 	}
 	
-	return RoomTypeList[RandomStream.RandRange(0, RoomList.Num() - 1)];
+	return RoomTypeList[m_GameMode->RandomRangeInt(0, RoomList.Num() - 1)];
 	
 }
 
@@ -182,7 +187,7 @@ USceneComponent* AMapGenerator::GetRandomExit()
 		
 	}
 
-		return ExitsLists[RandomStream.RandRange(0, ExitsLists.Num() - 1)];
+		return ExitsLists[m_GameMode->RandomRangeInt(0, ExitsLists.Num() - 1)];
 	
 }
 

@@ -57,6 +57,13 @@ void ABaseEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ABaseEnemy::SetActorTickEnabled(bool bEnabled)
+{
+	Super::SetActorTickEnabled(bEnabled);
+
+	this->Controller->SetActorTickEnabled(bEnabled);
+}
+
 void ABaseEnemy::Fire()
 {
 

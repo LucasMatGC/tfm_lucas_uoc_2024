@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
-#include "RogueLike_Project/RogueLike_ProjectCharacter.h"
 #include "RogueLike_Project/RoomGeneration/MapGenerator.h"
 #include "BaseGameMode.generated.h"
 
@@ -39,6 +38,12 @@ public:
 public:	
 	// Sets default values for this actor's properties
 	ABaseGameMode();
+
+	UFUNCTION(BlueprintCallable)
+	int RandomRangeInt(int Min, int Max);
+	
+	UFUNCTION(BlueprintCallable)
+	float RandomRangeFloat(float Min, float Max);
 
 	
 protected:

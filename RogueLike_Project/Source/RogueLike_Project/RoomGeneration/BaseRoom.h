@@ -7,8 +7,8 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "RogueLike_Project/Enemies/BaseEnemy.h"
-#include "RogueLike_Project/Utils/DataTables/EnemyDataRow.h"
 #include "RogueLike_Project/Utils/DataTables/ItemDataRow.h"
+#include "RogueLike_Project/Utils/DataTables/EnemyDataRow.h"
 #include "BaseRoom.generated.h"
 
 UENUM(BlueprintType)
@@ -93,6 +93,12 @@ public:
 	ABaseRoom();
 
 	UFUNCTION(BlueprintCallable)
+	void PrepareRoom(ABaseGameMode* GameMode);
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnDoor(FVector DoorLocation, FRotator DoorRotation, bool IsDoorLocked);
+
+	UFUNCTION(BlueprintCallable)
 	void SpawnEnemies(int NumberOfEnemiesToSpawn);
 
 	UFUNCTION(BlueprintCallable)
@@ -109,7 +115,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void EnemyKilled(ABaseEnemy* enemyKilled);
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -131,8 +137,9 @@ protected:
 
 private:
 
-	FRandomStream seed;	
-	
 	TArray<USceneComponent*> SpawnPoints;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ABaseGameMode> m_GameMode;
 	
 };

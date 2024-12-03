@@ -9,6 +9,18 @@ ABaseGameMode::ABaseGameMode()
 	
 }
 
+int ABaseGameMode::RandomRangeInt(int Min, int Max)
+{
+
+	return RandomStream.RandRange(Min, Max);
+	
+}
+
+float ABaseGameMode::RandomRangeFloat(float Min, float Max)
+{
+	return RandomStream.RandRange(Min, Max);
+}
+
 void ABaseGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,7 +34,7 @@ void ABaseGameMode::BeginPlay()
 			FVector::ZeroVector,
 			FRotator::ZeroRotator,
 			FActorSpawnParameters());
-	m_MapGenerator->Initialize(CurrentRooms, RandomStream);
+	m_MapGenerator->Initialize(CurrentRooms, this);
 	m_MapGenerator->GenerateRooms();
 
 	m_Player = GetWorld()->GetFirstPlayerController();
