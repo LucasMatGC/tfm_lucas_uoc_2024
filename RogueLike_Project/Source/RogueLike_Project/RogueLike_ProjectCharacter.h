@@ -36,6 +36,10 @@ public:
 	/** Fire point */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* FirePoint;
+
+	/** Fire point */
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* MeleeAttackMeshCollider;
 	
 	/** MappingContext */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -128,15 +132,20 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddAmmo(float ConsumableAmmo);
+
+	UFUNCTION(BlueprintCallable)
+	void UseMeleeCollider(float ExtraRange, bool isMeleeColliderActive);
 	
 protected:
-	
 	// To add mapping context
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION()
+	void ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

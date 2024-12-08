@@ -67,8 +67,6 @@ void ABaseEnemy::SetActorTickEnabled(bool bEnabled)
 void ABaseEnemy::Fire()
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, this->GetFullName());
-	
 	FActorSpawnParameters spawnInfo;
 	
 	newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(

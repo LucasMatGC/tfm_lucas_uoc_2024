@@ -208,7 +208,6 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 		
 		if (AAIController* Controller = Cast<AAIController>(newEnemy->GetController()))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "TEST");
 			Controller->BrainComponent->StopLogic("Spawn");
 		}
 		

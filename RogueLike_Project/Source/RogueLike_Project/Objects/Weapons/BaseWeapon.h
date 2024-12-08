@@ -39,8 +39,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	float CurrentFireRate;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float Range;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
+	USceneComponent* FirePoint;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> CommonUpgrades;

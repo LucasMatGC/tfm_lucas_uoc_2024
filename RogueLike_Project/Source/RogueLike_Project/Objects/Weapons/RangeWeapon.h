@@ -27,9 +27,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	int CurrentMagazine;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
-	USceneComponent* FirePoint;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;

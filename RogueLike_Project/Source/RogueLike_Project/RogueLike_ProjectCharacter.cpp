@@ -57,6 +57,12 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	// Defines the Fire point of the weapons (Spawn point for projectiles)
 	FirePoint = CreateDefaultSubobject<USceneComponent>(TEXT("FirePoint"));
 	FirePoint->SetupAttachment(GetMesh());
+
+	// Defines the Fire point of the weapons (Spawn point for projectiles)
+	MeleeAttackMeshCollider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeAttackMeshCollider"));
+	MeleeAttackMeshCollider->SetupAttachment(GetMesh());
+	MeleeAttackMeshCollider->SetHiddenInGame(true);
+	MeleeAttackMeshCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	// Add Inventory Component and define the weapon socket
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
@@ -77,6 +83,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.AddDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
 	InventoryComponent->OnUpgradeMaxHealth.AddDynamic(HealthComponent, &UHealthComponent::UpgradeMaxHealth);
+	MeleeAttackMeshCollider->OnComponentBeginOverlap.AddDynamic(this, &ARogueLike_ProjectCharacter::ApplyMeleeDamage);
 	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -97,6 +104,7 @@ void ARogueLike_ProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReas
 	HealthComponent->OnUpdateCurrentHealth.RemoveDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.RemoveDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
 	InventoryComponent->OnUpgradeMaxHealth.RemoveDynamic(HealthComponent, &UHealthComponent::UpgradeMaxHealth);
+	MeleeAttackMeshCollider->OnComponentBeginOverlap.RemoveDynamic(this, &ARogueLike_ProjectCharacter::ApplyMeleeDamage);
 	
 	Super::EndPlay(EndPlayReason);
 }
@@ -143,6 +151,15 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 		}
 		
 	}
+	
+}
+
+void ARogueLike_ProjectCharacter::ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, "Apply Damage!!!!");
+	InventoryComponent->ApplyMeleeDamage(OtherActor);
 	
 }
 
@@ -382,5 +399,20 @@ void ARogueLike_ProjectCharacter::ForceDamage(const FInputActionValue& Value)
 		UGameplayStatics::ApplyDamage(this, forceDamageValue, GetController(), this, UDamageType::StaticClass());
 	
 	}
+	
+}
+
+void ARogueLike_ProjectCharacter::UseMeleeCollider(float ExtraRange, bool isMeleeColliderActive)
+{
+
+	if (isMeleeColliderActive)
+	{
+		
+		FVector NewScale = FVector(ExtraRange, ExtraRange, 1);
+		MeleeAttackMeshCollider->SetRelativeScale3D(NewScale);
+		
+	}
+	
+	MeleeAttackMeshCollider->SetGenerateOverlapEvents(isMeleeColliderActive);
 	
 }

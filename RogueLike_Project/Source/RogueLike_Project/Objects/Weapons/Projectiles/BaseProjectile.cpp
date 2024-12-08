@@ -31,7 +31,7 @@ void ABaseProjectile::BeginPlay()
 	
 }
 
-float ABaseProjectile::CalculateDamage()
+float ABaseProjectile::CalculateDamage() const
 {
 
 	return (BaseDamage + AddedDamage) * DamageMultiplier;

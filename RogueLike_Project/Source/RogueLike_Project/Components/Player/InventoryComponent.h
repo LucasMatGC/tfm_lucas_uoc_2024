@@ -44,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void FireCurrentWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
+	void ApplyMeleeDamage(AActor* OtherActor);
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons", BlueprintPure)
 	ABaseWeapon* GetCurrentWeapon();

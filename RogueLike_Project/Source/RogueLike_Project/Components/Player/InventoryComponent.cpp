@@ -4,6 +4,7 @@
 #include "InventoryComponent.h"
 
 #include "GameFramework/Character.h"
+#include "RogueLike_Project/Objects/Weapons/MeleeWeapon.h"
 #include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
 
 // Sets default values
@@ -34,7 +35,7 @@ void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
 		if (ACharacter* character = Cast<ACharacter>(GetOwner()))
 		{
 			weapon->AttachToComponent(character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "WeaponSocket");
-			Cast<ARangeWeapon>(weapon)->FirePoint = FirePoint;
+			weapon->FirePoint = FirePoint;
 			weapon->SetUpWeapon(CommonUpgrades);
 			weapon->DisableWeapon(true);
 			Weapons.Add(weapon);
@@ -71,6 +72,18 @@ void UInventoryComponent::FireCurrentWeapon()
 	{
 		
 		Weapons[m_CurrentWeapon]->Fire();
+		
+	}
+	
+}
+
+void UInventoryComponent::ApplyMeleeDamage(AActor* OtherActor)
+{
+
+	if (AMeleeWeapon* CurrentWeapon = Cast<AMeleeWeapon>(Weapons[m_CurrentWeapon]))
+	{
+
+		CurrentWeapon->ApplyDamage(OtherActor);
 		
 	}
 	
@@ -136,7 +149,13 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 	}
 	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
 	{
-		FUpgradeStruct newUpgrade = *PickedUpItem->UpgradeMapping.Find(Weapons[indexOfWeapon]->GetClass());
+		FUpgradeStruct newUpgrade = PickedUpItem->DefaultUpgrade;
+		if (PickedUpItem->UpgradeMapping.Contains(Weapons[indexOfWeapon]->GetClass()))
+		{
+			newUpgrade = *PickedUpItem->UpgradeMapping.Find(Weapons[indexOfWeapon]->GetClass());
+			
+		}
+		
 		Weapons[indexOfWeapon]->AddUpgrade(newUpgrade, false);
 	}
 	
