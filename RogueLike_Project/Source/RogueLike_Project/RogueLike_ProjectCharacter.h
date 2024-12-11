@@ -37,7 +37,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* FirePoint;
 
-	/** Fire point */
+	/** Melee mesh collider */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* MeleeAttackMeshCollider;
 	
@@ -76,9 +76,6 @@ public:
 	/** Force Damage Input Action (for debug purposes) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ForceDamageAction;
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool m_IsPlayerAlive = true;
 	
 	/** Inventory component **/
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
@@ -177,6 +174,12 @@ protected:
 private:
 
 	int m_CurrentInteractable = 0;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	bool m_IsPlayerAlive = true;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	bool m_CanPlayerMove = true;
 	
 };
 

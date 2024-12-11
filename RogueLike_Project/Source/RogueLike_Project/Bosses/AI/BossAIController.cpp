@@ -1,14 +1,14 @@
 ﻿
 
 
-#include "EnemyAIController.h"
+#include "BossAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "RogueLike_Project/Enemies/BaseEnemy.h"
+#include "RogueLike_Project/Bosses/BaseBoss.h"
 #include "RogueLike_Project/Enemies/EnemyState.h"
 
 
-void AEnemyAIController::BeginPlay()
+void ABossAIController::BeginPlay()
 {
 
 	Super::BeginPlay();
@@ -23,20 +23,23 @@ void AEnemyAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("RandomPatrolRadius"), 1500.0f);
 		GetBlackboardComponent()->SetValueAsEnum(TEXT("EnemyState"), static_cast<uint8>(UEnemyState::Attacking));
 
-		if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(GetOwner()))
+		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetOwner()))
 		{
-			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyRange"), Enemy->Range);	
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyFireRange"), Enemy->Range);
+			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), Enemy->ProjectilesToFire);
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), Enemy->MeleeRange);
 		}
 		else
 		{
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyRange"), 1000.0f);
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), 100.f);
 		}
 		
 	}
 	
 }
 
-void AEnemyAIController::Tick(float DeltaTime)
+void ABossAIController::Tick(float DeltaTime)
 {
 	
 	Super::Tick(DeltaTime);

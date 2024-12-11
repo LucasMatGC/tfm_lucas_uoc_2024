@@ -7,7 +7,6 @@
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "RogueLike_Project/Enemies/EnemyState.h"
 
 
 UBTTask_MoveToRandomPoint::UBTTask_MoveToRandomPoint()

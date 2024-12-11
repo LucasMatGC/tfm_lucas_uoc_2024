@@ -114,7 +114,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	
-	if (m_IsPlayerAlive)
+	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{
 		
 		//Add Input Mapping Context
@@ -275,7 +275,7 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 
 void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 {
-	if (m_IsPlayerAlive)
+	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{
 		// input is a Vector2D
 		FVector2D MovementVector = Value.Get<FVector2D>();
@@ -303,7 +303,7 @@ void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 void ARogueLike_ProjectCharacter::Look(const FInputActionValue& Value)
 {
 
-	if (m_IsPlayerAlive)
+	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{
 		// input is a Vector2D
 		FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -331,7 +331,7 @@ void ARogueLike_ProjectCharacter::Fire(const FInputActionValue& Value)
 void ARogueLike_ProjectCharacter::ChangeWeapon(const FInputActionValue& Value)
 {
 
-	if (m_IsPlayerAlive)
+	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{		
 		InventoryComponent->ChangeWeapon(Value.Get<float>() < 0);
 		
@@ -408,11 +408,13 @@ void ARogueLike_ProjectCharacter::UseMeleeCollider(float ExtraRange, bool isMele
 	if (isMeleeColliderActive)
 	{
 		
-		FVector NewScale = FVector(ExtraRange, ExtraRange, 1);
+		FVector NewScale = FVector(ExtraRange, ExtraRange, MeleeAttackMeshCollider->GetComponentTransform().GetScale3D().Z);
 		MeleeAttackMeshCollider->SetRelativeScale3D(NewScale);
 		
 	}
 	
+	m_CanPlayerMove = !isMeleeColliderActive;
+	MeleeAttackMeshCollider->SetVisibility(isMeleeColliderActive, false);
 	MeleeAttackMeshCollider->SetGenerateOverlapEvents(isMeleeColliderActive);
 	
 }
