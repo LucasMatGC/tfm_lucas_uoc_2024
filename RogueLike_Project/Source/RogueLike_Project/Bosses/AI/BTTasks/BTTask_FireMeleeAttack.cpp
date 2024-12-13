@@ -10,7 +10,7 @@
 
 UBTTask_FireMeleeAttack::UBTTask_FireMeleeAttack()
 {
-	NodeName = TEXT("Prepare Special Attack");
+	NodeName = TEXT("Melee Attack");
 }
 
 EBTNodeResult::Type UBTTask_FireMeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

@@ -10,7 +10,7 @@
 
 UBTTask_FireSpecialAttack::UBTTask_FireSpecialAttack()
 {
-	NodeName = TEXT("Shoot Special Attack");
+	NodeName = TEXT("Fire Special Attack");
 }
 
 EBTNodeResult::Type UBTTask_FireSpecialAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -19,7 +19,7 @@ EBTNodeResult::Type UBTTask_FireSpecialAttack::ExecuteTask(UBehaviorTreeComponen
 
 	m_ReachedTarget = false;
 	
-	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(TEXT("NextState"), static_cast<uint8>(NextState));
+	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(GetSelectedBlackboardKey(), static_cast<uint8>(NextState));
 	
 	if (OwnerComp.GetAIOwner() == nullptr)
 	{

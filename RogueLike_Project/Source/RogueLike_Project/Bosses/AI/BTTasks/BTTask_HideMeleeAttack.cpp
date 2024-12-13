@@ -10,14 +10,14 @@
 
 UBTTask_HideMeleeAttack::UBTTask_HideMeleeAttack()
 {
-	NodeName = TEXT("Shoot Special Attack");
+	NodeName = TEXT("Hide Melee Attack");
 }
 
 EBTNodeResult::Type UBTTask_HideMeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 	
-	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(TEXT("NextState"), static_cast<uint8>(NextState));
+	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(GetSelectedBlackboardKey(), static_cast<uint8>(NextState));
 	
 	if (OwnerComp.GetAIOwner() == nullptr)
 	{

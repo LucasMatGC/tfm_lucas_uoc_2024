@@ -31,22 +31,31 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	UStaticMeshComponent* MeleeAttackMeshCollider;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|General Variables")
-	TSubclassOf<ABaseProjectile> ProjectileType;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Boss|General Variables")
+	TSubclassOf<ABaseProjectile> BaseProjectileType;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|General Variables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Boss|General Variables")
+	TSubclassOf<ABaseProjectile> SpecialProjectileType;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Boss|General Variables")
 	UHealthComponent* HealthComponent;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float BaseDamage;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	float MeleeDamage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	float SpecialDamage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float Range;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float MeleeRange;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "1", UIMin = "1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "1", UIMin = "1"))
 	int ProjectilesToFire;
 
 public:	
@@ -72,6 +81,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UseMeleeCollider(bool isMeleeColliderActive);
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                      int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION(BlueprintCallable)
 	void ShootSpecial();
