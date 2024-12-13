@@ -27,7 +27,6 @@ EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
 	m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
-	OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
 	bNotifyTick = true;
 	return EBTNodeResult::InProgress;
 	
@@ -40,29 +39,30 @@ void UBTTask_BaseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
-	if ( OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
-			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
-				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey()))
+	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
+
+	if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 	{
-
-		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
-
-		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
-		{
-			
-			OwnerComp.GetAIOwner()->StopMovement();
-			if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
-			{
-				m_Enemy->Fire(1);
-			}
-			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(TEXT("NextState"), static_cast<uint8>(NextState));
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		
+		OwnerComp.GetAIOwner()->StopMovement();
+		if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
+		{
+			m_Enemy->Fire(1);
 		}
-	}
-	else
-	{
-		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
+
+		OwnerComp.GetBlackboardComponent()->SetValueAsInt(GetSelectedBlackboardKey(), OwnerComp.GetBlackboardComponent()->GetValueAsInt(GetSelectedBlackboardKey()) + 1);
+		
+		if (OwnerComp.GetBlackboardComponent()->GetValueAsInt(GetSelectedBlackboardKey()) >= OwnerComp.GetBlackboardComponent()->GetValueAsInt("ProjectilesToFire"))
+		{
+		
+			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(TEXT("NextState"), static_cast<uint8>(NextState));
+			OwnerComp.GetBlackboardComponent()->SetValueAsInt(GetSelectedBlackboardKey(), 0);
+			
+		}
+		
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		
+	
 	}
 
 	

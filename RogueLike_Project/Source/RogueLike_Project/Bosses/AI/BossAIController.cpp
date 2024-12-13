@@ -20,10 +20,12 @@ void ABossAIController::BeginPlay()
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
-		GetBlackboardComponent()->SetValueAsFloat(TEXT("RandomPatrolRadius"), 1500.0f);
-		GetBlackboardComponent()->SetValueAsEnum(TEXT("EnemyState"), static_cast<uint8>(UEnemyState::Attacking));
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("RandomPatrolRadius"), 800.0f);
+		GetBlackboardComponent()->SetValueAsEnum(TEXT("EnemyState"), static_cast<uint8>(UEnemyState::Patrolling));
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("NextAttackPercentage"), 1.0f);
+			GetBlackboardComponent()->SetValueAsInt(TEXT("CurrentProjectile"), 0);
 
-		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetOwner()))
+		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetPawn()))
 		{
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyFireRange"), Enemy->Range);
 			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), Enemy->ProjectilesToFire);
@@ -31,8 +33,9 @@ void ABossAIController::BeginPlay()
 		}
 		else
 		{
-			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyRange"), 1000.0f);
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyFireRange"), 1200.0f);
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), 100.f);
+			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), 10);
 		}
 		
 	}

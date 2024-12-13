@@ -20,6 +20,12 @@ ABaseBoss::ABaseBoss()
 	FirePointSpecial = CreateDefaultSubobject<USceneComponent>(TEXT("FirePointSpecial"));
 	FirePointSpecial->SetupAttachment(GetMesh());
 
+	// Defines the Fire point of the weapons (Spawn point for projectiles)
+	MeleeAttackMeshCollider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeAttackMeshCollider"));
+	MeleeAttackMeshCollider->SetupAttachment(GetMesh());
+	MeleeAttackMeshCollider->SetHiddenInGame(true);
+	MeleeAttackMeshCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -42,6 +48,7 @@ void ABaseBoss::BeginPlay()
 	
 	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ABaseBoss::TakeDamage);
 	HealthComponent->OnProcessDeath.AddDynamic(this, &ABaseBoss::KillEnemy);
+	MeleeAttackMeshCollider->OnComponentBeginOverlap.AddDynamic(this, &ABaseBoss::ApplyMeleeDamage);
 	
 }
 
@@ -53,6 +60,7 @@ void ABaseBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		
 		HealthComponent->OnUpdateCurrentHealth.RemoveDynamic(this, &ABaseBoss::TakeDamage);
 		HealthComponent->OnProcessDeath.RemoveDynamic(this, &ABaseBoss::KillEnemy);
+		MeleeAttackMeshCollider->OnComponentBeginOverlap.RemoveDynamic(this, &ABaseBoss::ApplyMeleeDamage);
 	
 	}
 	
@@ -82,7 +90,7 @@ void ABaseBoss::Fire(int AttackID)
 		case 1:
 			
 			newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
-				ProjectileType,
+				BaseProjectileType,
 				FirePointPrimary->GetComponentTransform(),
 				this,
 				nullptr);
@@ -92,7 +100,7 @@ void ABaseBoss::Fire(int AttackID)
 			newProjectile->FinishSpawning(FirePointPrimary->GetComponentTransform(), false, nullptr);
 
 			newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
-				ProjectileType,
+				BaseProjectileType,
 				FirePointSecondary->GetComponentTransform(),
 				this,
 				nullptr);
@@ -110,7 +118,7 @@ void ABaseBoss::Fire(int AttackID)
 		case 3:
 			
 			newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
-				ProjectileType,
+				SpecialProjectileType,
 				FirePointSpecial->GetComponentTransform(),
 				this,
 				nullptr);
@@ -120,30 +128,30 @@ void ABaseBoss::Fire(int AttackID)
 			newProjectile->FinishSpawning(FirePointSpecial->GetComponentTransform(), false, nullptr);
 			break;
 
-		default:
-			break;
-
 	}
 	
 }
 
 void ABaseBoss::SetupProjectile(bool bIsSpecialProjectile)
 {
+	
+	newProjectile->SetLifeSpan(1000.0f);
 
 	if (bIsSpecialProjectile)
 	{
 
-		newProjectile->ProjectileComponent->MaxSpeed = 0.f;
+		newProjectile->BaseDamage = SpecialDamage;
+		newProjectile->ProjectileComponent->MaxSpeed = 2000.f;
 		newProjectile->ProjectileComponent->InitialSpeed = 0.f;
-		newProjectile->BaseDamage = BaseDamage;
+		newProjectile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "FirePointSpecial");
 		
 	}
 	else
 	{
 		
+		newProjectile->BaseDamage = BaseDamage;
 		newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
 		newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
-		newProjectile->BaseDamage = BaseDamage;
 		
 	}
 	
@@ -157,11 +165,25 @@ void ABaseBoss::UseMeleeCollider(bool isMeleeColliderActive)
 	
 }
 
+void ABaseBoss::ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, "Apply Damage!!!!");
+	UGameplayStatics::ApplyDamage(OtherActor, MeleeDamage, GetWorld()->GetFirstPlayerController(), this, UDamageType::StaticClass());
+	
+}
+
 void ABaseBoss::ShootSpecial()
 {
 
-	newProjectile->ProjectileComponent->MaxSpeed = 5000.f;
-	newProjectile->ProjectileComponent->InitialSpeed = 5000.f;
+	if (newProjectile != nullptr)
+	{
+		newProjectile->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		newProjectile->ProjectileComponent->InitialSpeed = 2000.f;
+		newProjectile->ProjectileComponent->Velocity = newProjectile->GetActorForwardVector().GetSafeNormal() * newProjectile->ProjectileComponent->MaxSpeed;
+		
+	}
 	
 }
 
