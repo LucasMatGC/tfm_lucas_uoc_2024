@@ -263,6 +263,9 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		// Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Interact);
 		
+		// Pause game
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Pause);
+		
 		// Debug Take Damage
 		EnhancedInputComponent->BindAction(ForceDamageAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ForceDamage);
 		

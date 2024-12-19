@@ -38,9 +38,6 @@ public:
 public:	
 	// Sets default values for this actor's properties
 	ABaseGameMode();
-
-	UFUNCTION(BlueprintCallable)
-	void PauseGame();
 	
 	UFUNCTION(BlueprintCallable)
 	int RandomRangeInt(int Min, int Max);
