@@ -9,6 +9,15 @@ ABaseGameMode::ABaseGameMode()
 	
 }
 
+void ABaseGameMode::PauseGame()
+{
+
+	m_IsGamePaused = !m_IsGamePaused;
+
+	//TODO: llamar al widget de pausa para mostrar el menu. Tambien se llama a este metodo al despausar, tener en cuenta
+	
+}
+
 int ABaseGameMode::RandomRangeInt(int Min, int Max)
 {
 

@@ -388,6 +388,13 @@ void ARogueLike_ProjectCharacter::Interact(const FInputActionValue& Value)
 	
 }
 
+void ARogueLike_ProjectCharacter::Pause(const FInputActionValue& Value)
+{
+
+	OnPlayerPause.Broadcast();
+	
+}
+
 void ARogueLike_ProjectCharacter::ForceDamage(const FInputActionValue& Value)
 {
 

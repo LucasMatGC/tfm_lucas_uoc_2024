@@ -3,11 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "../Objects/Weapons/Projectiles/BaseProjectile.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/Components/HealthComponent.h"
 #include "BaseBoss.generated.h"

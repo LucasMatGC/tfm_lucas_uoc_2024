@@ -73,6 +73,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	/** Pause/Unpause Action */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseAction;
+
 	/** Force Damage Input Action (for debug purposes) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ForceDamageAction;
@@ -108,6 +112,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerReady);
 	UPROPERTY(BlueprintAssignable, Category = "Configuration")
 	FPlayerReady OnPlayerReady;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerPause);
+	UPROPERTY(BlueprintAssignable, Category = "Configuration")
+	FPlayerPause OnPlayerPause;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdatePlayerCurrentWeapon, ABaseWeapon*, newWeapon);
 	UPROPERTY(BlueprintAssignable, Category = "Configuration")
@@ -167,6 +175,9 @@ protected:
 
 	/** Called for interaction input **/
 	void Interact(const FInputActionValue& Value);
+
+	/** Called for Pause/Unpause input **/
+	void Pause(const FInputActionValue& Value);
 
 	/** Called for force damage input (debug purpose) **/
 	void ForceDamage(const FInputActionValue& Value);

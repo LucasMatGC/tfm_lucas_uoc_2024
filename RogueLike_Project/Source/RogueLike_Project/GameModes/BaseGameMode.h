@@ -40,6 +40,9 @@ public:
 	ABaseGameMode();
 
 	UFUNCTION(BlueprintCallable)
+	void PauseGame();
+	
+	UFUNCTION(BlueprintCallable)
 	int RandomRangeInt(int Min, int Max);
 	
 	UFUNCTION(BlueprintCallable)
@@ -56,5 +59,6 @@ protected:
 
 private:
 
-
+	bool m_IsGamePaused = false;	
+	
 };
