@@ -80,8 +80,6 @@ void AMapGenerator::SpawnNextRoom()
 	if (IsOverlaping())
 	{
 
-		TArray<USceneComponent*> Exits;
-
 		ExitsLists.Remove(exit);
 		m_LatestRoom->Destroy();
 		SpawnNextRoom();
@@ -110,6 +108,8 @@ void AMapGenerator::SpawnNextRoom()
 		{
 
 			ExitsLists.Remove(exit);
+			SpawnBossRoom();
+			SpawnItemRoom();
 			CloseRemainingExits();
 			
 		}
@@ -140,6 +140,90 @@ bool AMapGenerator::IsOverlaping()
 		
 	return overlappingComponents.Num() != 0;
 	
+}
+
+void AMapGenerator::SpawnBossRoom()
+{
+
+	bool bIsSpawnValid = false;
+
+	while (!bIsSpawnValid)
+	{
+		
+		USceneComponent* exit = GetRandomExit();
+		FActorSpawnParameters spawnInfo;
+
+		if (BossRoomType == nullptr || exit == nullptr)
+		{
+			UE_LOG(LogSpawn, Error, TEXT("Boss Room not defined"));
+			return;
+			
+		}
+		
+		m_LatestRoom = GetWorld()->SpawnActor<ABaseRoom>(
+			BossRoomType,
+			exit->GetComponentTransform().GetLocation(),
+			exit->GetComponentRotation(),
+			spawnInfo);
+
+		ExitsLists.Remove(exit);
+		
+		if (IsOverlaping())
+		{
+
+			m_LatestRoom->Destroy();
+			
+		}
+		else
+		{
+			BossRoom = m_LatestRoom;
+			RoomList.Add(BossRoom);
+			bIsSpawnValid = true;
+		}
+		
+	}
+}
+
+void AMapGenerator::SpawnItemRoom()
+{
+
+	bool bIsSpawnValid = false;
+
+	while (!bIsSpawnValid)
+	{
+		
+		USceneComponent* exit = GetRandomExit();
+		FActorSpawnParameters spawnInfo;
+
+		if (ItemRoomType == nullptr || exit == nullptr)
+		{
+			UE_LOG(LogSpawn, Error, TEXT("Item Room not defined"));
+			return;
+			
+		}
+		
+		m_LatestRoom = GetWorld()->SpawnActor<ABaseRoom>(
+			ItemRoomType,
+			exit->GetComponentTransform().GetLocation(),
+			exit->GetComponentRotation(),
+			spawnInfo);
+
+		ExitsLists.Remove(exit);
+		
+		if (IsOverlaping())
+		{
+
+			m_LatestRoom->Destroy();
+			
+		}
+		else
+		{
+			ItemRoom = m_LatestRoom;
+			RoomList.Add(ItemRoom);
+			bIsSpawnValid = true;
+		}
+		
+	}
 }
 
 // Called every frame

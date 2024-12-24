@@ -7,8 +7,10 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "RogueLike_Project/Enemies/BaseEnemy.h"
+#include "RogueLike_Project/Bosses/BaseBoss.h"
 #include "RogueLike_Project/Utils/DataTables/ItemDataRow.h"
 #include "RogueLike_Project/Utils/DataTables/EnemyDataRow.h"
+#include "RogueLike_Project/Utils/DataTables/BossDataRow.h"
 #include "BaseRoom.generated.h"
 
 UENUM(BlueprintType)
@@ -18,7 +20,8 @@ enum class ERoomFunctionality
 	RandomItems = 1,
 	FullyRandom = 2,
 	Customized = 3,
-	Empty = 4
+	RandomBoss = 4,
+	Empty = 5
 };
 
 UCLASS()
@@ -55,6 +58,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta=(RowType = "EnemyDataRow"), Category = "Room|Configuration")
 	TSoftObjectPtr<UDataTable> EnemyTable;
 
+	UPROPERTY(EditDefaultsOnly, meta=(RowType = "BossDataRow"), Category = "Room|Configuration")
+	TSoftObjectPtr<UDataTable> BossTable;
+
 	UPROPERTY(EditDefaultsOnly, meta=(RowType = "ItemDataRow"), Category = "Room|Configuration")
 	TSoftObjectPtr<UDataTable> ItemTable;
 	
@@ -86,6 +92,9 @@ public:
 	TArray<TObjectPtr<ABaseEnemy>> SpawnedEnemies;
 
 	UPROPERTY(Transient)
+	TObjectPtr<ABaseBoss> SpawnedBoss;
+
+	UPROPERTY(Transient)
 	TArray<TObjectPtr<ABaseItem>> SpawnedItems;
 	
 public:	
@@ -103,7 +112,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnItems(int NumberOfItemsToSpawn);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnBoss();
+
 	UFUNCTION(BlueprintCallable)
 	void SpawnCustom();
 	
@@ -115,7 +127,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void EnemyKilled(ABaseEnemy* enemyKilled);
+	
+	UFUNCTION(BlueprintCallable)
+	void BossKilled(ABaseBoss* BossKilled);
 
+	UFUNCTION(BlueprintCallable)
+	void EnableExitLevel();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

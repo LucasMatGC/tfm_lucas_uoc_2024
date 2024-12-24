@@ -125,6 +125,7 @@ void ABaseRoom::BeginPlay()
 	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
 
 	EnemyTable.LoadSynchronous();
+	BossTable.LoadSynchronous();
 	ItemTable.LoadSynchronous();
 	
 }
@@ -139,10 +140,10 @@ void ABaseRoom::Tick(float DeltaTime)
 void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (SpawnedEnemies.Num() > 0)
+	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 	{
 		
-		if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
+		if (SpawnedEnemies.Num() > 0)
 		{
 
 			CloseDoors();
@@ -157,15 +158,29 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 					Controller->BrainComponent->StartLogic();
 				}
 			}
-
 		
 		}
 		
-	}
+		else if (SpawnedBoss != nullptr)
+		{
+		
+			CloseDoors();
+			
+			SpawnedBoss->SetActorHiddenInGame(false);
+			SpawnedBoss->SetActorTickEnabled(true);
+				
+			if (AAIController* Controller = Cast<AAIController>(SpawnedBoss->GetController()))
+			{
+				Controller->BrainComponent->StartLogic();
+			}
+		
+		}
 	
-	for (ABaseItem* Item : SpawnedItems)
-	{
-		Item->SetActorHiddenInGame(false);
+		for (ABaseItem* Item : SpawnedItems)
+		{
+			Item->SetActorHiddenInGame(false);
+		}
+		
 	}
 	
 	DeactivateTriggers();
@@ -178,7 +193,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 	if (SpawnPoints.Num() < 0 || NumberOfEnemiesToSpawn < 0)
 	{
 
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No enemies were defined to spawn");
+		UE_LOG(LogSpawn, Error, TEXT("No enemies were defined to spawn"));
 		
 	}
 	
@@ -225,7 +240,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 	if (SpawnPoints.Num() < 0 || NumberOfItemsToSpawn < 0)
 	{
 
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, "No items were defined to spawn");
+		UE_LOG(LogSpawn, Error, TEXT("No items were defined to spawn"));
 		
 	}
 	
@@ -252,6 +267,39 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		SpawnedItems.Add(newItem);
 		SpawnPoints.Remove(spawnPoint);
 	}
+}
+
+void ABaseRoom::SpawnBoss()
+{
+	
+	TArray<FName> RowNames = BossTable->GetRowNames();
+	
+	USceneComponent* spawnPoint = SpawnPoints[m_GameMode->RandomRangeInt(0, SpawnPoints.Num() - 1)];
+	
+	FActorSpawnParameters spawnInfo;
+
+	FBossDataRow* bossData = BossTable->FindRow<FBossDataRow>( RowNames[m_GameMode->RandomRangeInt(0, RowNames.Num() - 1)], nullptr, true ); 
+	
+	SpawnedBoss = GetWorld()->SpawnActorDeferred<ABaseBoss>(
+				bossData->BossBP,
+				spawnPoint->GetComponentTransform(),
+				nullptr,
+				nullptr);
+
+	SpawnedBoss->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
+
+	SpawnedBoss->SetActorHiddenInGame(true);
+	SpawnedBoss->SetActorTickEnabled(false);
+		
+	if (AAIController* Controller = Cast<AAIController>(SpawnedBoss->GetController()))
+	{
+		Controller->BrainComponent->StopLogic("Spawn");
+	}
+		
+	SpawnedBoss->OnBossKilled.AddDynamic(this, &ABaseRoom::BossKilled);
+
+	SpawnPoints.Remove(spawnPoint);
+	
 }
 
 void ABaseRoom::SpawnCustom()
@@ -296,6 +344,19 @@ void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled)
 		
 	}
 	
+}
+
+void ABaseRoom::BossKilled(ABaseBoss* BossKilled)
+{
+
+	OpenDoors();
+
+	EnableExitLevel();
+	
+}
+
+void ABaseRoom::EnableExitLevel()
+{
 }
 
 void ABaseRoom::DeactivateTriggers()

@@ -25,9 +25,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
 	float BaseFireRate;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
-	bool FollowsPlayer;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
 	TSubclassOf<ABaseEnemy> EnemyBP;

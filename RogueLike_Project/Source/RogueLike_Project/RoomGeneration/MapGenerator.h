@@ -24,6 +24,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TSubclassOf<ABaseRoom> StartRoomType;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	TSubclassOf<ABaseRoom> ItemRoomType;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	TSubclassOf<ABaseRoom> BossRoomType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TSubclassOf<ABaseRoom>> RoomTypeList;
@@ -33,6 +39,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TArray<TObjectPtr<ABaseRoom>> RoomList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	TObjectPtr<ABaseRoom> BossRoom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	TObjectPtr<ABaseRoom> ItemRoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TSubclassOf<AActor> DoorBP;
@@ -55,6 +67,10 @@ protected:
 	virtual void AddExits();
 
 	virtual bool IsOverlaping();
+	
+	void SpawnBossRoom();
+	
+	void SpawnItemRoom();
 
 	virtual void CloseRemainingExits();
 
