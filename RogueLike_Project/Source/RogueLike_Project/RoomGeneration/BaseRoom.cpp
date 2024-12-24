@@ -52,7 +52,10 @@ void ABaseRoom::PrepareRoom(ABaseGameMode* GameMode)
 	case ERoomFunctionality::RandomItems:
 		SpawnItems(SpawnPoints.Num());
 		break;
-
+		
+	case ERoomFunctionality::RandomBoss:
+		SpawnBoss();
+		break;
 			
 	case ERoomFunctionality::FullyRandom:
 		numberOfEnemiesToSpawn = m_GameMode->RandomRangeInt(0, SpawnPoints.Num());
@@ -143,6 +146,8 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 	{
 		
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "TRIGGERED!!!!");
+		
 		if (SpawnedEnemies.Num() > 0)
 		{
 
@@ -160,8 +165,8 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 			}
 		
 		}
-		
-		else if (SpawnedBoss != nullptr)
+
+		if (SpawnedBoss != nullptr)
 		{
 		
 			CloseDoors();

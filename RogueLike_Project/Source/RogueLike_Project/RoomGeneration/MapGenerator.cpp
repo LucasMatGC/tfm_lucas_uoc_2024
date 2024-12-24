@@ -176,6 +176,7 @@ void AMapGenerator::SpawnBossRoom()
 		}
 		else
 		{
+			m_LatestRoom->PrepareRoom(m_GameMode);
 			BossRoom = m_LatestRoom;
 			RoomList.Add(BossRoom);
 			bIsSpawnValid = true;
@@ -218,6 +219,7 @@ void AMapGenerator::SpawnItemRoom()
 		}
 		else
 		{
+			m_LatestRoom->PrepareRoom(m_GameMode);
 			ItemRoom = m_LatestRoom;
 			RoomList.Add(ItemRoom);
 			bIsSpawnValid = true;

@@ -418,7 +418,7 @@ void ARogueLike_ProjectCharacter::UseMeleeCollider(float ExtraRange, bool isMele
 	if (isMeleeColliderActive)
 	{
 		
-		FVector NewScale = FVector(ExtraRange, ExtraRange, MeleeAttackMeshCollider->GetComponentTransform().GetScale3D().Z);
+		FVector NewScale = FVector(ExtraRange, ExtraRange, MeleeAttackMeshCollider->GetRelativeScale3D().Z);
 		MeleeAttackMeshCollider->SetRelativeScale3D(NewScale);
 		
 	}
