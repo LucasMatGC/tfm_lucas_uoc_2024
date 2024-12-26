@@ -53,6 +53,9 @@ public:
 	USceneComponent* TriggersFolder;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USceneComponent* TeleportsFolder;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UArrowComponent* Direction;
 
 	UPROPERTY(EditDefaultsOnly, meta=(RowType = "EnemyDataRow"), Category = "Room|Configuration")
@@ -137,11 +140,17 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 	void PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void ExitLevel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void DeactivateTriggers();

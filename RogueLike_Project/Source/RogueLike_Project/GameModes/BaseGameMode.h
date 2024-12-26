@@ -7,6 +7,24 @@
 #include "RogueLike_Project/RoomGeneration/MapGenerator.h"
 #include "BaseGameMode.generated.h"
 
+USTRUCT(BlueprintType)
+struct FLevelVariables
+{
+	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	int MinRooms = 8;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	int MaxRooms = 10;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	int CurrentLevel = 1;
+	
+};
+
 UCLASS()
 class ROGUELIKE_PROJECT_API ABaseGameMode : public AGameMode
 {
@@ -14,26 +32,26 @@ class ROGUELIKE_PROJECT_API ABaseGameMode : public AGameMode
 
 public:
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Map Generation|GenerateVariables")
 	int PredefinedSeed = -1;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
-	int MinRooms = 8;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
-	int MaxRooms = 10;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
 	TSubclassOf<AMapGenerator> MapGeneratorType;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Configuration|Map Generation|GenerateVariables")
 	FRandomStream RandomStream;
 	
 	UPROPERTY(Transient)
-	TObjectPtr<AMapGenerator> m_MapGenerator;
+	TObjectPtr<AMapGenerator> MapGenerator;
 
 	UPROPERTY(Transient)
-	TObjectPtr<APlayerController> m_Player;
+	TObjectPtr<APlayerController> Player;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
+	TMap<FName, FLevelVariables> LevelConfigurationMap;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Configuration")
+	FLevelVariables CurrentLevelConfiguration;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -45,7 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float RandomRangeFloat(float Min, float Max);
 
-	
+	UFUNCTION(BlueprintCallable)
+	void LoadNextLevel();
+
 protected:
 
 	virtual void BeginPlay() override;

@@ -3,6 +3,8 @@
 
 #include "BaseGameMode.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 ABaseGameMode::ABaseGameMode()
 {
@@ -21,23 +23,65 @@ float ABaseGameMode::RandomRangeFloat(float Min, float Max)
 	return RandomStream.RandRange(Min, Max);
 }
 
+void ABaseGameMode::LoadNextLevel()
+{
+
+	switch (CurrentLevelConfiguration.CurrentLevel)
+	{
+	
+		case 1:
+			
+			UGameplayStatics::OpenLevel(GetWorld(), "03_SecondLevel");
+			break;
+		
+		case 2:
+		
+			UGameplayStatics::OpenLevel(GetWorld(), "04_ThirdLevel");
+			break;
+			
+		case 3:
+			
+			UGameplayStatics::OpenLevel(GetWorld(), "05_Results");
+			break;
+		
+	}
+	
+}
+
 void ABaseGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetSeed();
-
-	CurrentRooms = RandomStream.RandRange(MinRooms, MaxRooms);
 	
-	m_MapGenerator = GetWorld()->SpawnActor<AMapGenerator>(
-			MapGeneratorType,
-			FVector::ZeroVector,
-			FRotator::ZeroRotator,
-			FActorSpawnParameters());
-	m_MapGenerator->Initialize(CurrentRooms, this);
-	m_MapGenerator->GenerateRooms();
 
-	m_Player = GetWorld()->GetFirstPlayerController();
+	FString levelName = GetWorld()->GetMapName();
+	levelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, levelName);
+
+	if (FLevelVariables* currentLevelConfiguration = LevelConfigurationMap.Find(FName(levelName)))
+	{
+
+		CurrentLevelConfiguration = *currentLevelConfiguration;
+
+		//if (CurrentLevelConfiguration.CurrentLevel == 1)
+		//{
+			
+			SetSeed();
+		
+		//}
+
+		CurrentRooms = RandomStream.RandRange(CurrentLevelConfiguration.MinRooms, CurrentLevelConfiguration.MaxRooms);
+		
+		MapGenerator = GetWorld()->SpawnActor<AMapGenerator>(
+				MapGeneratorType,
+				FVector::ZeroVector,
+				FRotator::ZeroRotator,
+				FActorSpawnParameters());
+		MapGenerator->Initialize(CurrentRooms, this);
+		MapGenerator->GenerateRooms();
+
+		Player = GetWorld()->GetFirstPlayerController();
+		
+	}
 	
 }
 

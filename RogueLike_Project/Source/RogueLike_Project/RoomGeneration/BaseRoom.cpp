@@ -22,6 +22,7 @@ ABaseRoom::ABaseRoom()
 	SpawnPointFolder = CreateDefaultSubobject<USceneComponent>(TEXT("SpawnPointFolder"));
 	ItemsFolder = CreateDefaultSubobject<USceneComponent>(TEXT("ItemsFolder"));
 	TriggersFolder = CreateDefaultSubobject<USceneComponent>(TEXT("TriggersFolder"));
+	TeleportsFolder = CreateDefaultSubobject<USceneComponent>(TEXT("TeleportsFolder"));
 	Direction = CreateDefaultSubobject<UArrowComponent>(TEXT("Direction"));
 
 	SetRootComponent(RootScene);
@@ -31,6 +32,7 @@ ABaseRoom::ABaseRoom()
 	SpawnPointFolder->SetupAttachment(RootScene);
 	ItemsFolder->SetupAttachment(RootScene);
 	TriggersFolder->SetupAttachment(RootScene);
+	TeleportsFolder->SetupAttachment(RootScene);
 	Direction->SetupAttachment(RootScene);
 
 }
@@ -133,6 +135,25 @@ void ABaseRoom::BeginPlay()
 	
 }
 
+void ABaseRoom::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	TArray<USceneComponent*> TeleportPoints;
+	TeleportsFolder->GetChildrenComponents(false, TeleportPoints);
+	for (USceneComponent* teleport : TeleportPoints)
+	{
+
+		if (UStaticMeshComponent* Cylinder = Cast<UStaticMeshComponent>(teleport))
+		{
+			
+			Cylinder->OnComponentBeginOverlap.RemoveDynamic(this, &ABaseRoom::ExitLevel);
+			
+		}
+		
+	}
+}
+
 // Called every frame
 void ABaseRoom::Tick(float DeltaTime)
 {
@@ -190,6 +211,22 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 	
 	DeactivateTriggers();
 	
+}
+
+void ABaseRoom::ExitLevel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
+	{
+
+		if (ABaseGameMode* GameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+
+			GameMode->LoadNextLevel();
+			
+		}
+		
+	}
 }
 
 void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
@@ -362,6 +399,22 @@ void ABaseRoom::BossKilled(ABaseBoss* BossKilled)
 
 void ABaseRoom::EnableExitLevel()
 {
+	TArray<USceneComponent*> TeleportPoints;
+	TeleportsFolder->GetChildrenComponents(false, TeleportPoints);
+	
+	for (USceneComponent* teleport : TeleportPoints)
+	{
+
+		if (UStaticMeshComponent* Cylinder = Cast<UStaticMeshComponent>(teleport))
+		{
+			
+			Cylinder->OnComponentBeginOverlap.AddDynamic(this, &ABaseRoom::ExitLevel);
+			Cylinder->SetVisibility(true);
+			Cylinder->SetGenerateOverlapEvents(true);
+			
+		}
+		
+	}
 }
 
 void ABaseRoom::DeactivateTriggers()
