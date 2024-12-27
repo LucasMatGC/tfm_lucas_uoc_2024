@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
 	void AttachPickedUpItem(int indexOfWeapon);
 	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapons")
+	void AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapon);
+	
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrades")
 	TArray<FUpgradeStruct> GetCommonUpgrades();
 	

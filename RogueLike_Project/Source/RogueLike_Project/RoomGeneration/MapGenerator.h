@@ -41,6 +41,9 @@ public:
 	TArray<TObjectPtr<ABaseRoom>> RoomList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
+	TObjectPtr<ABaseRoom> SpawnRoom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	TObjectPtr<ABaseRoom> BossRoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")

@@ -45,10 +45,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	USceneComponent* FirePoint;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> CommonUpgrades;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> Upgrades;
 
 public:

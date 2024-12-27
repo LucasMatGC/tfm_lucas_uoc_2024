@@ -12,6 +12,7 @@
 #include "InputActionValue.h"
 #include "Components/Player/InventoryComponent.h"
 #include "Components/HealthComponent.h"
+#include "GameModes/BaseGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -93,6 +94,13 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+
+		gameMode->PreparePlayer();
+		
 	}
 
 	OnPlayerReady.Broadcast();

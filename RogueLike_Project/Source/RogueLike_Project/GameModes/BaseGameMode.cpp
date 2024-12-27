@@ -4,6 +4,8 @@
 #include "BaseGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
+#include "RogueLike_Project/Utils/GameInstance/BaseGameInstance.h"
 
 // Sets default values
 ABaseGameMode::ABaseGameMode()
@@ -11,16 +13,14 @@ ABaseGameMode::ABaseGameMode()
 	
 }
 
-int ABaseGameMode::RandomRangeInt(int Min, int Max)
+void ABaseGameMode::LoadLevelData()
 {
 
-	return RandomStream.RandRange(Min, Max);
+	m_GameVariables =  m_GameInstance->GetGameVariables();
+
+	CurrentGameTime = m_GameVariables.CurrentGameTime;
 	
-}
-
-float ABaseGameMode::RandomRangeFloat(float Min, float Max)
-{
-	return RandomStream.RandRange(Min, Max);
+	
 }
 
 void ABaseGameMode::LoadNextLevel()
@@ -31,20 +31,37 @@ void ABaseGameMode::LoadNextLevel()
 	
 		case 1:
 			
+			m_GameInstance->SetGameVariables(Player, 10.0f, false, false);
 			UGameplayStatics::OpenLevel(GetWorld(), "03_SecondLevel");
 			break;
 		
 		case 2:
 		
+			m_GameInstance->SetGameVariables(Player, 20.0f, false, false);
 			UGameplayStatics::OpenLevel(GetWorld(), "04_ThirdLevel");
 			break;
 			
 		case 3:
 			
+			m_GameInstance->SetGameVariables(Player, 30.0f, true, true);
 			UGameplayStatics::OpenLevel(GetWorld(), "05_Results");
 			break;
 		
 	}
+	
+}
+
+int ABaseGameMode::RandomRangeInt(int Min, int Max)
+{
+
+	return m_GameInstance->RandomRangeInt(Min, Max);
+	
+}
+
+float ABaseGameMode::RandomRangeFloat(float Min, float Max)
+{
+	
+	return m_GameInstance->RandomRangeFloat(Min, Max);
 	
 }
 
@@ -53,51 +70,108 @@ void ABaseGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 
-	FString levelName = GetWorld()->GetMapName();
-	levelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, levelName);
-
-	if (FLevelVariables* currentLevelConfiguration = LevelConfigurationMap.Find(FName(levelName)))
+	if (m_GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 
-		CurrentLevelConfiguration = *currentLevelConfiguration;
+		FString levelName = GetWorld()->GetMapName();
+		levelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, levelName);
 
-		//if (CurrentLevelConfiguration.CurrentLevel == 1)
-		//{
-			
-			SetSeed();
+		if (FLevelVariables* currentLevelConfiguration = LevelConfigurationMap.Find(FName(levelName)))
+		{
+
+			CurrentLevelConfiguration = *currentLevelConfiguration;
+
+			if (CurrentLevelConfiguration.CurrentLevel == 1)
+			{
+				
+				SetSeed();
 		
-		//}
+			}
+			else
+			{
+				
+				LoadLevelData();
+				
+			}
 
-		CurrentRooms = RandomStream.RandRange(CurrentLevelConfiguration.MinRooms, CurrentLevelConfiguration.MaxRooms);
+			CurrentRooms = RandomRangeInt(CurrentLevelConfiguration.MinRooms, CurrentLevelConfiguration.MaxRooms);
 		
-		MapGenerator = GetWorld()->SpawnActor<AMapGenerator>(
-				MapGeneratorType,
-				FVector::ZeroVector,
-				FRotator::ZeroRotator,
-				FActorSpawnParameters());
-		MapGenerator->Initialize(CurrentRooms, this);
-		MapGenerator->GenerateRooms();
-
-		Player = GetWorld()->GetFirstPlayerController();
+			MapGenerator = GetWorld()->SpawnActor<AMapGenerator>(
+					MapGeneratorType,
+					FVector::ZeroVector,
+					FRotator::ZeroRotator,
+					FActorSpawnParameters());
+			MapGenerator->Initialize(CurrentRooms, this);
+			MapGenerator->GenerateRooms();
+		
+			Player = GetWorld()->GetFirstPlayerController();
+		}
 		
 	}
+
+	
 	
 }
 
 void ABaseGameMode::SetSeed()
 {
 
-	if (PredefinedSeed == -1)
+	m_GameInstance->SetSeed();
+	
+}
+
+void ABaseGameMode::PreparePlayer()
+{
+
+	TArray<USceneComponent*> spawnPoint;
+	
+	MapGenerator->SpawnRoom->SpawnPointFolder->GetChildrenComponents(false, spawnPoint);
+
+	if (spawnPoint.Num() > 0)
 	{
 
-		RandomStream.GenerateNewSeed();
-		PredefinedSeed = RandomStream.GetCurrentSeed();
+		if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(Player->GetCharacter()))
+		{
+			
+			Character->SetActorLocation(spawnPoint[0]->GetComponentLocation());
+
+			if (CurrentLevelConfiguration.CurrentLevel > 1)
+			{
+					
+				
+				Character->HealthComponent->SetHealth(m_GameVariables.PlayerHealth);
+				for (FUpgradeStruct Upgrade : m_GameVariables.ListOfCommonUpgrades)
+				{
+
+					Character->InventoryComponent->AddUpgrade(Upgrade, 0);
+					
+				}
+
+				for (int i = 0; i < Character->InventoryComponent->Weapons.Num(); i++)
+				{
+
+					TArray<FUpgradeStruct> Upgrades = m_GameVariables.WeaponInfo[i].ListOfUpgrades;
+					for (FUpgradeStruct Upgrade : Upgrades)
+					{
+
+						Character->InventoryComponent->AddUpgrade(Upgrade, i);	
+						
+					}
+
+					if (ARangeWeapon* RangeWeapon = Cast<ARangeWeapon>(Character->InventoryComponent->Weapons[i]))
+					{
+
+						RangeWeapon->CurrentAmmo = m_GameVariables.WeaponInfo[i].WeaponsAmmo;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
 		
-	}
-	else
-	{
-		RandomStream.Initialize(PredefinedSeed);
 	}
 	
 }

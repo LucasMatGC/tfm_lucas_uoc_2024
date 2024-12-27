@@ -68,10 +68,24 @@ void UHealthComponent::ProcessDeath()
 
 void UHealthComponent::SetMaxHealth(float health)
 {
-
 	MaxHealth = health;
 	CurrentHealth = MaxHealth;
+}	
 
+void UHealthComponent::SetHealth(float health)
+{
+
+	CurrentHealth = health;
+	
+	UpdateHUD(CurrentHealth);
+
+}
+
+float UHealthComponent::GetCurrentHealth()
+{
+
+	return CurrentHealth;
+	
 }
 
 void UHealthComponent::UpgradeMaxHealth(float HealthUpgrade)

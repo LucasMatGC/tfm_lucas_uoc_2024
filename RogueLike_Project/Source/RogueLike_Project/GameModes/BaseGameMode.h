@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
 #include "RogueLike_Project/RoomGeneration/MapGenerator.h"
+#include "RogueLike_Project/Utils/GameInstance/BaseGameInstance.h"
 #include "BaseGameMode.generated.h"
 
 USTRUCT(BlueprintType)
@@ -31,15 +32,9 @@ class ROGUELIKE_PROJECT_API ABaseGameMode : public AGameMode
 	GENERATED_BODY()
 
 public:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Map Generation|GenerateVariables")
-	int PredefinedSeed = -1;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
 	TSubclassOf<AMapGenerator> MapGeneratorType;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Configuration|Map Generation|GenerateVariables")
-	FRandomStream RandomStream;
 	
 	UPROPERTY(Transient)
 	TObjectPtr<AMapGenerator> MapGenerator;
@@ -52,30 +47,46 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Configuration")
 	FLevelVariables CurrentLevelConfiguration;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
+	float CurrentGameTime;
 	
 public:	
 	// Sets default values for this actor's properties
 	ABaseGameMode();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadLevelData();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadNextLevel();
 	
 	UFUNCTION(BlueprintCallable)
 	int RandomRangeInt(int Min, int Max);
 	
 	UFUNCTION(BlueprintCallable)
 	float RandomRangeFloat(float Min, float Max);
-
+	
 	UFUNCTION(BlueprintCallable)
-	void LoadNextLevel();
+	void PreparePlayer();
 
 protected:
 
 	virtual void BeginPlay() override;
+	
 	void SetSeed();
+
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Map Generation|GenerateVariables")
 	int CurrentRooms;
 
 private:
 
-	bool m_IsGamePaused = false;	
+	bool m_IsGamePaused = false;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBaseGameInstance> m_GameInstance;
+	
+	FGameVariables m_GameVariables;
 	
 };

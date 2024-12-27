@@ -157,6 +157,7 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 		}
 		
 		Weapons[indexOfWeapon]->AddUpgrade(newUpgrade, false);
+		OnUpgradeMaxHealth.Broadcast(newUpgrade.ExtraHealth);
 	}
 	
 	PickedUpItem->Destroy();
@@ -169,6 +170,29 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 
 	OnUpgradeSelection.Broadcast(nullptr, false);
 	
+	
+}
+
+void UInventoryComponent::AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapon)
+{
+
+	if (indexOfWeapon == -1)
+	{
+		
+		CommonUpgrades.Add(NewUpgrade);
+		for (ABaseWeapon* weapon : Weapons)
+		{
+			weapon->AddUpgrade(NewUpgrade, true);
+		}
+		OnUpgradeMaxHealth.Broadcast(NewUpgrade.ExtraHealth);
+		
+	}
+	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
+	{
+		Weapons[indexOfWeapon]->AddUpgrade(NewUpgrade, false);
+		OnUpgradeMaxHealth.Broadcast(NewUpgrade.ExtraHealth);
+	}
+
 	
 }
 

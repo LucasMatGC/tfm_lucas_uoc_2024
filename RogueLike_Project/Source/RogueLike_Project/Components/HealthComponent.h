@@ -20,6 +20,11 @@ public:
 	void ProcessDeath();
 
 	void SetMaxHealth(float health);
+
+	void SetHealth(float health);
+	
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHealth();
 	
 	UFUNCTION(BlueprintCallable)
 	void UpgradeMaxHealth(float HealthUpgrade);
