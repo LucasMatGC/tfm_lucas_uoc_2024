@@ -137,6 +137,8 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 			
 			PlayerController->GetMousePosition(mousePos.X, mousePos.Y);
 
+			//TODO: Desactivar control de mando. En caso de usarse, Detectar cuando se usa mando para desactivar esta porcion
+			// Y usar joystick dcho para rotar. Usar la funcion "look" y esto solo para alimentar el valor en caso de que sea raton
 			PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
 
 			FVector endTrace = direction * (CameraBoom->TargetArmLength * 30) + startTrace;

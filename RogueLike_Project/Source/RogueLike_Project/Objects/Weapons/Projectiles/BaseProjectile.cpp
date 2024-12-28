@@ -52,7 +52,6 @@ void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor*
 	if (OtherActor != nullptr)
 	{
 		
-		//TODO: ultimo parametro define el tipo de daño (ej: electrico, fuego, hielo, etc)
 		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), OwnerController, this, UDamageType::StaticClass());
 		Destroy();
 	

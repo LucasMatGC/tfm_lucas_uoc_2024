@@ -86,8 +86,7 @@ void AMapGenerator::SpawnNextRoom()
 		SpawnNextRoom();
 		
 	}
-	//TODO: Preparar la generación interna de elementos/enemigos de cada sala en este punto para asegurar una aleatoriedad
-	// continua
+
 	else
 	{
 

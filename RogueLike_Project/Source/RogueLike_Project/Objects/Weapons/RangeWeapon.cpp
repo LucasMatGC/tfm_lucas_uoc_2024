@@ -44,7 +44,6 @@ void ARangeWeapon::Fire()
 		newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
 			ProjectileType,
 			FirePoint->GetComponentTransform(),
-			//TODO: Definir como owner el player.
 			nullptr,
 			nullptr);
 
@@ -155,8 +154,6 @@ void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 		case EUpgradeType::ModifierUpgrade:
 
 			newProjectile->ProjectileMesh->SetStaticMesh(Upgrade.NewProjectileMesh);
-			//TODO: Modify Collision profile
-			//TODO: Modify Trajectory of Projectile
 			break;
 			
 		default:

@@ -32,9 +32,6 @@ EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	
 }
 
-//TODO: Ahora mismo no se esta disparando por tandas. Se dispara solo una vez. Utilizar las variables de ProjectilesToFire
-// y CurrentPRojectiles para validar cuanto hay que disparar. Quitar la logica de acercarse al player y añadir simplemente
-// bucle de disparo
 void UBTTask_BaseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
