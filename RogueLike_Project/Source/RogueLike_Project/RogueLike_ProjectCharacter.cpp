@@ -121,9 +121,23 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentInvulnerabilityTime > 0.0f)
+	{
+
+		CurrentInvulnerabilityTime -= DeltaTime;
+
+		if (CurrentInvulnerabilityTime <= 0.0f && m_IsPlayerAlive)
+		{
+
+			HealthComponent->SetCanTakeDamage(true);
+			
+		}
+		
+	}
 	
 	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{
+
 		
 		//Add Input Mapping Context
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -190,7 +204,8 @@ void ARogueLike_ProjectCharacter::AddAmmo(float ConsumableAmmo)
 void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
 {
 
-
+	CurrentInvulnerabilityTime = MaxInvulnerabilityTime;
+	HealthComponent->SetCanTakeDamage(false);
 	
 }
 
@@ -200,7 +215,7 @@ void ARogueLike_ProjectCharacter::KillPlayer()
 	m_IsPlayerAlive = false;
 	
 	// Hides visible components
-	SetActorHiddenInGame(true);
+	//SetActorHiddenInGame(true);
 
 	// Disables collision components
 	SetActorEnableCollision(false);
@@ -209,6 +224,13 @@ void ARogueLike_ProjectCharacter::KillPlayer()
 	SetActorTickEnabled(false);
 
 	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
+
+	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+
+		gameMode->PreparePlayer();
+		
+	}
 	
 }
 

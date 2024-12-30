@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHUD(float oldHealth);
 
+	UFUNCTION(BlueprintCallable)
+	void SetCanTakeDamage(bool CanTakeDamage);
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float,
 	                                               normalizedHealth);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
@@ -62,5 +65,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Health Values", meta = (ClampMin = "0", UIMin = "0"))
 	float CurrentHealth = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Health Values")
+	bool bCanTakeDamage = true;
 	
 };

@@ -39,7 +39,7 @@ public:
 	UPROPERTY(Transient)
 	TObjectPtr<AMapGenerator> MapGenerator;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, BlueprintReadWrite)
 	TObjectPtr<APlayerController> Player;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")

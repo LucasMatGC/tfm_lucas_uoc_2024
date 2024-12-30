@@ -55,7 +55,8 @@ void ARangeWeapon::Fire()
 		CurrentAmmo--;
 			
 		UpdateHUD();
-	
+		
+		OnWeaponFire.Broadcast(false, 0);
 	}
 }
 

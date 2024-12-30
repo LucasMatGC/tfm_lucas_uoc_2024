@@ -70,19 +70,6 @@ void UInventoryComponent::FireCurrentWeapon()
 
 	if (Weapons.IsValidIndex(m_CurrentWeapon))
 	{
-
-		if (AMeleeWeapon* MeleeWeapon = Cast<AMeleeWeapon>(Weapons[m_CurrentWeapon]))
-		{
-			
-			OnWeaponFire.Broadcast(true, MeleeWeapon->CurrentCombo);
-			
-		}
-		else
-		{
-			
-			OnWeaponFire.Broadcast(false, 0);
-			
-		}
 		Weapons[m_CurrentWeapon]->Fire();
 		
 	}

@@ -66,10 +66,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrades")
 	TArray<FUpgradeStruct> GetCommonUpgrades();
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponFire, bool ,bIsMeleeWeapon, int, CurrentCombo);
-	UPROPERTY(BlueprintAssignable, Category = "Inventory|Upgrades")
-	FOnWeaponFire OnWeaponFire;
-	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpgradeSelection, ABaseItem*, pickedUpgrade, bool, bShowUpgradeHUD);
 	UPROPERTY(BlueprintAssignable, Category = "Inventory|Upgrades")
 	FOnUpgradeSelection OnUpgradeSelection;

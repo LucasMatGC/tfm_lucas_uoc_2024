@@ -36,12 +36,11 @@ void UHealthComponent::OnTakeDamage(AActor* DamagedActor, float Damage, const cl
 }
 
 //TODO: Barra de vida del boss en pantalla
-//TODO: Para enemigos, mostrar daños como numeros cayendo en UI
 
 void UHealthComponent::TakeDamage(float Damage)
 {
 
-	if (Damage <= 0)
+	if (Damage <= 0 || !bCanTakeDamage)
 	{
 		return;
 	}
@@ -118,5 +117,12 @@ void UHealthComponent::UpdateHUD(float oldHealth)
 {
 	
 	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
+	
+}
+
+void UHealthComponent::SetCanTakeDamage(bool CanTakeDamage)
+{
+
+	bCanTakeDamage = CanTakeDamage;
 	
 }

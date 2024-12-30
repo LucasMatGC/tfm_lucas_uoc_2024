@@ -79,7 +79,9 @@ void AMeleeWeapon::Fire()
 		
 		if (ARogueLike_ProjectCharacter* Player = Cast<ARogueLike_ProjectCharacter>(GetAttachParentActor()))
 		{
-
+			
+			OnWeaponFire.Broadcast(true, CurrentCombo);
+			
 			Player->UseMeleeCollider(Range, true);
 			
 		}

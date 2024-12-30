@@ -93,6 +93,14 @@ public:
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	TArray<UInteractComponent*> Interactables;
 
+	/** Interactable components list **/
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
+	float MaxInvulnerabilityTime = 2.0f;
+
+	/** Interactable components list **/
+	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Configuration")
+	float CurrentInvulnerabilityTime = 0.0f;
+
 public:
 	
 	ARogueLike_ProjectCharacter();
