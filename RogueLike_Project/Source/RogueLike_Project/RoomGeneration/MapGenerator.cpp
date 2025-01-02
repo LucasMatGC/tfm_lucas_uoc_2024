@@ -2,7 +2,7 @@
 
 
 #include "MapGenerator.h"
-#include "RogueLike_Project/GameModes/BaseGameMode.h"
+#include "RogueLike_Project/GameModes/GameplayGameMode.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -26,7 +26,7 @@ void AMapGenerator::BeginPlay()
 	
 }
 
-void AMapGenerator::Initialize(int maxRooms, ABaseGameMode* GameMode)
+void AMapGenerator::Initialize(int maxRooms, AGameplayGameMode* GameMode)
 {
 
 	m_GameMode = GameMode;

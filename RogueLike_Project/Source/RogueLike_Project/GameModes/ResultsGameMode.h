@@ -4,16 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
-#include "MainMenuGameMode.generated.h"
+#include "ResultsGameMode.generated.h"
 
 UCLASS()
-class ROGUELIKE_PROJECT_API AMainMenuGameMode : public AGameMode
+class ROGUELIKE_PROJECT_API AResultsGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this actor's properties
-	AMainMenuGameMode();
+	AResultsGameMode();
+
+	UFUNCTION(BlueprintCallable)
+	void Initi();
+
+	
 
 
 };

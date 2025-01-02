@@ -1,19 +1,19 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BaseGameMode.h"
+#include "GameplayGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "RogueLike_Project/Objects/Weapons/RangeWeapon.h"
 #include "RogueLike_Project/Utils/GameInstance/BaseGameInstance.h"
 
 // Sets default values
-ABaseGameMode::ABaseGameMode()
+AGameplayGameMode::AGameplayGameMode()
 {
 	
 }
 
-void ABaseGameMode::LoadLevelData()
+void AGameplayGameMode::LoadLevelData()
 {
 
 	m_GameVariables =  m_GameInstance->GetGameVariables();
@@ -23,7 +23,7 @@ void ABaseGameMode::LoadLevelData()
 	
 }
 
-void ABaseGameMode::LoadNextLevel()
+void AGameplayGameMode::LoadNextLevel()
 {
 
 	switch (CurrentLevelConfiguration.CurrentLevel)
@@ -51,21 +51,21 @@ void ABaseGameMode::LoadNextLevel()
 	
 }
 
-int ABaseGameMode::RandomRangeInt(int Min, int Max)
+int AGameplayGameMode::RandomRangeInt(int Min, int Max)
 {
 
 	return m_GameInstance->RandomRangeInt(Min, Max);
 	
 }
 
-float ABaseGameMode::RandomRangeFloat(float Min, float Max)
+float AGameplayGameMode::RandomRangeFloat(float Min, float Max)
 {
 	
 	return m_GameInstance->RandomRangeFloat(Min, Max);
 	
 }
 
-void ABaseGameMode::BeginPlay()
+void AGameplayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -114,14 +114,14 @@ void ABaseGameMode::BeginPlay()
 	
 }
 
-void ABaseGameMode::SetSeed()
+void AGameplayGameMode::SetSeed()
 {
 
 	m_GameInstance->SetSeed();
 	
 }
 
-void ABaseGameMode::PreparePlayer()
+void AGameplayGameMode::PreparePlayer()
 {
 
 	TArray<USceneComponent*> spawnPoint;
@@ -173,5 +173,13 @@ void ABaseGameMode::PreparePlayer()
 		}
 		
 	}
+	
+}
+
+void AGameplayGameMode::GameOver()
+{
+			
+	m_GameInstance->SetGameVariables(Player, 30.0f, true, false);
+	UGameplayStatics::OpenLevel(GetWorld(), "05_Results");
 	
 }

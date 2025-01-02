@@ -105,7 +105,7 @@ public:
 	ABaseRoom();
 
 	UFUNCTION(BlueprintCallable)
-	void PrepareRoom(ABaseGameMode* GameMode);
+	void PrepareRoom(AGameplayGameMode* GameMode);
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnDoor(FVector DoorLocation, FRotator DoorRotation, bool IsDoorLocked);
@@ -167,6 +167,6 @@ private:
 	TArray<USceneComponent*> SpawnPoints;
 
 	UPROPERTY(Transient)
-	TObjectPtr<ABaseGameMode> m_GameMode;
+	TObjectPtr<AGameplayGameMode> m_GameMode;
 	
 };

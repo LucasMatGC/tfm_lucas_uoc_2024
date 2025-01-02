@@ -6,7 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "RogueLike_Project/RoomGeneration/MapGenerator.h"
 #include "RogueLike_Project/Utils/GameInstance/BaseGameInstance.h"
-#include "BaseGameMode.generated.h"
+#include "GameplayGameMode.generated.h"
 
 USTRUCT(BlueprintType)
 struct FLevelVariables
@@ -27,7 +27,7 @@ public:
 };
 
 UCLASS()
-class ROGUELIKE_PROJECT_API ABaseGameMode : public AGameMode
+class ROGUELIKE_PROJECT_API AGameplayGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
@@ -53,7 +53,7 @@ public:
 	
 public:	
 	// Sets default values for this actor's properties
-	ABaseGameMode();
+	AGameplayGameMode();
 
 	UFUNCTION(BlueprintCallable)
 	void LoadLevelData();
@@ -69,6 +69,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void PreparePlayer();
+	
+	UFUNCTION(BlueprintCallable)
+	void GameOver();
 
 protected:
 

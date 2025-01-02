@@ -8,7 +8,7 @@
 #include "BrainComponent.h"
 #include "Components/BoxComponent.h"
 #include "RogueLike_Project/RogueLike_ProjectCharacter.h"
-#include "RogueLike_Project/GameModes/BaseGameMode.h"
+#include "RogueLike_Project/GameModes/GameplayGameMode.h"
 
 // Sets default values
 ABaseRoom::ABaseRoom()
@@ -37,7 +37,7 @@ ABaseRoom::ABaseRoom()
 
 }
 
-void ABaseRoom::PrepareRoom(ABaseGameMode* GameMode)
+void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 {
 
 	m_GameMode = GameMode;
@@ -219,7 +219,7 @@ void ABaseRoom::ExitLevel(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 	{
 
-		if (ABaseGameMode* GameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+		if (AGameplayGameMode* GameMode = Cast<AGameplayGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 
 			GameMode->LoadNextLevel();

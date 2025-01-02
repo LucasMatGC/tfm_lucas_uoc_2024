@@ -55,7 +55,7 @@ public:
 public:
 	
 	UFUNCTION(BlueprintCallable)
-	void Initialize(int maxRooms, ABaseGameMode* GameMode);
+	void Initialize(int maxRooms, AGameplayGameMode* GameMode);
 	
 	UFUNCTION(BlueprintCallable)
 	void GenerateRooms();
@@ -87,7 +87,7 @@ private:
 	TObjectPtr<ABaseRoom> m_LatestRoom;
 	
 	UPROPERTY(Transient)
-	TObjectPtr<ABaseGameMode> m_GameMode;
+	TObjectPtr<AGameplayGameMode> m_GameMode;
 
 	UPROPERTY(Transient)
 	int CurrentRooms = 0;

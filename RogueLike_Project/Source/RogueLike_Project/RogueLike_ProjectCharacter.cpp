@@ -12,7 +12,7 @@
 #include "InputActionValue.h"
 #include "Components/Player/InventoryComponent.h"
 #include "Components/HealthComponent.h"
-#include "GameModes/BaseGameMode.h"
+#include "GameModes/GameplayGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -96,7 +96,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 		}
 	}
 
-	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+	if (AGameplayGameMode* gameMode = Cast<AGameplayGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 
 		gameMode->PreparePlayer();
@@ -225,10 +225,10 @@ void ARogueLike_ProjectCharacter::KillPlayer()
 
 	InventoryComponent->GetCurrentWeapon()->DisableWeapon(true);
 
-	if (ABaseGameMode* gameMode = Cast<ABaseGameMode>(GetWorld()->GetAuthGameMode()))
+	if (AGameplayGameMode* gameMode = Cast<AGameplayGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 
-		gameMode->PreparePlayer();
+		gameMode->GameOver();
 		
 	}
 	
