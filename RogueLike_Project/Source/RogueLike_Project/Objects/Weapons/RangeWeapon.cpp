@@ -3,6 +3,8 @@
 
 #include "RangeWeapon.h"
 
+#include "RogueLike_Project/Objects/Items/BaseItem.h"
+
 // Sets default values
 ARangeWeapon::ARangeWeapon()
 {
@@ -132,33 +134,51 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);
 
-	AddedDamage += newUpgrade.AddedDamage;
-	DamageMultiplier += newUpgrade.AddedDamageMultiplier;
-	Range += newUpgrade.AddedRange;
-	MaxFireRate -= newUpgrade.ReducedFireRate;
-	MaxAmmo += newUpgrade.AddedMaxAmmo;
-	MaxMagazine += newUpgrade.AddedMaxMagazine;
+	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade)
+	{
+		
+		AddedDamage += FMath::Max(newUpgrade.AddedDamage, 0.0f);
+		DamageMultiplier += FMath::Max(newUpgrade.AddedDamageMultiplier, 0.0f);
+		Range += FMath::Max(newUpgrade.AddedRange, 0.1f);
+		MaxFireRate -= FMath::Max(newUpgrade.ReducedFireRate, 0.1f);
+		MaxAmmo += FMath::Max(newUpgrade.AddedMaxAmmo, 1);
+		MaxMagazine += FMath::Max(newUpgrade.AddedMaxMagazine, 1);
+
+	}
 	
 }
 
 void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 {
 	
-	switch (Upgrade.UpgradeType)
+	if (Upgrade.UpgradeType == EUpgradeType::ModifierUpgrade || Upgrade.UpgradeType == EUpgradeType::CustomizedUpgrade)
 	{
 
-		case EUpgradeType::DamageTypeUpgrade:
-
-			newProjectile->DamageType = Upgrade.DamageType;
-			break;
-				
-		case EUpgradeType::ModifierUpgrade:
-
+		if (Upgrade.NewProjectileMesh != nullptr)
+		{
 			newProjectile->ProjectileMesh->SetStaticMesh(Upgrade.NewProjectileMesh);
-			break;
+		}
+
+		if (Upgrade.Bounciness > 0.0f)
+		{
 			
-		default:
-			break;
+			newProjectile->ProjectileComponent->Bounciness = Upgrade.Bounciness;
+			newProjectile->ProjectileComponent->bShouldBounce = true;
+			
+		}
+		
+		if (Upgrade.ChangeCollisionProfile)
+		{
+			newProjectile->ProjectileMesh->SetCollisionProfileName(Upgrade.NewCollisionProfile.Name, true);
+		}
+		//If the projectile is already set as not destroy on impact, avoid setting this flag. It will revert it if
+		//the order of upgrades is changed
+		if (newProjectile->bDestroyOnImpact)
+		{
+			newProjectile->bDestroyOnImpact = Upgrade.DestroyOnImpact;
+		}
+		newProjectile->LifeSteal += LifeSteal;
+		
 	}
 	
 }
@@ -166,8 +186,8 @@ void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 void ARangeWeapon::SetupProjectile()
 {
 	
-	newProjectile->ProjectileComponent->MaxSpeed = 1000.f;
-	newProjectile->ProjectileComponent->InitialSpeed = 1000.f;
+	newProjectile->ProjectileComponent->MaxSpeed = Range;
+	newProjectile->ProjectileComponent->InitialSpeed = Range;
 	newProjectile->InitialLifeSpan = 1.0f;
 	newProjectile->BaseDamage = BaseDamage;
 	newProjectile->AddedDamage = AddedDamage;

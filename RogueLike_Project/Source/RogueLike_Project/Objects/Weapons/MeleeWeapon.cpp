@@ -113,5 +113,32 @@ void AMeleeWeapon::ApplyDamage(AActor* OtherActor)
 {
 
 	UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), GetWorld()->GetFirstPlayerController(), this, UDamageType::StaticClass());
+
+	if(LifeSteal > 0.0)
+	{
+
+		if (ARogueLike_ProjectCharacter* Player = Cast<ARogueLike_ProjectCharacter>(GetAttachParentActor()))
+		{
+			float HealAmmount = FMathf::Floor(LifeSteal * CalculateDamage());
+		
+			Player->HealPlayer(HealAmmount);	
+		}
+	}
 	
+}
+
+void AMeleeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
+{
+	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);
+
+	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade)
+	{
+		
+		AddedDamage += FMath::Max(newUpgrade.AddedDamage, 0.0f);
+		DamageMultiplier += FMath::Max(newUpgrade.AddedDamageMultiplier, 0.1f);
+		Range += FMath::Max(newUpgrade.ExtraScale, 0.1f);
+		MaxFireRate -= FMath::Max(newUpgrade.ReducedFireRate, 0.1f);
+		MaxCombo += FMath::Max(newUpgrade.AddedCombo, 1);
+
+	}
 }

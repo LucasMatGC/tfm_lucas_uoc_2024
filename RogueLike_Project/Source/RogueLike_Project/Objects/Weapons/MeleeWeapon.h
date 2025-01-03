@@ -49,6 +49,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyDamage(AActor* OtherActor);
+
+	virtual void AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade) override;
 	
 protected:
 	// Called when the game starts or when spawned

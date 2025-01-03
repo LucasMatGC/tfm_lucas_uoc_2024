@@ -14,11 +14,5 @@ class ROGUELIKE_PROJECT_API AResultsGameMode : public AGameMode
 public:	
 	// Sets default values for this actor's properties
 	AResultsGameMode();
-
-	UFUNCTION(BlueprintCallable)
-	void Initi();
-
 	
-
-
 };

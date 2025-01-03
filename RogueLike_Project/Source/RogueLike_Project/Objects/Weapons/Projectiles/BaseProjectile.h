@@ -25,6 +25,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float DamageMultiplier = 1.0f;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float LifeSteal = 0.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration")
+	bool bDestroyOnImpact = true;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Configuration")
 	AController* OwnerController;
 	
@@ -38,7 +44,11 @@ public:
 	UFUNCTION()
 	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	void OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 protected:
+	UFUNCTION()
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

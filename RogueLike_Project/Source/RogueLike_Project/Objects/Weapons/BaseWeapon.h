@@ -41,6 +41,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float Range;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float LifeSteal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	USceneComponent* FirePoint;

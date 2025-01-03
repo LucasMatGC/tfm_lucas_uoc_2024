@@ -166,16 +166,21 @@ void AMapGenerator::SpawnBossRoom()
 			exit->GetComponentRotation(),
 			spawnInfo);
 
-		ExitsLists.Remove(exit);
 		
 		if (IsOverlaping())
 		{
 
+			ExitsLists.Remove(exit);
 			m_LatestRoom->Destroy();
 			
 		}
 		else
 		{
+			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
+			{
+				room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), false);
+			}
+			ExitsLists.Remove(exit);
 			m_LatestRoom->PrepareRoom(m_GameMode);
 			BossRoom = m_LatestRoom;
 			RoomList.Add(BossRoom);
@@ -209,16 +214,21 @@ void AMapGenerator::SpawnItemRoom()
 			exit->GetComponentRotation(),
 			spawnInfo);
 
-		ExitsLists.Remove(exit);
 		
 		if (IsOverlaping())
 		{
 
+			ExitsLists.Remove(exit);
 			m_LatestRoom->Destroy();
 			
 		}
 		else
 		{
+			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
+			{
+				room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), false);
+			}
+			ExitsLists.Remove(exit);
 			m_LatestRoom->PrepareRoom(m_GameMode);
 			ItemRoom = m_LatestRoom;
 			RoomList.Add(ItemRoom);
