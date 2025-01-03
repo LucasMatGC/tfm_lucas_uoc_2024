@@ -61,7 +61,7 @@ void ABaseEnemy::SetActorTickEnabled(bool bEnabled)
 {
 	Super::SetActorTickEnabled(bEnabled);
 
-	this->Controller->SetActorTickEnabled(bEnabled);
+	//this->Controller->SetActorTickEnabled(bEnabled);
 }
 
 void ABaseEnemy::Fire()

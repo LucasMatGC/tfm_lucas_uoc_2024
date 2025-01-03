@@ -146,7 +146,7 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 		}
 		OnUpgradeMaxHealth.Broadcast(newUpgrade.ExtraHealth);
 	}
-	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
+	else if (indexOfWeapon >= 0 && indexOfWeapon <= Weapons.Num() - 1 )
 	{
 		FUpgradeStruct newUpgrade = PickedUpItem->DefaultUpgrade;
 		if (PickedUpItem->UpgradeMapping.Contains(Weapons[indexOfWeapon]->GetClass()))

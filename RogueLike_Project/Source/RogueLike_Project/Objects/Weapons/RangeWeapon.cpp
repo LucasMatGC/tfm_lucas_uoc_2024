@@ -134,9 +134,10 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);
 
-	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade)
+	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade || newUpgrade.UpgradeType != EUpgradeType::CustomizedUpgrade)
 	{
-		
+
+		//TODO: Cambiar estas asignaciones. Ahora mismo se esta sumando el maximo de lo que define el upgrade y el valor de corte, cuando lo que deberia de caparse es la suma ya hecha
 		AddedDamage += FMath::Max(newUpgrade.AddedDamage, 0.0f);
 		DamageMultiplier += FMath::Max(newUpgrade.AddedDamageMultiplier, 0.0f);
 		Range += FMath::Max(newUpgrade.AddedRange, 0.1f);
@@ -144,6 +145,11 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 		MaxAmmo += FMath::Max(newUpgrade.AddedMaxAmmo, 1);
 		MaxMagazine += FMath::Max(newUpgrade.AddedMaxMagazine, 1);
 
+	}
+
+	if (newUpgrade.UpgradeType != EUpgradeType::ModifierUpgrade || newUpgrade.UpgradeType != EUpgradeType::CustomizedUpgrade)
+	{
+		LifeSteal += FMath::Max(newUpgrade.LifeSteal, 0.0f);
 	}
 	
 }
@@ -173,13 +179,13 @@ void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 		}
 		//If the projectile is already set as not destroy on impact, avoid setting this flag. It will revert it if
 		//the order of upgrades is changed
-		if (newProjectile->bDestroyOnImpact)
+		if (Upgrade.ChangeProjectileDestruction)
 		{
 			newProjectile->bDestroyOnImpact = Upgrade.DestroyOnImpact;
 		}
-		newProjectile->LifeSteal += LifeSteal;
 		
 	}
+	
 	
 }
 
@@ -192,6 +198,7 @@ void ARangeWeapon::SetupProjectile()
 	newProjectile->BaseDamage = BaseDamage;
 	newProjectile->AddedDamage = AddedDamage;
 	newProjectile->DamageMultiplier = DamageMultiplier;
+	newProjectile->LifeSteal = LifeSteal;
 	newProjectile->OwnerController = GetWorld()->GetFirstPlayerController();
 	
 	for (FUpgradeStruct commonUpgrade : CommonUpgrades)

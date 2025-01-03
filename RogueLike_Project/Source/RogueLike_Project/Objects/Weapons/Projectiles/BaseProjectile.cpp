@@ -15,10 +15,11 @@ ABaseProjectile::ABaseProjectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-	RootCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RootCollider"));
-	SetRootComponent(RootCollider);
+	//SetRootComponent(RootCollider);
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
-	ProjectileMesh->SetupAttachment(RootCollider);
+	SetRootComponent(ProjectileMesh);
+	RootCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RootCollider"));
+	RootCollider->SetupAttachment(ProjectileMesh);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 	ProjectileComponent->ProjectileGravityScale = 0;

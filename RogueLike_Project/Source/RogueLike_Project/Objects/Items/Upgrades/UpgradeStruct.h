@@ -109,7 +109,7 @@ public:
 		meta = (EditCondition = "UpgradeType == EUpgradeType::ModifierUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
-	float LifeSteel;
+	float LifeSteal;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "UpgradeType == EUpgradeType::ModifierUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",
@@ -121,5 +121,11 @@ public:
 		meta = (EditCondition = "UpgradeType == EUpgradeType::ModifierUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",
 			EditConditionHides),
 		Category = "Configuration|Upgrade")
-	bool DestroyOnImpact;
+	bool ChangeProjectileDestruction = false;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
+		meta = (EditCondition = "UpgradeType == EUpgradeType::ModifierUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",
+			EditConditionHides),
+		Category = "Configuration|Upgrade")
+	bool DestroyOnImpact = true;
 };
