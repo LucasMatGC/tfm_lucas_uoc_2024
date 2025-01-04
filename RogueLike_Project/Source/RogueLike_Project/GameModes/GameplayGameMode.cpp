@@ -114,6 +114,17 @@ void AGameplayGameMode::BeginPlay()
 	
 }
 
+void AGameplayGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!m_IsPlayerPrepared)
+	{
+		PreparePlayer();
+		m_IsPlayerPrepared = true;
+	}
+}
+
 void AGameplayGameMode::SetSeed()
 {
 

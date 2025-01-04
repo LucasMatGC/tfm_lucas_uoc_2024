@@ -116,7 +116,7 @@ void UHealthComponent::Heal(float ConsumableHealth)
 void UHealthComponent::UpdateHUD(float oldHealth)
 {
 	
-	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, CurrentHealth/MaxHealth);
+	OnUpdateCurrentHealth.Broadcast(oldHealth, CurrentHealth, MaxHealth, CurrentHealth/MaxHealth);
 	
 }
 

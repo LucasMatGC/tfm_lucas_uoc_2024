@@ -38,7 +38,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCanTakeDamage(bool CanTakeDamage);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float,
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUpdateCurrentHealth, float, oldHealth, float, newHealth, float, maxHealth, float,
 	                                               normalizedHealth);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FUpdateCurrentHealth OnUpdateCurrentHealth;

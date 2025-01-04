@@ -106,7 +106,7 @@ public:
 	ARogueLike_ProjectCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	void TakeDamage(float oldHealth, float currentHealth, float normalizedHealth);
+	void TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth);
 	
 	UFUNCTION(BlueprintCallable)
 	void KillPlayer();

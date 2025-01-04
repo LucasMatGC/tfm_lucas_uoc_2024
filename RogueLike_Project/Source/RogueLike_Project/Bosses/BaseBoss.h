@@ -71,7 +71,7 @@ public:
 	void SetupProjectile(bool bIsSpecialProjectile);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void TakeDamage(float oldHealth, float currentHealth, float normalizedHealth);
+	virtual void TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void KillEnemy();

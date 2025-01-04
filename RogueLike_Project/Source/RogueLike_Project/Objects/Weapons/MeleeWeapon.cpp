@@ -134,11 +134,11 @@ void AMeleeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade || newUpgrade.UpgradeType != EUpgradeType::CustomizedUpgrade)
 	{
 		
-		AddedDamage += FMath::Max(newUpgrade.AddedDamage, 0.0f);
-		DamageMultiplier += FMath::Max(newUpgrade.AddedDamageMultiplier, 0.1f);
-		Range += FMath::Max(newUpgrade.ExtraScale, 0.1f);
-		MaxFireRate -= FMath::Max(newUpgrade.ReducedFireRate, 0.1f);
-		MaxCombo += FMath::Max(newUpgrade.AddedCombo, 1);
+		AddedDamage = FMath::Max(AddedDamage + newUpgrade.AddedDamage, (1 - BaseDamage));
+		DamageMultiplier = FMath::Max(DamageMultiplier + newUpgrade.AddedDamageMultiplier, 0.1f);
+		Range = FMath::Max(Range + newUpgrade.AddedRange, 0.1);
+		MaxFireRate = FMath::Max(MaxFireRate - newUpgrade.ReducedFireRate, 0.1f);
+		MaxCombo = FMath::Max(MaxCombo + newUpgrade.AddedCombo, 1);
 
 	}
 

@@ -95,14 +95,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	if (AGameplayGameMode* gameMode = Cast<AGameplayGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-
-		gameMode->PreparePlayer();
-		
-	}
-
+	
 	OnPlayerReady.Broadcast();
 }
 
@@ -201,7 +194,7 @@ void ARogueLike_ProjectCharacter::AddAmmo(float ConsumableAmmo)
 	
 }
 
-void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
+void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth)
 {
 
 	CurrentInvulnerabilityTime = MaxInvulnerabilityTime;

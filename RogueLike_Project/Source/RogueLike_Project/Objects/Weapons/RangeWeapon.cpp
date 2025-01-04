@@ -138,12 +138,12 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 	{
 
 		//TODO: Cambiar estas asignaciones. Ahora mismo se esta sumando el maximo de lo que define el upgrade y el valor de corte, cuando lo que deberia de caparse es la suma ya hecha
-		AddedDamage += FMath::Max(newUpgrade.AddedDamage, 0.0f);
-		DamageMultiplier += FMath::Max(newUpgrade.AddedDamageMultiplier, 0.0f);
-		Range += FMath::Max(newUpgrade.AddedRange, 0.1f);
-		MaxFireRate -= FMath::Max(newUpgrade.ReducedFireRate, 0.1f);
-		MaxAmmo += FMath::Max(newUpgrade.AddedMaxAmmo, 1);
-		MaxMagazine += FMath::Max(newUpgrade.AddedMaxMagazine, 1);
+		AddedDamage = FMath::Max(AddedDamage + newUpgrade.AddedDamage, (1 - BaseDamage));
+		DamageMultiplier = FMath::Max(DamageMultiplier + newUpgrade.AddedDamageMultiplier, 0.1f);
+		Range = FMath::Max(Range + newUpgrade.AddedRange, 100.0f);
+		MaxFireRate = FMath::Max(MaxFireRate - newUpgrade.ReducedFireRate, 0.1f);
+		MaxAmmo = FMath::Max(MaxAmmo + newUpgrade.AddedMaxAmmo, 1);
+		MaxMagazine = FMath::Max(MaxMagazine + newUpgrade.AddedMaxMagazine, 1);
 
 	}
 

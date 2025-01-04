@@ -187,7 +187,7 @@ void ABaseBoss::ShootSpecial()
 	
 }
 
-void ABaseBoss::TakeDamage(float oldHealth, float currentHealth, float normalizedHealth)
+void ABaseBoss::TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth)
 {
 	
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "OOOOOOUCH!!!!!!");

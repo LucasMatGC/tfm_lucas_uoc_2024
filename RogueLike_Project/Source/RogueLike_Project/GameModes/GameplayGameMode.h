@@ -77,6 +77,8 @@ protected:
 
 	virtual void BeginPlay() override;
 	
+	virtual void Tick(float DeltaSeconds) override;
+	
 	void SetSeed();
 
 
@@ -86,6 +88,8 @@ protected:
 private:
 
 	bool m_IsGamePaused = false;
+
+	bool m_IsPlayerPrepared = false;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBaseGameInstance> m_GameInstance;
