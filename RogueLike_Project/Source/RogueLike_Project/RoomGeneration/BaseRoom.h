@@ -91,13 +91,13 @@ public:
 		meta = (EditCondition = "Functionality == ERoomFunctionality::Customized", EditConditionHides), Category = "Room|Configuration")
 	TMap<USceneComponent*, FText> ItemsPerSpawnPoint;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<ABaseEnemy>> SpawnedEnemies;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<ABaseBoss> SpawnedBoss;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<ABaseItem>> SpawnedItems;
 	
 public:	

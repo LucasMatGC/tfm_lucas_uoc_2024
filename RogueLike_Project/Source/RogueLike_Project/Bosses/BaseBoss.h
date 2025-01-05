@@ -86,6 +86,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShootSpecial();
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBossTrigger, bool, activateHealthBar);
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnBossTrigger OnBossTrigger;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBossKilled, ABaseBoss*, bossKilled);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnBossKilled OnBossKilled;

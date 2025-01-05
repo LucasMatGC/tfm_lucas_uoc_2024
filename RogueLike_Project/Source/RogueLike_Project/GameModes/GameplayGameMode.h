@@ -36,7 +36,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
 	TSubclassOf<AMapGenerator> MapGeneratorType;
 	
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AMapGenerator> MapGenerator;
 
 	UPROPERTY(Transient, BlueprintReadWrite)

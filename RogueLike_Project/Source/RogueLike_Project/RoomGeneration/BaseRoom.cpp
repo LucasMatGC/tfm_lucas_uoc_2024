@@ -194,6 +194,7 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 			
 			SpawnedBoss->SetActorHiddenInGame(false);
 			SpawnedBoss->SetActorTickEnabled(true);
+			SpawnedBoss->OnBossTrigger.Broadcast(true);
 				
 			if (AAIController* Controller = Cast<AAIController>(SpawnedBoss->GetController()))
 			{

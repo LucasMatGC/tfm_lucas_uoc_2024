@@ -4,6 +4,7 @@
 #include "BaseBoss.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "RogueLike_Project/GameModes/GameplayGameMode.h"
 #include "Tasks/Task.h"
 
 // Sets default values
@@ -196,6 +197,7 @@ void ABaseBoss::TakeDamage(float oldHealth, float currentHealth, float maxHealth
 void ABaseBoss::KillEnemy() 
 {
 
+	OnBossTrigger.Broadcast(false);
 	OnBossKilled.Broadcast(this);
 	
 	// Hides visible components
