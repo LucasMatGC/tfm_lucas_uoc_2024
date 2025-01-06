@@ -22,9 +22,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
 	float BaseRange;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
-	float BaseFireRate;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy Data")
 	TSubclassOf<ABaseEnemy> EnemyBP;

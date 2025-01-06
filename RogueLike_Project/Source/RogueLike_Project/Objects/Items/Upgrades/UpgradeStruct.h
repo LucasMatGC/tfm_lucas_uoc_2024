@@ -32,6 +32,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
 	FName UpgradeDescription = FName("Upgrade Description");
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
+	UTexture2D* UpgradeTexture;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,
 		meta = (EditCondition = "UpgradeType == EUpgradeType::BaseVariablesUpgrade || UpgradeType == EUpgradeType::CustomizedUpgrade",

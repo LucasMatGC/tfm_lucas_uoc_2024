@@ -143,6 +143,7 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 		Range = FMath::Max(Range + newUpgrade.AddedRange, 100.0f);
 		MaxFireRate = FMath::Max(MaxFireRate - newUpgrade.ReducedFireRate, 0.1f);
 		MaxAmmo = FMath::Max(MaxAmmo + newUpgrade.AddedMaxAmmo, 1);
+		ExtraProjectileScale = FMath::Max(ExtraProjectileScale + newUpgrade.ExtraScale, 0.0);
 		MaxMagazine = FMath::Max(MaxMagazine + newUpgrade.AddedMaxMagazine, 1);
 
 	}
@@ -200,6 +201,11 @@ void ARangeWeapon::SetupProjectile()
 	newProjectile->DamageMultiplier = DamageMultiplier;
 	newProjectile->LifeSteal = LifeSteal;
 	newProjectile->OwnerController = GetWorld()->GetFirstPlayerController();
+	FVector NewScale = FVector(
+		newProjectile->ProjectileMesh->GetRelativeScale3D().X + ExtraProjectileScale,
+		newProjectile->ProjectileMesh->GetRelativeScale3D().Y + ExtraProjectileScale,
+		newProjectile->ProjectileMesh->GetRelativeScale3D().Z + ExtraProjectileScale);
+	newProjectile->ProjectileMesh->SetRelativeScale3D(NewScale);
 	
 	for (FUpgradeStruct commonUpgrade : CommonUpgrades)
 	{

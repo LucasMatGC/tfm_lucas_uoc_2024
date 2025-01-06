@@ -85,5 +85,7 @@ void UBaseGameInstance::SetSeed()
 	{
 		RandomStream.Initialize(PredefinedSeed);
 	}
+
+	SavedGameVariables.CurrentGameTime = 0.0f;
 	
 }

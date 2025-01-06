@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
 	EItemType ItemType = EItemType::Consumable;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
+	float RotationSpeed = 1;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "ItemType == EItemType::Consumable", EditConditionHides), Category = "Configuration|Consumable")
 	float ConsumableHealth;
 	

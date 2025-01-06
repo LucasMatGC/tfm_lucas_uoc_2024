@@ -29,6 +29,9 @@ public:
 	int CurrentMagazine;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
+	float ExtraProjectileScale;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;
 
 public:

@@ -48,6 +48,7 @@ void ABaseItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABaseItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 }
 
 void ABaseItem::PickUpItem(ACharacter* interactor)

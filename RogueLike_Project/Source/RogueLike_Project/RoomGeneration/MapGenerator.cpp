@@ -267,7 +267,7 @@ TSubclassOf<ABaseRoom> AMapGenerator::GetRandomRoomType()
 		
 	}
 	
-	return RoomTypeList[m_GameMode->RandomRangeInt(0, RoomList.Num() - 1)];
+	return RoomTypeList[m_GameMode->RandomRangeInt(0, RoomTypeList.Num() - 1)];
 	
 }
 

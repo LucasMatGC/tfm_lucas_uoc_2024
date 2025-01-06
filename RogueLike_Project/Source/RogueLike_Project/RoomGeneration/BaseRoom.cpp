@@ -40,6 +40,37 @@ ABaseRoom::ABaseRoom()
 void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 {
 
+	TArray<USceneComponent*> TriggerBoxes;
+	TriggersFolder->GetChildrenComponents(false, TriggerBoxes);
+	
+	for (USceneComponent* trigger : TriggerBoxes)
+	{
+
+		if (UBoxComponent* boxColliderTrigger = Cast<UBoxComponent>(trigger))
+		{
+			
+			boxColliderTrigger->OnComponentBeginOverlap.AddDynamic(this, &ABaseRoom::PlayerEnters);
+			
+		}
+		
+	}
+
+	FActorSpawnParameters spawnInfo;
+
+	//Spawn a door on the entry
+	ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
+		DoorBP,
+		this->GetTransform().GetLocation(),
+		this->GetActorRotation(),
+		spawnInfo);
+
+	Doors.Add(door);
+	door->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "Door");
+
+	door->SetLocked(false);
+
+	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
+
 	m_GameMode = GameMode;
 	
 	int numberOfEnemiesToSpawn = 0;
@@ -97,37 +128,6 @@ void ABaseRoom::BeginPlay()
 {
 	
 	Super::BeginPlay();
-
-	TArray<USceneComponent*> TriggerBoxes;
-	TriggersFolder->GetChildrenComponents(false, TriggerBoxes);
-	
-	for (USceneComponent* trigger : TriggerBoxes)
-	{
-
-		if (UBoxComponent* boxColliderTrigger = Cast<UBoxComponent>(trigger))
-		{
-			
-			boxColliderTrigger->OnComponentBeginOverlap.AddDynamic(this, &ABaseRoom::PlayerEnters);
-			
-		}
-		
-	}
-
-	FActorSpawnParameters spawnInfo;
-
-	//Spawn a door on the entry
-	ABaseDoor* door = GetWorld()->SpawnActor<ABaseDoor>(
-		DoorBP,
-		this->GetTransform().GetLocation(),
-		this->GetActorRotation(),
-		spawnInfo);
-
-	Doors.Add(door);
-	door->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "Door");
-
-	door->SetLocked(false);
-
-	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
 
 	EnemyTable.LoadSynchronous();
 	BossTable.LoadSynchronous();

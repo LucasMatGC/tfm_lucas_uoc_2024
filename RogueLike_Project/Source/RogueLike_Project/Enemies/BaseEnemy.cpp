@@ -25,6 +25,7 @@ void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewRange)
 	BaseDamage = NewDamage;
 	Range = NewRange;
 	
+	
 }
 
 // Called when the game starts or when spawned
