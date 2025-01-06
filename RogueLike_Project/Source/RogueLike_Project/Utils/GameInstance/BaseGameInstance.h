@@ -63,6 +63,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
 	int PredefinedSeed = -1;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float AudioMaster = 0.2f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float AudioMusic = 0.2f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float AudioSFX = 0.2f;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Configuration")
 	FRandomStream RandomStream;
 
