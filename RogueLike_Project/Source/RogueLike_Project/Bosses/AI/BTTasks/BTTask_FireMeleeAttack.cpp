@@ -24,33 +24,40 @@ EBTNodeResult::Type UBTTask_FireMeleeAttack::ExecuteTask(UBehaviorTreeComponent&
 		return EBTNodeResult::Failed;
 	}
 
-	m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
-	OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
-	bNotifyTick = true;
-	return EBTNodeResult::InProgress;
+	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
+	{
+		
+		m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
+		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
+		bNotifyTick = true;
+		m_Enemy->OnSetFeedback.Broadcast(true);
+		return EBTNodeResult::InProgress;
 	
+	}
+	
+	return EBTNodeResult::Failed;
 }
 
 void UBTTask_FireMeleeAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
-	if ( OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
+	if ( (OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
-				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey()))
+				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey())) || m_ReachedTarget)
 	{
 
+		m_ReachedTarget = true;
+		
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 		{
 			
 			OwnerComp.GetAIOwner()->StopMovement();
-			if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
-			{
-				m_Enemy->Fire(2);
-			}
+			m_Enemy->Fire(2);
+			m_Enemy->OnSetFeedback.Broadcast(false);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		
 		}

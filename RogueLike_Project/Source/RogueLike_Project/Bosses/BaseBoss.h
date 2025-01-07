@@ -96,6 +96,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnBossTrigger OnBossTrigger;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetFeedback, bool, isVisible);
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnSetFeedback OnSetFeedback;;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBossKilled, ABaseBoss*, bossKilled);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnBossKilled OnBossKilled;

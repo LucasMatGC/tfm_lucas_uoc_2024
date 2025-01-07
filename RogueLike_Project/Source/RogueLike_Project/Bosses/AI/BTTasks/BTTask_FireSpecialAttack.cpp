@@ -29,6 +29,7 @@ EBTNodeResult::Type UBTTask_FireSpecialAttack::ExecuteTask(UBehaviorTreeComponen
 	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		m_Enemy->ShootSpecial();
+		m_Enemy->OnSetFeedback.Broadcast(false);
 		return EBTNodeResult::Succeeded;
 	}
 

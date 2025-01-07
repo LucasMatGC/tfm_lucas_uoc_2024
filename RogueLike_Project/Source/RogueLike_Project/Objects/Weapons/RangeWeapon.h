@@ -57,9 +57,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddAmmo(float ConsumableAmmo);
-	
-	UFUNCTION(BlueprintCallable)
-	void UpdateHUD();
+
+	virtual void UpdateHUD() override;
 
 	virtual void AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade) override;
 

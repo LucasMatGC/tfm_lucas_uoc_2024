@@ -57,6 +57,10 @@ void ABaseWeapon::Reload()
 {
 }
 
+void ABaseWeapon::UpdateHUD()
+{
+}
+
 void ABaseWeapon::DisableWeapon(bool toHide) 
 {
 	// Hides visible components

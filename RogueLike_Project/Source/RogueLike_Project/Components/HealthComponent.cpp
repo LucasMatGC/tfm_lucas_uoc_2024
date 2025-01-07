@@ -50,6 +50,7 @@ void UHealthComponent::TakeDamage(float Damage)
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
 	
 	UpdateHUD(oldHealth);
+	bPlayedDamageAnimation = false;
 	
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("DAMAGE Taken: %f, oldHealth: %f, currentHealth: %f"), Damage, oldHealth, CurrentHealth));
 

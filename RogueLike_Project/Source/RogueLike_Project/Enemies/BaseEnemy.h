@@ -55,6 +55,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyKilled, ABaseEnemy*, enemyKilled);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnEnemyKilled OnEnemyKilled;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetFeedback, bool, isVisible);
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnSetFeedback OnSetFeedback;;
 	
 protected:
 

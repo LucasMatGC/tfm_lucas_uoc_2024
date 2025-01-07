@@ -18,7 +18,7 @@ public:
 	UEnemyState NextState;
 
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.1", UIMin = "0.1"))
-	float AimTime = 0.2;
+	float AimTime = 0.5;
 	
 	UBTTask_Shoot();
 

@@ -24,11 +24,18 @@ EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
-	m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
-	bNotifyTick = true;
-	return EBTNodeResult::InProgress;
+	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
+	{
+		
+		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
+		m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
+		bNotifyTick = true;
+		return EBTNodeResult::InProgress;
+
+	}
+
+	return EBTNodeResult::Failed;
 	
 }
 
@@ -38,14 +45,14 @@ void UBTTask_BaseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	
 	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
+	m_Enemy->OnSetFeedback.Broadcast(true);
+	
 	if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 	{
 		
 		OwnerComp.GetAIOwner()->StopMovement();
-		if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
-		{
-			m_Enemy->Fire(1);
-		}
+		m_Enemy->OnSetFeedback.Broadcast(false);
+		m_Enemy->Fire(1);
 
 		OwnerComp.GetBlackboardComponent()->SetValueAsInt(GetSelectedBlackboardKey(), OwnerComp.GetBlackboardComponent()->GetValueAsInt(GetSelectedBlackboardKey()) + 1);
 		

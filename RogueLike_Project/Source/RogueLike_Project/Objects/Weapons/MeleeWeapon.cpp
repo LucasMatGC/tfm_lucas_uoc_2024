@@ -35,6 +35,7 @@ void AMeleeWeapon::Tick(float DeltaSeconds)
 			bIsAttacking = false;
 			bCanDoComboAttack = false;
 			CurrentCombo = 0;
+			FUpdateAmmo.Broadcast(MaxCombo, MaxCombo);
 			HideAttackCollision();
 		}
 
@@ -81,7 +82,7 @@ void AMeleeWeapon::Fire()
 		{
 			
 			OnWeaponFire.Broadcast(true, CurrentCombo);
-			
+			UpdateHUD();
 			Player->UseMeleeCollider(Range, true);
 			
 		}
@@ -124,6 +125,14 @@ void AMeleeWeapon::ApplyDamage(AActor* OtherActor)
 			Player->HealPlayer(HealAmmount);	
 		}
 	}
+	
+}
+
+void AMeleeWeapon::UpdateHUD()
+{
+	Super::UpdateHUD();
+
+	FUpdateAmmo.Broadcast(MaxCombo - CurrentCombo, MaxCombo);
 	
 }
 

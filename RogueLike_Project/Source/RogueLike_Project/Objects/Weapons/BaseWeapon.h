@@ -66,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void UpdateHUD();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DisableWeapon(bool toHide);
@@ -76,6 +79,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateAmmo, int, currentMagazine, int, remainingAmmo);
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")
 	FUpdateAmmo FUpdateAmmo;
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEmptyMagazineShoot);
+	UPROPERTY(BlueprintAssignable, Category = "Weapon")
+	FOnEmptyMagazineShoot OnEmptyMagazineShoot;
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponFire, bool ,bIsMeleeWeapon, int, CurrentCombo);
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")

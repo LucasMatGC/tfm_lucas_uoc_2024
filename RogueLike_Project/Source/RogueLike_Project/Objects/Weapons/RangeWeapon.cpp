@@ -60,6 +60,10 @@ void ARangeWeapon::Fire()
 		
 		OnWeaponFire.Broadcast(false, 0);
 	}
+	else if (CurrentMagazine == 0)
+	{
+		OnEmptyMagazineShoot.Broadcast();
+	}
 }
 
 void ARangeWeapon::Reload()
@@ -90,7 +94,7 @@ int ARangeWeapon::GetMaxMagazine()
 
 bool ARangeWeapon::CanFire() const
 {
-
+	
 	return CurrentMagazine > 0 && CurrentFireRate <= 0;
 	
 }

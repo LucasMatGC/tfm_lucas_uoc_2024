@@ -10,7 +10,7 @@ UCLASS(meta=(BlueprintSpawnableComponent))
 class ROGUELIKE_PROJECT_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	UHealthComponent();
@@ -68,5 +68,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Health Values")
 	bool bCanTakeDamage = true;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Health Values")
+	bool bPlayedDamageAnimation = false;
 	
 };

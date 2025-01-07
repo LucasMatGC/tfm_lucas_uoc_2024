@@ -169,6 +169,7 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 
 	OnUpgradeSelection.Broadcast(nullptr, false);
 	
+	Weapons[m_CurrentWeapon]->UpdateHUD();
 	
 }
 
@@ -191,6 +192,8 @@ void UInventoryComponent::AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapo
 		Weapons[indexOfWeapon]->AddUpgrade(NewUpgrade, false);
 		OnUpgradeMaxHealth.Broadcast(NewUpgrade.ExtraHealth);
 	}
+	
+	Weapons[m_CurrentWeapon]->UpdateHUD();
 
 	
 }

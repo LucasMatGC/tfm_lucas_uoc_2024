@@ -23,24 +23,30 @@ EBTNodeResult::Type UBTTask_SpecialAttack::ExecuteTask(UBehaviorTreeComponent& O
 	{
 		return EBTNodeResult::Failed;
 	}
-
-	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
-	m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
-	OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
-	bNotifyTick = true;
-	return EBTNodeResult::InProgress;
 	
+	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
+		m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
+		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
+		bNotifyTick = true;
+		return EBTNodeResult::InProgress;
+	}
+	
+	return EBTNodeResult::Failed;
 }
 
 void UBTTask_SpecialAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
-	if ( OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
+	if ( (OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
-				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey()))
+				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey())) || m_ReachedTarget)
 	{
+		m_ReachedTarget = true;
+		m_Enemy->OnSetFeedback.Broadcast(true);
 
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
@@ -48,10 +54,7 @@ void UBTTask_SpecialAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		{
 			
 			OwnerComp.GetAIOwner()->StopMovement();
-			if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
-			{
-				m_Enemy->Fire(3);
-			}
+			m_Enemy->Fire(3);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		
 		}

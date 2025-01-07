@@ -50,6 +50,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyDamage(AActor* OtherActor);
 
+	virtual void UpdateHUD() override;
+
 	virtual void AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade) override;
 	
 protected:
