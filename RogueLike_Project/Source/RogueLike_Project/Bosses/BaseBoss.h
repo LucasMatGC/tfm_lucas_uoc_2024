@@ -47,6 +47,12 @@ public:
 	float SpecialDamage;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	float SpecialProjectileScale = 3.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
+	float SpecialProjectileWaitTime = 2.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float Range;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
@@ -102,9 +108,14 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void Tick(float DeltaTime) override;
-
 	
 	UPROPERTY(Transient)
 	TObjectPtr<ABaseProjectile>  newProjectile;
+
+private:
+
+	bool m_bIsChargingSpecialProjectile = false;
+
+	float m_CurrentSpecialProjectileWaitTime = 0.0f;
 	
 };

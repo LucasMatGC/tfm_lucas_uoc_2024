@@ -71,6 +71,29 @@ void ABaseBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABaseBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (m_bIsChargingSpecialProjectile)
+	{
+
+		if (m_CurrentSpecialProjectileWaitTime > 0.0)
+		{
+			m_CurrentSpecialProjectileWaitTime -= DeltaTime;
+
+			if (m_CurrentSpecialProjectileWaitTime <= 0.0)
+			{
+
+				m_bIsChargingSpecialProjectile = false;
+				
+			}
+		}
+
+		float scale = FMath::Lerp(1.0f, SpecialProjectileScale, (SpecialProjectileWaitTime - m_CurrentSpecialProjectileWaitTime) / SpecialProjectileWaitTime);
+		
+		FVector NewScale = FVector(scale , scale, scale);
+		newProjectile->ProjectileMesh->SetRelativeScale3D(NewScale);
+		
+	}
+	
 }
 
 void ABaseBoss::SetActorTickEnabled(bool bEnabled)
@@ -142,9 +165,12 @@ void ABaseBoss::SetupProjectile(bool bIsSpecialProjectile)
 	{
 
 		newProjectile->BaseDamage = SpecialDamage;
-		newProjectile->ProjectileComponent->MaxSpeed = 2000.f;
+		newProjectile->ProjectileComponent->MaxSpeed = 1500.f;
 		newProjectile->ProjectileComponent->InitialSpeed = 0.f;
 		newProjectile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, "FirePointSpecial");
+		
+		m_bIsChargingSpecialProjectile = true;
+		m_CurrentSpecialProjectileWaitTime = SpecialProjectileWaitTime;
 		
 	}
 	else

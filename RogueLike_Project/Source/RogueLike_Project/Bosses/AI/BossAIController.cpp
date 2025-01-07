@@ -25,16 +25,18 @@ void ABossAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("NextAttackPercentage"), 1.0f);
 			GetBlackboardComponent()->SetValueAsInt(TEXT("CurrentProjectile"), 0);
 
-		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetPawn()))
+		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetOwner()))
 		{
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("SpecialProjectileWaitTime"), Enemy->SpecialProjectileWaitTime);
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyFireRange"), Enemy->Range);
-			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), Enemy->ProjectilesToFire);
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), Enemy->MeleeRange);
+			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), Enemy->ProjectilesToFire);
 		}
 		else
 		{
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("SpecialProjectileWaitTime"), 2.0);
 			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyFireRange"), 1200.0f);
-			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), 100.f);
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("EnemyMeleeRange"), 275.f);
 			GetBlackboardComponent()->SetValueAsInt(TEXT("ProjectilesToFire"), 10);
 		}
 		
