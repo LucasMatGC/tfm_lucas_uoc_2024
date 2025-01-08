@@ -3,6 +3,8 @@
 
 #include "BaseEnemy.h"
 
+#include "AIController.h"
+#include "BrainComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -18,13 +20,13 @@ ABaseEnemy::ABaseEnemy()
 	
 }
 
-void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewRange)
+void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewRange, float NewRandomizedItemSpawnRate)
 {
 
 	HealthComponent->SetMaxHealth(NewMaxHealth);
 	BaseDamage = NewDamage;
 	Range = NewRange;
-	
+	RandomizedItemSpawnRate = NewRandomizedItemSpawnRate;
 	
 }
 
@@ -97,10 +99,16 @@ void ABaseEnemy::TakeDamage(float oldHealth, float currentHealth, float maxHealt
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "OOOOOOUCH!!!!!!");
 }
 
-void ABaseEnemy::KillEnemy() 
+void ABaseEnemy::KillEnemy(bool isMeleeDamage) 
 {
 
-	OnEnemyKilled.Broadcast(this);
+	OnEnemyKilled.Broadcast(this, isMeleeDamage);
+
+	
+	if (AAIController* AIController = Cast<AAIController>(this->GetController()))
+	{
+		AIController->BrainComponent->StopLogic("Death");
+	}
 	
 	// Hides visible components
 	SetActorHiddenInGame(true);

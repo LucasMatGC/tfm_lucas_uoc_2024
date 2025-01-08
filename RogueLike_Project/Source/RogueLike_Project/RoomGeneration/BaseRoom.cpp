@@ -70,6 +70,7 @@ void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 	door->SetLocked(false);
 
 	SpawnPointFolder->GetChildrenComponents(false, SpawnPoints);
+	ItemsFolder->GetChildrenComponents(false, ItemSpawnPoints);
 
 	m_GameMode = GameMode;
 	
@@ -83,7 +84,7 @@ void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 		break;
 			
 	case ERoomFunctionality::RandomItems:
-		SpawnItems(SpawnPoints.Num());
+		SpawnItems(ItemSpawnPoints.Num());
 		break;
 		
 	case ERoomFunctionality::RandomBoss:
@@ -92,9 +93,17 @@ void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 			
 	case ERoomFunctionality::FullyRandom:
 		numberOfEnemiesToSpawn = m_GameMode->RandomRangeInt(0, SpawnPoints.Num());
-		numberOfItemsToSpawn = SpawnPoints.Num() - numberOfEnemiesToSpawn;
+		numberOfItemsToSpawn = FMath::Min(SpawnPoints.Num() - numberOfEnemiesToSpawn, ItemSpawnPoints.Num());
 		SpawnEnemies(numberOfEnemiesToSpawn);
 		SpawnItems(numberOfItemsToSpawn);
+		break;
+		
+	case ERoomFunctionality::StartRoom:
+		SpawnItems(ItemSpawnPoints.Num());
+		for (ABaseItem* Item : SpawnedItems)
+		{
+			Item->SetActorHiddenInGame(false);
+		}
 		break;
 			
 		// Customized
@@ -166,8 +175,6 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 {
 	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 	{
-		
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "TRIGGERED!!!!");
 		
 		if (SpawnedEnemies.Num() > 0)
 		{
@@ -257,7 +264,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 					nullptr,
 					nullptr);
 		
-		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseRange);
+		newEnemy->Initialize(enemyData->BaseHealth, enemyData->BaseDamage, enemyData->BaseRange, m_GameMode->RandomRangeFloat(0.0f, 1.0f));
 
 		newEnemy->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
 
@@ -280,7 +287,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 {
 
-	if (SpawnPoints.Num() < 0 || NumberOfItemsToSpawn < 0)
+	if (ItemSpawnPoints.Num() < 0 || NumberOfItemsToSpawn < 0)
 	{
 
 		UE_LOG(LogSpawn, Error, TEXT("No items were defined to spawn"));
@@ -292,7 +299,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 	for (int iterator = 0; iterator < NumberOfItemsToSpawn; iterator++)
 	{
 		
-		USceneComponent* spawnPoint = SpawnPoints[m_GameMode->RandomRangeInt(0, SpawnPoints.Num() - 1)];
+		USceneComponent* spawnPoint = ItemSpawnPoints[m_GameMode->RandomRangeInt(0, ItemSpawnPoints.Num() - 1)];
 		
 		FActorSpawnParameters spawnInfo;
 
@@ -308,7 +315,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		newItem->FinishSpawning(spawnPoint->GetComponentTransform(), false, nullptr);
 		newItem->SetActorHiddenInGame(true);
 		SpawnedItems.Add(newItem);
-		SpawnPoints.Remove(spawnPoint);
+		ItemSpawnPoints.Remove(spawnPoint);
 	}
 }
 
@@ -352,8 +359,6 @@ void ABaseRoom::SpawnCustom()
 void ABaseRoom::OpenDoors()
 {
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Opening doors.......");
-	
 	for (ABaseDoor* door : Doors)
 	{
 		
@@ -365,7 +370,6 @@ void ABaseRoom::OpenDoors()
 
 void ABaseRoom::CloseDoors()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Closing doors.......");
 	
 	for (ABaseDoor* door : Doors)
 	{
@@ -375,10 +379,12 @@ void ABaseRoom::CloseDoors()
 	}
 }
 
-void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled)
+void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled, bool isMeleeDamage)
 {
 
 	SpawnedEnemies.Remove(enemyKilled);
+
+	m_GameMode->CheckItemSpawn(enemyKilled->RandomizedItemSpawnRate, enemyKilled->GetActorTransform(), isMeleeDamage);
 
 	if (SpawnedEnemies.Num() == 0)
 	{
@@ -393,6 +399,13 @@ void ABaseRoom::BossKilled(ABaseBoss* BossKilled)
 {
 
 	OpenDoors();
+
+	SpawnItems(ItemSpawnPoints.Num());
+	
+	for (ABaseItem* Item : SpawnedItems)
+	{
+		Item->SetActorHiddenInGame(false);
+	}
 
 	EnableExitLevel();
 	

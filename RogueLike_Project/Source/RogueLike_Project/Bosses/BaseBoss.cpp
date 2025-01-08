@@ -220,7 +220,7 @@ void ABaseBoss::TakeDamage(float oldHealth, float currentHealth, float maxHealth
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "OOOOOOUCH!!!!!!");
 }
 
-void ABaseBoss::KillEnemy() 
+void ABaseBoss::KillEnemy(bool isMeleeDamage) 
 {
 
 	OnBossTrigger.Broadcast(false);

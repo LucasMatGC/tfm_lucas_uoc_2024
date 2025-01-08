@@ -68,7 +68,7 @@ int UBaseGameInstance::RandomRangeInt(int Min, int Max)
 
 float UBaseGameInstance::RandomRangeFloat(float Min, float Max)
 {
-	return RandomStream.RandRange(Min, Max);
+	return RandomStream.FRandRange(Min, Max);
 }
 
 void UBaseGameInstance::SetSeed()

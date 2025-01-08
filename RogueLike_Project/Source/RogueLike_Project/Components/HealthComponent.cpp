@@ -3,6 +3,7 @@
 
 #include "HealthComponent.h"
 #include "GameFramework/Character.h"
+#include "RogueLike_Project/Objects/Weapons/MeleeWeapon.h"
 
 // Sets default values
 UHealthComponent::UHealthComponent()
@@ -32,12 +33,12 @@ void UHealthComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UHealthComponent::OnTakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
                                     class AController* InstigatedBy, AActor* DamageCauser)
 {
-	TakeDamage(Damage);
+	TakeDamage(Damage, DamageCauser);
 }
 
 //TODO: Barra de vida del boss en pantalla
 
-void UHealthComponent::TakeDamage(float Damage)
+void UHealthComponent::TakeDamage(float Damage, AActor* DamageCauser)
 {
 
 	if (Damage <= 0 || !bCanTakeDamage)
@@ -52,20 +53,24 @@ void UHealthComponent::TakeDamage(float Damage)
 	UpdateHUD(oldHealth);
 	bPlayedDamageAnimation = false;
 	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("DAMAGE Taken: %f, oldHealth: %f, currentHealth: %f"), Damage, oldHealth, CurrentHealth));
-
 	if (CurrentHealth <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "DEATH!!!!!!");
-		ProcessDeath();
+		ProcessDeath(DamageCauser);
 	}
 	
 }
 
-void UHealthComponent::ProcessDeath()
+void UHealthComponent::ProcessDeath(AActor* DamageCauser)
 {
 
-	OnProcessDeath.Broadcast();
+	if (AMeleeWeapon* MeleeWeapon = Cast<AMeleeWeapon>(DamageCauser))
+	{
+		OnProcessDeath.Broadcast(true);
+	}
+	else
+	{
+		OnProcessDeath.Broadcast(false);
+	}
 	
 }
 

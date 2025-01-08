@@ -30,6 +30,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float Range;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float RandomizedItemSpawnRate = 0.0f;
 
 public:	
 	// Sets default values for this actor's properties
@@ -38,7 +41,7 @@ public:
 	virtual void SetActorTickEnabled(bool bEnabled) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewRange);
+	virtual void Initialize(float NewMaxHealth, float NewDamage, float NewRange, float NewRandomizedItemSpawnRate);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
@@ -50,9 +53,9 @@ public:
 	virtual void TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void KillEnemy();
+	virtual void KillEnemy(bool isMeleeDamage);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyKilled, ABaseEnemy*, enemyKilled);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEnemyKilled, ABaseEnemy*, enemyKilled, bool, isMeleeDamage);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnEnemyKilled OnEnemyKilled;
 

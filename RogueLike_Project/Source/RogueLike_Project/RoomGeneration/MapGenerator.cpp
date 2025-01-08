@@ -51,6 +51,7 @@ void AMapGenerator::GenerateRooms()
 	
 	m_LatestRoom = GetWorld()->SpawnActor<ABaseRoom>(StartRoomType, location, rotation, spawnInfo);
 	SpawnRoom = m_LatestRoom;
+	SpawnRoom->PrepareRoom(m_GameMode);
 	AddExits();
 
 	if (ExitsLists.Num() > 0 && CurrentRooms < MaxRoom)

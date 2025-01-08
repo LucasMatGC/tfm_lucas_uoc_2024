@@ -109,7 +109,7 @@ public:
 	void TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth);
 	
 	UFUNCTION(BlueprintCallable)
-	void KillPlayer();
+	void KillPlayer(bool isMeleeDamage);
 
 	UFUNCTION(BlueprintCallable)
 	void AddInteractable(UInteractComponent* InteractComponent);

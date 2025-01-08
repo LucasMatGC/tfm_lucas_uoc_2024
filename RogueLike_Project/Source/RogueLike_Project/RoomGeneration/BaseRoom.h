@@ -21,7 +21,8 @@ enum class ERoomFunctionality
 	FullyRandom = 2,
 	Customized = 3,
 	RandomBoss = 4,
-	Empty = 5
+	Empty = 5,
+	StartRoom = 6
 };
 
 UCLASS()
@@ -79,7 +80,7 @@ public:
 	TArray<FText> EnemiesToSpawn;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,
-		meta = (EditCondition = "Functionality == ERoomFunctionality::RandomItems || Functionality == ERoomFunctionality::FullyRandom",
+		meta = (EditCondition = "Functionality == ERoomFunctionality::RandomItems || Functionality == ERoomFunctionality::FullyRandom || Functionality == ERoomFunctionality::StartRoom",
 			EditConditionHides), Category = "Room|Configuration")
 	TArray<FText> ItemsToSpawn;
 	
@@ -129,7 +130,7 @@ public:
 	void CloseDoors();
 	
 	UFUNCTION(BlueprintCallable)
-	void EnemyKilled(ABaseEnemy* enemyKilled);
+	void EnemyKilled(ABaseEnemy* enemyKilled, bool isMeleeDamage);
 	
 	UFUNCTION(BlueprintCallable)
 	void BossKilled(ABaseBoss* BossKilled);
@@ -165,6 +166,8 @@ protected:
 private:
 
 	TArray<USceneComponent*> SpawnPoints;
+
+	TArray<USceneComponent*> ItemSpawnPoints;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AGameplayGameMode> m_GameMode;

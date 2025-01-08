@@ -202,7 +202,7 @@ void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealt
 	
 }
 
-void ARogueLike_ProjectCharacter::KillPlayer()
+void ARogueLike_ProjectCharacter::KillPlayer(bool isMeleeDamage)
 {
 
 	m_IsPlayerAlive = false;

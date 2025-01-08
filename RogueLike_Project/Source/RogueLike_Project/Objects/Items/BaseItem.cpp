@@ -54,8 +54,6 @@ void ABaseItem::Tick(float DeltaTime)
 void ABaseItem::PickUpItem(ACharacter* interactor)
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, "Item Picked Up!!!!!!");
-
 	if (ItemType == EItemType::Consumable)
 	{
 

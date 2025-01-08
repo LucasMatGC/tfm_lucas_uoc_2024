@@ -75,7 +75,6 @@ void AGameplayGameMode::BeginPlay()
 
 		FString levelName = GetWorld()->GetMapName();
 		levelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, levelName);
 
 		if (FLevelVariables* currentLevelConfiguration = LevelConfigurationMap.Find(FName(levelName)))
 		{
@@ -110,7 +109,8 @@ void AGameplayGameMode::BeginPlay()
 		
 	}
 
-	
+	ConsumableTable.LoadSynchronous();
+	UpgradeTable.LoadSynchronous();
 	
 }
 
@@ -192,5 +192,68 @@ void AGameplayGameMode::GameOver()
 			
 	m_GameInstance->SetGameVariables(Player, 30.0f, true, false);
 	UGameplayStatics::OpenLevel(GetWorld(), "05_Results");
+	
+}
+
+void AGameplayGameMode::CheckItemSpawn(float RandomizedItemSpawnRate, FTransform SpawnTransform, bool isMeleeDamage)
+{
+
+	if (RandomizedItemSpawnRate < ConsumableSpawnThreshold)
+	{
+		return;
+	}
+
+	if (RandomizedItemSpawnRate < UpgradeSpawnThreshold)
+	{
+
+		FActorSpawnParameters spawnInfo;
+
+		FItemDataRow* itemData;
+		
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("RandomizedItemSpawnRate: %f, isMeleeDamage: %i"), RandomizedItemSpawnRate, isMeleeDamage));
+
+		if (ConsumableTable != nullptr)
+		{
+			
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ConsumableTable")));
+		}
+		
+		if (isMeleeDamage)
+		{
+			itemData = ConsumableTable->FindRow<FItemDataRow>( "ConsumableAmmo", nullptr, true );
+		}
+		else
+		{
+			itemData = ConsumableTable->FindRow<FItemDataRow>( "ConsumableHealth", nullptr, true );
+		}
+		
+		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
+					itemData->ItemBP,
+					SpawnTransform,
+					nullptr,
+					nullptr);
+		
+		newItem->ItemName = itemData->DisplayName;
+		newItem->FinishSpawning(SpawnTransform, false, nullptr);
+	}
+	else
+	{
+		
+		
+		TArray<FName> RowNames = UpgradeTable->GetRowNames();
+
+		FActorSpawnParameters spawnInfo;
+
+		FItemDataRow* itemData = UpgradeTable->FindRow<FItemDataRow>( RowNames[RandomRangeInt(0, RowNames.Num() - 1)], nullptr, true ); 
+		
+		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
+					itemData->ItemBP,
+					SpawnTransform,
+					nullptr,
+					nullptr);
+		
+		newItem->ItemName = itemData->DisplayName;
+		newItem->FinishSpawning(SpawnTransform, false, nullptr);
+	}
 	
 }

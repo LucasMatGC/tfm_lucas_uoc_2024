@@ -80,7 +80,7 @@ public:
 	virtual void TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void KillEnemy();
+	virtual void KillEnemy(bool isMeleeDamage);
 
 	UFUNCTION(BlueprintCallable)
 	void UseMeleeCollider(bool isMeleeColliderActive);

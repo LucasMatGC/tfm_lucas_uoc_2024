@@ -50,6 +50,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
 	float CurrentGameTime;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
+	float ConsumableSpawnThreshold = 0.3;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Configuration")
+	float UpgradeSpawnThreshold = 0.9;
+
+	UPROPERTY(EditDefaultsOnly, meta=(RowType = "ItemDataRow"), Category = "Configuration")
+	TSoftObjectPtr<UDataTable> ConsumableTable;
+
+	UPROPERTY(EditDefaultsOnly, meta=(RowType = "ItemDataRow"), Category = "Configuration")
+	TSoftObjectPtr<UDataTable> UpgradeTable;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -72,6 +84,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void GameOver();
+
+	UFUNCTION(BlueprintCallable)
+	void CheckItemSpawn(float RandomizedItemSpawnRate, FTransform SpawnTransform, bool isMeleeDamage);
 
 protected:
 

@@ -15,9 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	UHealthComponent();
 	
-	void TakeDamage(float Damage);
+	void TakeDamage(float Damage, AActor* DamageCauser);
 
-	void ProcessDeath();
+	void ProcessDeath(AActor* DamageCauser);
 
 	void SetMaxHealth(float health);
 
@@ -43,7 +43,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FUpdateCurrentHealth OnUpdateCurrentHealth;
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FProcessDeath);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProcessDeath, bool, isMeleeDamage);
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FProcessDeath OnProcessDeath;
 
