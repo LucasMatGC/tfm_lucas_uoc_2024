@@ -150,7 +150,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 
 			FVector endTrace = direction * (CameraBoom->TargetArmLength * 30) + startTrace;
 
-			if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Visibility, *params))
+			if (GetWorld()->LineTraceSingleByChannel(*hit, startTrace, endTrace, ECollisionChannel::ECC_Camera, *params))
 			{
 
 				if (hit->GetActor() != nullptr)
