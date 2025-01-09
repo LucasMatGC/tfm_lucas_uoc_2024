@@ -155,7 +155,7 @@ void AGameplayGameMode::PreparePlayer()
 				for (FUpgradeStruct Upgrade : m_GameVariables.ListOfCommonUpgrades)
 				{
 
-					Character->InventoryComponent->AddUpgrade(Upgrade, 0);
+					Character->InventoryComponent->AddUpgrade(Upgrade, -1);
 					
 				}
 

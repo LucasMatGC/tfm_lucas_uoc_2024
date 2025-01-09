@@ -187,7 +187,7 @@ void UInventoryComponent::AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapo
 		OnUpgradeMaxHealth.Broadcast(NewUpgrade.ExtraHealth);
 		
 	}
-	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num() -1 )
+	else if (indexOfWeapon >= 0 && indexOfWeapon < Weapons.Num())
 	{
 		Weapons[indexOfWeapon]->AddUpgrade(NewUpgrade, false);
 		OnUpgradeMaxHealth.Broadcast(NewUpgrade.ExtraHealth);

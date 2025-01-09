@@ -269,9 +269,6 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Look);
 		
 		// Fire
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Fire);
@@ -290,9 +287,6 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		
 		// Pause game
 		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::Pause);
-		
-		// Debug Take Damage
-		EnhancedInputComponent->BindAction(ForceDamageAction, ETriggerEvent::Triggered, this, &ARogueLike_ProjectCharacter::ForceDamage);
 		
 	}
 	else
@@ -324,25 +318,6 @@ void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 			// add movement 
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
-		}
-	}
-}
-
-void ARogueLike_ProjectCharacter::Look(const FInputActionValue& Value)
-{
-
-	if (m_IsPlayerAlive && m_CanPlayerMove)
-	{
-		// input is a Vector2D
-		FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-		if (Controller != nullptr)
-		{
-
-			// add yaw and pitch input to controller
-			AddControllerYawInput(LookAxisVector.X);
-			AddControllerPitchInput(LookAxisVector.Y);
-			
 		}
 	}
 }
@@ -420,20 +395,6 @@ void ARogueLike_ProjectCharacter::Pause(const FInputActionValue& Value)
 {
 
 	OnPlayerPause.Broadcast();
-	
-}
-
-void ARogueLike_ProjectCharacter::ForceDamage(const FInputActionValue& Value)
-{
-
-	if (m_IsPlayerAlive)
-	{
-		
-		float forceDamageValue = 20.0f;
-	
-		UGameplayStatics::ApplyDamage(this, forceDamageValue, GetController(), this, UDamageType::StaticClass());
-	
-	}
 	
 }
 

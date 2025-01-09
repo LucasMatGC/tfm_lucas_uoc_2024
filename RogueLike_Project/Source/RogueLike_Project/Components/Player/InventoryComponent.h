@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Weapons")
 	TArray<ABaseWeapon*> Weapons;
 	
-	UPROPERTY(Transient, EditDefaultsOnly, BlueprintReadWrite, Category = "Inventory|Upgrades")
+	UPROPERTY(Transient, EditAnywhere, BlueprintReadWrite, Category = "Inventory|Upgrades")
 	TArray<FUpgradeStruct> CommonUpgrades;
 
 public:

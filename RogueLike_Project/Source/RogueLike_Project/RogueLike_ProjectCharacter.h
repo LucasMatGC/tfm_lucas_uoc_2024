@@ -53,10 +53,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
-	/** Look Input Action */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
-
 	/** Change Weapon Input Action */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
@@ -76,10 +72,6 @@ public:
 	/** Pause/Unpause Action */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* PauseAction;
-
-	/** Force Damage Input Action (for debug purposes) */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ForceDamageAction;
 	
 	/** Inventory component **/
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
@@ -166,9 +158,6 @@ protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-
 	/** Called for fire input **/
 	void Fire(const FInputActionValue& Value);
 
@@ -186,9 +175,6 @@ protected:
 
 	/** Called for Pause/Unpause input **/
 	void Pause(const FInputActionValue& Value);
-
-	/** Called for force damage input (debug purpose) **/
-	void ForceDamage(const FInputActionValue& Value);
 
 private:
 
