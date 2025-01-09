@@ -7,6 +7,7 @@
 #include "../Objects/Weapons/Projectiles/BaseProjectile.h"
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/Components/HealthComponent.h"
+#include "Sound/SoundCue.h"
 #include "BaseBoss.generated.h"
 
 UCLASS()
@@ -60,6 +61,18 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables", meta = (ClampMin = "1", UIMin = "1"))
 	int ProjectilesToFire;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables")
+	USoundCue* BaseFireSFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables")
+	USoundCue* SpecialFireSFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables")
+	USoundCue* MeleeAttackSFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss|General Variables")
+	USoundCue* DeathSFX;
 
 public:	
 	// Sets default values for this actor's properties

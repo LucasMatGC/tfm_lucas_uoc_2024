@@ -3,6 +3,7 @@
 
 #include "RangeWeapon.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "RogueLike_Project/Objects/Items/BaseItem.h"
 
 // Sets default values
@@ -57,12 +58,14 @@ void ARangeWeapon::Fire()
 		CurrentAmmo--;
 			
 		UpdateHUD();
+		UGameplayStatics::SpawnSound2D(this, FireSFX);
 		
 		OnWeaponFire.Broadcast(false, 0);
 	}
 	else if (CurrentMagazine == 0)
 	{
 		OnEmptyMagazineShoot.Broadcast();
+		UGameplayStatics::SpawnSound2D(this, EmptyMagazineSFX);
 	}
 }
 

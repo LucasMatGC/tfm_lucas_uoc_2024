@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "RogueLike_Project/Objects/Items/Upgrades/UpgradeStruct.h"
+#include "Sound/SoundCue.h"
 #include "BaseWeapon.generated.h"
 
 UCLASS()
@@ -53,6 +54,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|General Variables")
 	TArray<FUpgradeStruct> Upgrades;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
+	USoundCue* FireSFX;
 
 public:
 	

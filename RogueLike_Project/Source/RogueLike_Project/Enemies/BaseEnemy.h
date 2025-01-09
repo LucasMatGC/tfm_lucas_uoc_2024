@@ -7,6 +7,7 @@
 #include "../Objects/Weapons/Projectiles/BaseProjectile.h"
 #include "GameFramework/Character.h"
 #include "RogueLike_Project/Components/HealthComponent.h"
+#include "Sound/SoundCue.h"
 #include "BaseEnemy.generated.h"
 
 UCLASS()
@@ -33,6 +34,12 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float RandomizedItemSpawnRate = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
+	USoundCue* FireSFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemy|General Variables")
+	USoundCue* DeathSFX;
 
 public:	
 	// Sets default values for this actor's properties

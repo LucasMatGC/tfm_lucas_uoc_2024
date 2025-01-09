@@ -132,6 +132,8 @@ void ABaseBoss::Fire(int AttackID)
 			SetupProjectile(false);
 				
 			newProjectile->FinishSpawning(FirePointSecondary->GetComponentTransform(), false, nullptr);
+		
+			UGameplayStatics::SpawnSound2D(this, BaseFireSFX);
 			break;
 		
 		case 2:
@@ -189,6 +191,7 @@ void ABaseBoss::UseMeleeCollider(bool isMeleeColliderActive)
 	
 	MeleeAttackMeshCollider->SetVisibility(isMeleeColliderActive, false);
 	MeleeAttackMeshCollider->SetGenerateOverlapEvents(isMeleeColliderActive);
+	UGameplayStatics::SpawnSound2D(this, MeleeAttackSFX);
 	
 }
 
@@ -206,6 +209,7 @@ void ABaseBoss::ShootSpecial()
 
 	if (newProjectile != nullptr)
 	{
+		UGameplayStatics::SpawnSound2D(this, SpecialFireSFX);
 		newProjectile->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		newProjectile->ProjectileComponent->InitialSpeed = 2000.f;
 		newProjectile->ProjectileComponent->Velocity = newProjectile->GetActorForwardVector().GetSafeNormal() * newProjectile->ProjectileComponent->MaxSpeed;
@@ -225,6 +229,7 @@ void ABaseBoss::KillEnemy(bool isMeleeDamage)
 
 	OnBossTrigger.Broadcast(false);
 	OnBossKilled.Broadcast(this);
+	UGameplayStatics::SpawnSound2D(this, DeathSFX);
 	
 	// Hides visible components
 	SetActorHiddenInGame(true);

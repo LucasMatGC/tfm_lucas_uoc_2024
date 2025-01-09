@@ -82,6 +82,8 @@ void ABaseEnemy::Fire()
 	
 	newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
 	
+	UGameplayStatics::SpawnSound2D(this, FireSFX);
+	
 }
 
 void ABaseEnemy::SetupProjectile()
@@ -109,6 +111,8 @@ void ABaseEnemy::KillEnemy(bool isMeleeDamage)
 	{
 		AIController->BrainComponent->StopLogic("Death");
 	}
+	
+	UGameplayStatics::SpawnSound2D(this, DeathSFX);
 	
 	// Hides visible components
 	SetActorHiddenInGame(true);

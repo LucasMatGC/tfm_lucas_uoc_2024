@@ -84,6 +84,7 @@ void AMeleeWeapon::Fire()
 			OnWeaponFire.Broadcast(true, CurrentCombo);
 			UpdateHUD();
 			Player->UseMeleeCollider(Range, true);
+			UGameplayStatics::SpawnSound2D(this, FireSFX);
 			
 		}
 		

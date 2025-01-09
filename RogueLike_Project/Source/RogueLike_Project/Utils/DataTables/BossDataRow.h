@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "RogueLike_Project/Enemies/BaseEnemy.h"
+#include "RogueLike_Project/Bosses/BaseBoss.h"
 #include "BossDataRow.generated.h"
 
 USTRUCT(BlueprintType)
