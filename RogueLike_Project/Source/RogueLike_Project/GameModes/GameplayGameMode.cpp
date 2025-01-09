@@ -206,25 +206,21 @@ void AGameplayGameMode::CheckItemSpawn(float RandomizedItemSpawnRate, FTransform
 	if (RandomizedItemSpawnRate < UpgradeSpawnThreshold)
 	{
 
+		ConsumableTable.LoadSynchronous();
+		
+		TArray<FName> RowNames = ConsumableTable->GetRowNames();
+		
 		FActorSpawnParameters spawnInfo;
 
 		FItemDataRow* itemData;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("RandomizedItemSpawnRate: %f, isMeleeDamage: %i"), RandomizedItemSpawnRate, isMeleeDamage));
-
-		if (ConsumableTable != nullptr)
-		{
-			
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ConsumableTable")));
-		}
-		
 		if (isMeleeDamage)
 		{
-			itemData = ConsumableTable->FindRow<FItemDataRow>( "ConsumableAmmo", nullptr, true );
+			itemData = ConsumableTable->FindRow<FItemDataRow>( RowNames[1], nullptr, true );
 		}
 		else
 		{
-			itemData = ConsumableTable->FindRow<FItemDataRow>( "ConsumableHealth", nullptr, true );
+			itemData = ConsumableTable->FindRow<FItemDataRow>( RowNames[0], nullptr, true );
 		}
 		
 		TObjectPtr<ABaseItem> newItem = GetWorld()->SpawnActorDeferred<ABaseItem>(
@@ -239,6 +235,7 @@ void AGameplayGameMode::CheckItemSpawn(float RandomizedItemSpawnRate, FTransform
 	else
 	{
 		
+		UpgradeTable.LoadSynchronous();
 		
 		TArray<FName> RowNames = UpgradeTable->GetRowNames();
 

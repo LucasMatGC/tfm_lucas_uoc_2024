@@ -247,6 +247,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 		
 	}
 	
+	EnemyTable.LoadSynchronous();
 	TArray<FName> RowNames = EnemyTable->GetRowNames();
 	
 	for (int iterator = 0; iterator < NumberOfEnemiesToSpawn; iterator++)
@@ -294,6 +295,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 		
 	}
 	
+	ItemTable.LoadSynchronous();
 	TArray<FName> RowNames = ItemTable->GetRowNames();
 	
 	for (int iterator = 0; iterator < NumberOfItemsToSpawn; iterator++)
@@ -322,6 +324,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 void ABaseRoom::SpawnBoss()
 {
 	
+	BossTable.LoadSynchronous();
 	TArray<FName> RowNames = BossTable->GetRowNames();
 	
 	USceneComponent* spawnPoint = SpawnPoints[m_GameMode->RandomRangeInt(0, SpawnPoints.Num() - 1)];
