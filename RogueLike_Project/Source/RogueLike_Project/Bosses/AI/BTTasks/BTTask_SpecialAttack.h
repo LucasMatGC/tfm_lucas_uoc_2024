@@ -14,8 +14,11 @@ class ROGUELIKE_PROJECT_API UBTTask_SpecialAttack : public UBTTask_BlackboardBas
 	
 public:
 
+	// Set time enemy needs to aim at the player before shooting 
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float AimTime = 0.2;
+
+public:
 	
 	UBTTask_SpecialAttack();
 

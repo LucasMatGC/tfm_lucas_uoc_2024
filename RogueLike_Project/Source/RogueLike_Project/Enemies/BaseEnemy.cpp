@@ -20,6 +20,7 @@ ABaseEnemy::ABaseEnemy()
 	
 }
 
+// Sets base variables of enemy
 void ABaseEnemy::Initialize(float NewMaxHealth, float NewDamage, float NewRange, float NewRandomizedItemSpawnRate)
 {
 
@@ -41,6 +42,7 @@ void ABaseEnemy::BeginPlay()
 	
 }
 
+// Called when the game ends or when despawned
 void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
@@ -55,6 +57,7 @@ void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+// Called every frame
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -63,10 +66,9 @@ void ABaseEnemy::Tick(float DeltaTime)
 void ABaseEnemy::SetActorTickEnabled(bool bEnabled)
 {
 	Super::SetActorTickEnabled(bEnabled);
-
-	//this->Controller->SetActorTickEnabled(bEnabled);
 }
 
+// Creates, sets variables and fires projectile
 void ABaseEnemy::Fire()
 {
 
@@ -86,6 +88,7 @@ void ABaseEnemy::Fire()
 	
 }
 
+// Set projectile variables
 void ABaseEnemy::SetupProjectile()
 {
 	
@@ -95,12 +98,12 @@ void ABaseEnemy::SetupProjectile()
 	
 }
 
+// Called after damage count in health component. Used in case special logic is needed 
 void ABaseEnemy::TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth)
 {
-	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "OOOOOOUCH!!!!!!");
 }
 
+// Called when enemy dies. Notifies room enemy is killed, and destroys actor
 void ABaseEnemy::KillEnemy(bool isMeleeDamage) 
 {
 

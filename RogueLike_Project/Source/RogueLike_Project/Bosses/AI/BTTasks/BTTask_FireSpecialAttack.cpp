@@ -13,6 +13,7 @@ UBTTask_FireSpecialAttack::UBTTask_FireSpecialAttack()
 	NodeName = TEXT("Fire Special Attack");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_FireSpecialAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -25,7 +26,8 @@ EBTNodeResult::Type UBTTask_FireSpecialAttack::ExecuteTask(UBehaviorTreeComponen
 	{
 		return EBTNodeResult::Failed;
 	}
-	
+
+	// Calls special projectile fire function
 	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		m_Enemy->ShootSpecial();

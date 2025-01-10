@@ -8,17 +8,21 @@
 #include "RogueLike_Project/Enemies/EnemyState.h"
 
 
+// Called when the game starts or when spawned
 void AEnemyAIController::BeginPlay()
 {
 
 	Super::BeginPlay();
-	
+
+	// Setup Behaviour Tree variables
 	if (AIBehavior != nullptr)
 	{
 		RunBehaviorTree(AIBehavior);
 
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
+
+		GetBlackboardComponent()->SetValueAsBool(TEXT("TargetReached"), false);
 		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("RandomPatrolRadius"), 1500.0f);
 		GetBlackboardComponent()->SetValueAsEnum(TEXT("EnemyState"), static_cast<uint8>(UEnemyState::Attacking));
@@ -36,11 +40,13 @@ void AEnemyAIController::BeginPlay()
 	
 }
 
+// Called every frame
 void AEnemyAIController::Tick(float DeltaTime)
 {
 	
 	Super::Tick(DeltaTime);
-	
+
+	// Update player position
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 }

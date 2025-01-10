@@ -13,6 +13,7 @@ UBTTask_TurretShoot::UBTTask_TurretShoot()
 	NodeName = TEXT("Shoot");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_TurretShoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -32,17 +33,21 @@ EBTNodeResult::Type UBTTask_TurretShoot::ExecuteTask(UBehaviorTreeComponent& Own
 	
 }
 
+// Called every frame
 void UBTTask_TurretShoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	
+
+	// If player is in attack range of enemy
 	if ( OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
 				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey()))
 	{
 
+		// Reduce Aim time
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
+		// If aim time is reached, fire
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 		{
 			
@@ -50,7 +55,7 @@ void UBTTask_TurretShoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			{
 				m_Enemy->Fire();
 			}
-			//OwnerComp.GetBlackboardComponent()->SetValueAsEnum(TEXT("NextState"), static_cast<uint8>(NextState));
+
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		
 		}

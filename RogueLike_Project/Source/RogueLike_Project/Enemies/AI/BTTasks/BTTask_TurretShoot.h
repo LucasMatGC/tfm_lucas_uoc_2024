@@ -17,6 +17,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UEnemyState NextState;
 
+	// Set time enemy needs to aim at the player before shooting 
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float AimTime = 0.2;
 	

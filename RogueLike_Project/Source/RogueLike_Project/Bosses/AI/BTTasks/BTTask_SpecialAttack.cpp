@@ -13,6 +13,7 @@ UBTTask_SpecialAttack::UBTTask_SpecialAttack()
 	NodeName = TEXT("Prepare Special Attack");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_SpecialAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -24,6 +25,7 @@ EBTNodeResult::Type UBTTask_SpecialAttack::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	}
 	
+	// Set focus on player and start moving towards it
 	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
@@ -37,10 +39,12 @@ EBTNodeResult::Type UBTTask_SpecialAttack::ExecuteTask(UBehaviorTreeComponent& O
 	return EBTNodeResult::Failed;
 }
 
+// Called every frame
 void UBTTask_SpecialAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
+	// If player is in attack range of enemy or if already reach him
 	if ( (OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
 				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey())) || m_ReachedTarget)
@@ -48,8 +52,10 @@ void UBTTask_SpecialAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		m_ReachedTarget = true;
 		m_Enemy->OnSetFeedback.Broadcast(true);
 
+		// Reduce Aim time
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
+		// If aim time is reached, stop movement and prepare special attack
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 		{
 			
@@ -59,6 +65,7 @@ void UBTTask_SpecialAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		
 		}
 	}
+	// Else, keep moving towards player
 	else
 	{
 		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);

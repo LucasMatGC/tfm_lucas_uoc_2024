@@ -13,6 +13,7 @@ UBTTask_FireMeleeAttack::UBTTask_FireMeleeAttack()
 	NodeName = TEXT("Melee Attack");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_FireMeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -24,9 +25,11 @@ EBTNodeResult::Type UBTTask_FireMeleeAttack::ExecuteTask(UBehaviorTreeComponent&
 		return EBTNodeResult::Failed;
 	}
 
+	// Set focus on player and start moving towards it
 	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		
+		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
 		m_PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 		OwnerComp.GetAIOwner()->SetFocus(m_PlayerPawn);
 		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);
@@ -39,10 +42,12 @@ EBTNodeResult::Type UBTTask_FireMeleeAttack::ExecuteTask(UBehaviorTreeComponent&
 	return EBTNodeResult::Failed;
 }
 
+// Called every frame
 void UBTTask_FireMeleeAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
+	// If player is in attack range of enemy or if already reach him
 	if ( (OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
 				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey())) || m_ReachedTarget)
@@ -50,8 +55,10 @@ void UBTTask_FireMeleeAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 
 		m_ReachedTarget = true;
 		
+		// Reduce Aim time
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
+		// If aim time is reached, stop movement and fire melee attack
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 		{
 			
@@ -62,6 +69,7 @@ void UBTTask_FireMeleeAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 		
 		}
 	}
+	// Else, keep moving towards player
 	else
 	{
 		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);

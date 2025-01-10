@@ -11,6 +11,7 @@ UHealthComponent::UHealthComponent()
 	
 }
 
+// Called when the game starts or when spawned
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,6 +21,7 @@ void UHealthComponent::BeginPlay()
 	
 }
 
+// Called when the game ends or when despawned
 void UHealthComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	
@@ -30,14 +32,15 @@ void UHealthComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		
 }
 
+// Called when owner recieved any type of damage
 void UHealthComponent::OnTakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
                                     class AController* InstigatedBy, AActor* DamageCauser)
 {
 	TakeDamage(Damage, DamageCauser);
 }
 
-//TODO: Barra de vida del boss en pantalla
 
+// Decreases life of actor by specified amount
 void UHealthComponent::TakeDamage(float Damage, AActor* DamageCauser)
 {
 
@@ -60,6 +63,7 @@ void UHealthComponent::TakeDamage(float Damage, AActor* DamageCauser)
 	
 }
 
+// Notifies the owner of the cause of the kill
 void UHealthComponent::ProcessDeath(AActor* DamageCauser)
 {
 
@@ -96,6 +100,7 @@ float UHealthComponent::GetCurrentHealth()
 	
 }
 
+// Updates Max health. Used by upgrades
 void UHealthComponent::UpgradeMaxHealth(float HealthUpgrade)
 {
 
@@ -108,6 +113,7 @@ void UHealthComponent::UpgradeMaxHealth(float HealthUpgrade)
 	
 }
 
+// Heal owner the specified amount
 void UHealthComponent::Heal(float ConsumableHealth)
 {
 
@@ -119,6 +125,7 @@ void UHealthComponent::Heal(float ConsumableHealth)
 	
 }
 
+// Updates the health UI widget
 void UHealthComponent::UpdateHUD(float oldHealth)
 {
 	

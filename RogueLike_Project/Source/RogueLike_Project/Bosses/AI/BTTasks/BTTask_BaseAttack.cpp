@@ -13,6 +13,7 @@ UBTTask_BaseAttack::UBTTask_BaseAttack()
 	NodeName = TEXT("Base Attack");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -24,6 +25,7 @@ EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+	// Set focus on player
 	if (m_Enemy = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		
@@ -39,14 +41,17 @@ EBTNodeResult::Type UBTTask_BaseAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	
 }
 
+// Called every frame
 void UBTTask_BaseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
+	// Reduce Aim time
 	OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
 	m_Enemy->OnSetFeedback.Broadcast(true);
 	
+	// If aim time is reached, stop movement and fire base attack
 	if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 	{
 		
@@ -54,8 +59,10 @@ void UBTTask_BaseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		m_Enemy->OnSetFeedback.Broadcast(false);
 		m_Enemy->Fire(1);
 
+		// Adds one to the current base projectile fires
 		OwnerComp.GetBlackboardComponent()->SetValueAsInt(GetSelectedBlackboardKey(), OwnerComp.GetBlackboardComponent()->GetValueAsInt(GetSelectedBlackboardKey()) + 1);
-		
+
+		// If the base projectiles to fire limit is reached, change enemy state, else, close node and wait for next fire
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsInt(GetSelectedBlackboardKey()) >= OwnerComp.GetBlackboardComponent()->GetValueAsInt("ProjectilesToFire"))
 		{
 		

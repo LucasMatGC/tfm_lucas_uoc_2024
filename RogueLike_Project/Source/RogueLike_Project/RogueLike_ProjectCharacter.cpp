@@ -71,6 +71,7 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 
 }
 
+// Called when the game starts or when spawned
 void ARogueLike_ProjectCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -97,6 +98,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	OnPlayerReady.Broadcast();
 }
 
+// Called when the game ends or when despawned
 void ARogueLike_ProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	

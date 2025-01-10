@@ -13,17 +13,19 @@ UBTTask_Shoot::UBTTask_Shoot()
 	NodeName = TEXT("Shoot");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	m_ReachedTarget = false;
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("TargetReached"), false);
 	
 	if (OwnerComp.GetAIOwner() == nullptr)
 	{
 		return EBTNodeResult::Failed;
 	}
 
+	// Set focus on player and start moving towards it
 	if (m_Enemy = Cast<ABaseEnemy>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", AimTime);
@@ -37,22 +39,25 @@ EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	return EBTNodeResult::Failed;
 }
 
+// Called every frame
 void UBTTask_Shoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
+	// If player is in attack range of enemy or if already reach him
 	if ( (OwnerComp.GetAIOwner()->LineOfSightTo(m_PlayerPawn) &&
 			FVector3d::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(),
 				m_PlayerPawn->GetActorLocation()) <= OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey())) ||
-				m_ReachedTarget)
+				OwnerComp.GetBlackboardComponent()->GetValueAsBool(TEXT("TargetReached")))
 	{
 
-		m_ReachedTarget = true;
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("TargetReached"), true);
 		m_Enemy->OnSetFeedback.Broadcast(true);
 		
+		// Reduce Aim time
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat("CurrentAimTime", OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") - DeltaSeconds);
 
-
+		// If aim time is reached, stop movement and fire
 		if (OwnerComp.GetBlackboardComponent()->GetValueAsFloat("CurrentAimTime") <= 0)
 		{
 			
@@ -64,6 +69,7 @@ void UBTTask_Shoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 		
 		}
 	}
+	// Else, keep moving towards player
 	else
 	{
 		OwnerComp.GetAIOwner()->MoveToActor(m_PlayerPawn);

@@ -13,6 +13,7 @@ UBTTask_HideMeleeAttack::UBTTask_HideMeleeAttack()
 	NodeName = TEXT("Hide Melee Attack");
 }
 
+// Called when node is reached. Runs for only once per execution.
 EBTNodeResult::Type UBTTask_HideMeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -23,7 +24,8 @@ EBTNodeResult::Type UBTTask_HideMeleeAttack::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return EBTNodeResult::Failed;
 	}
-	
+
+	// Calls deactivate melee collider function
 	if (ABaseBoss* Boss = Cast<ABaseBoss>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		Boss->UseMeleeCollider(false);

@@ -13,12 +13,14 @@ UInventoryComponent::UInventoryComponent()
 	
 }
 
+// Called when the game starts or when spawned
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
+// Initializes base variables of inventory, spawns and initializes weapons
 void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
 {
 
@@ -45,6 +47,7 @@ void UInventoryComponent::SetupInventory(USceneComponent* newFirePoint)
 	Weapons[m_CurrentWeapon]->DisableWeapon(false);
 }
 
+// Change current weapon
 void UInventoryComponent::ChangeWeapon(bool MoveForward)
 {
 	if (Weapons.Num() > 1)
@@ -65,6 +68,7 @@ void UInventoryComponent::ChangeWeapon(bool MoveForward)
 	}
 }
 
+// Calls fire function of current weapon
 void UInventoryComponent::FireCurrentWeapon()
 {
 
@@ -76,6 +80,7 @@ void UInventoryComponent::FireCurrentWeapon()
 	
 }
 
+// Calls apply damage of current weapon if it's a melee weapon
 void UInventoryComponent::ApplyMeleeDamage(AActor* OtherActor)
 {
 
@@ -88,6 +93,7 @@ void UInventoryComponent::ApplyMeleeDamage(AActor* OtherActor)
 	
 }
 
+// Return current weapon
 ABaseWeapon* UInventoryComponent::GetCurrentWeapon()
 {
 
@@ -99,6 +105,7 @@ ABaseWeapon* UInventoryComponent::GetCurrentWeapon()
 	return  nullptr;
 }
 
+// Add ammo to all ranged weapons
 void UInventoryComponent::AddAmmo(float ConsumableAmmo)
 {
 
@@ -120,6 +127,7 @@ void UInventoryComponent::AddAmmo(float ConsumableAmmo)
 	}
 }
 
+// Pauses game and show upgrade UI
 void UInventoryComponent::PickUpItem(ABaseItem* NewPickedUpItem)
 {
 
@@ -134,8 +142,10 @@ void UInventoryComponent::PickUpItem(ABaseItem* NewPickedUpItem)
 	
 }
 
+// Attach the upgrade to the selected target
 void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 {
+	// If player was the target, add upgrade to inventory and attach it to all weapons
 	if (indexOfWeapon == -1)
 	{
 		FUpgradeStruct newUpgrade = PickedUpItem->DefaultUpgrade;
@@ -146,6 +156,7 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 		}
 		OnUpgradeMaxHealth.Broadcast(newUpgrade.ExtraHealth);
 	}
+	// Else if a specific weapon was the target, add the specific upgrade to the weapon
 	else if (indexOfWeapon >= 0 && indexOfWeapon <= Weapons.Num() - 1 )
 	{
 		FUpgradeStruct newUpgrade = PickedUpItem->DefaultUpgrade;
@@ -161,7 +172,8 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 	
 	PickedUpItem->Destroy();
 	PickedUpItem = nullptr;
-	
+
+	// Resume game
 	if ( APlayerController* const player = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController()) )
 	{
 		player->SetPause(false);
@@ -173,6 +185,7 @@ void UInventoryComponent::AttachPickedUpItem(int indexOfWeapon)
 	
 }
 
+// Add upgrades to inventory and weapons on load level
 void UInventoryComponent::AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapon)
 {
 
@@ -198,6 +211,7 @@ void UInventoryComponent::AddUpgrade(FUpgradeStruct NewUpgrade, int indexOfWeapo
 	
 }
 
+// Returns common upgrades
 TArray<FUpgradeStruct> UInventoryComponent::GetCommonUpgrades()
 {
 

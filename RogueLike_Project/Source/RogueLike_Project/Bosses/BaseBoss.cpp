@@ -12,16 +12,17 @@ ABaseBoss::ABaseBoss()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
+	// Defines the Fire point of the weapons (Spawn point for projectiles)
 	FirePointPrimary = CreateDefaultSubobject<USceneComponent>(TEXT("FirePointPrimary"));
 	FirePointPrimary->SetupAttachment(GetMesh());
 	
 	FirePointSecondary = CreateDefaultSubobject<USceneComponent>(TEXT("FirePointSecondary"));
 	FirePointSecondary->SetupAttachment(GetMesh());
 	
+	// Defines the Fire point of the special weapons (Spawn point for special projectiles)
 	FirePointSpecial = CreateDefaultSubobject<USceneComponent>(TEXT("FirePointSpecial"));
 	FirePointSpecial->SetupAttachment(GetMesh());
 
-	// Defines the Fire point of the weapons (Spawn point for projectiles)
 	MeleeAttackMeshCollider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeAttackMeshCollider"));
 	MeleeAttackMeshCollider->SetupAttachment(GetMesh());
 	MeleeAttackMeshCollider->SetHiddenInGame(true);
@@ -32,6 +33,7 @@ ABaseBoss::ABaseBoss()
 	
 }
 
+// Sets base variables
 void ABaseBoss::Initialize(float NewMaxHealth, float NewDamage, float NewRange)
 {
 
@@ -53,6 +55,7 @@ void ABaseBoss::BeginPlay()
 	
 }
 
+// Called when the game ends or when despawned
 void ABaseBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
@@ -68,6 +71,7 @@ void ABaseBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+// Called every frame
 void ABaseBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -96,6 +100,7 @@ void ABaseBoss::Tick(float DeltaTime)
 	
 }
 
+// Enable tick of actor and controller
 void ABaseBoss::SetActorTickEnabled(bool bEnabled)
 {
 	Super::SetActorTickEnabled(bEnabled);
@@ -103,6 +108,7 @@ void ABaseBoss::SetActorTickEnabled(bool bEnabled)
 	this->Controller->SetActorTickEnabled(bEnabled);
 }
 
+// Fires the specified attack of the boss
 void ABaseBoss::Fire(int AttackID)
 {
 
@@ -110,7 +116,7 @@ void ABaseBoss::Fire(int AttackID)
 
 	switch (AttackID)
 	{
-
+		// ID 1: Basic attack. Shoots one projectile from each base fire point
 		case 1:
 			
 			newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
@@ -135,12 +141,14 @@ void ABaseBoss::Fire(int AttackID)
 		
 			UGameplayStatics::SpawnSound2D(this, BaseFireSFX);
 			break;
-		
+
+		// ID 2: Activate melee collider
 		case 2:
 			
 			UseMeleeCollider(true);
 			break;
-		
+
+		// ID 3: Prepares special projectile
 		case 3:
 			
 			newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
@@ -158,11 +166,13 @@ void ABaseBoss::Fire(int AttackID)
 	
 }
 
+// Initializes projectile variables
 void ABaseBoss::SetupProjectile(bool bIsSpecialProjectile)
 {
 	
 	newProjectile->SetLifeSpan(1000.0f);
 
+	// If projectiles is a special projectile, attach it to parent while it charges and set to 0 speed
 	if (bIsSpecialProjectile)
 	{
 
@@ -186,6 +196,7 @@ void ABaseBoss::SetupProjectile(bool bIsSpecialProjectile)
 	
 }
 
+// Activate / Deactivate melee collider
 void ABaseBoss::UseMeleeCollider(bool isMeleeColliderActive)
 {
 	
@@ -195,15 +206,16 @@ void ABaseBoss::UseMeleeCollider(bool isMeleeColliderActive)
 	
 }
 
+// Apply melee damage to overlaped actor
 void ABaseBoss::ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, "Apply Damage!!!!");
 	UGameplayStatics::ApplyDamage(OtherActor, MeleeDamage, GetWorld()->GetFirstPlayerController(), this, UDamageType::StaticClass());
 	
 }
 
+// Detach and fire special projectile
 void ABaseBoss::ShootSpecial()
 {
 
@@ -218,12 +230,13 @@ void ABaseBoss::ShootSpecial()
 	
 }
 
+
+// Function called after damage logic
 void ABaseBoss::TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth)
 {
-	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "OOOOOOUCH!!!!!!");
 }
 
+// Deactivate boss and notifies of boss killed
 void ABaseBoss::KillEnemy(bool isMeleeDamage) 
 {
 

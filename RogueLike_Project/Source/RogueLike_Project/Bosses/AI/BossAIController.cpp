@@ -8,11 +8,13 @@
 #include "RogueLike_Project/Enemies/EnemyState.h"
 
 
+// Called when the game starts or when spawned
 void ABossAIController::BeginPlay()
 {
 
 	Super::BeginPlay();
-	
+
+	// Setup Behaviour tree base variables
 	if (AIBehavior != nullptr)
 	{
 		RunBehaviorTree(AIBehavior);
@@ -23,7 +25,7 @@ void ABossAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("RandomPatrolRadius"), 800.0f);
 		GetBlackboardComponent()->SetValueAsEnum(TEXT("EnemyState"), static_cast<uint8>(UEnemyState::Patrolling));
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("NextAttackPercentage"), 1.0f);
-			GetBlackboardComponent()->SetValueAsInt(TEXT("CurrentProjectile"), 0);
+		GetBlackboardComponent()->SetValueAsInt(TEXT("CurrentProjectile"), 0);
 
 		if (ABaseBoss* Enemy = Cast<ABaseBoss>(GetOwner()))
 		{
@@ -44,6 +46,7 @@ void ABossAIController::BeginPlay()
 	
 }
 
+// Called every frame
 void ABossAIController::Tick(float DeltaTime)
 {
 	
