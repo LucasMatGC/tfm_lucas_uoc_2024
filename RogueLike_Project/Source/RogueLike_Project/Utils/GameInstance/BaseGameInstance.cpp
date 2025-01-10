@@ -12,6 +12,7 @@ UBaseGameInstance::UBaseGameInstance()
 	
 }
 
+// Save game values from the player and timer
 void UBaseGameInstance::SetGameVariables(APlayerController* CurrentPlayer, float CurrentGameTime,
                                          bool IsGameFinished, bool IsGameWon)
 {
@@ -52,6 +53,7 @@ void UBaseGameInstance::SetGameVariables(APlayerController* CurrentPlayer, float
 	
 }
 
+// Returns the save data
 FGameVariables UBaseGameInstance::GetGameVariables()
 {
 
@@ -59,6 +61,7 @@ FGameVariables UBaseGameInstance::GetGameVariables()
 	
 }
 
+// Generate a Random integer in the specified range
 int UBaseGameInstance::RandomRangeInt(int Min, int Max)
 {
 
@@ -66,11 +69,13 @@ int UBaseGameInstance::RandomRangeInt(int Min, int Max)
 	
 }
 
+// Generate a Random float in the specified range
 float UBaseGameInstance::RandomRangeFloat(float Min, float Max)
 {
 	return RandomStream.FRandRange(Min, Max);
 }
 
+// Generate a seed, either randomly or with a predefined one
 void UBaseGameInstance::SetSeed()
 {
 

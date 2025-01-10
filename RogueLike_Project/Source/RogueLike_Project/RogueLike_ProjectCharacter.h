@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeInteracionAction;
 
-	/** Reload Input Action */
+	/** Interact Input Action */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
@@ -85,11 +85,11 @@ public:
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	TArray<UInteractComponent*> Interactables;
 
-	/** Interactable components list **/
+	/** Max Vulnerability time **/
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration")
 	float MaxInvulnerabilityTime = 2.0f;
 
-	/** Interactable components list **/
+	/** Current Invulnerability time **/
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Configuration")
 	float CurrentInvulnerabilityTime = 0.0f;
 
@@ -142,7 +142,7 @@ public:
 	void UseMeleeCollider(float ExtraRange, bool isMeleeColliderActive);
 	
 protected:
-	// To add mapping context
+	
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

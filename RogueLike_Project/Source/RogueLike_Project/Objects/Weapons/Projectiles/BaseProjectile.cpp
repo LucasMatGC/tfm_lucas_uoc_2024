@@ -13,9 +13,7 @@ class ARogueLike_ProjectCharacter;
 // Sets default values
 ABaseProjectile::ABaseProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-	//SetRootComponent(RootCollider);
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	SetRootComponent(ProjectileMesh);
 	RootCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RootCollider"));
@@ -37,6 +35,7 @@ void ABaseProjectile::BeginPlay()
 	
 }
 
+// Calculate damage of projectile
 float ABaseProjectile::CalculateDamage() const
 {
 
@@ -44,6 +43,7 @@ float ABaseProjectile::CalculateDamage() const
 	
 }
 
+// Called every frame
 void ABaseProjectile::Tick(float DeltaTime)
 {
 
@@ -51,15 +51,17 @@ void ABaseProjectile::Tick(float DeltaTime)
 	
 }
 
+// Called when projectile hits other objects
 void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 
 	if (OtherActor != nullptr)
 	{
-		
+		// Apply damage to other actore
 		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), OwnerController, this, UDamageType::StaticClass());
 
+		// If Projectile has lifesteal and other actor is an enemy or boss, heal player specified ammount
 		if(LifeSteal > 0.0)
 		{
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor))
@@ -81,7 +83,8 @@ void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor*
 				}
 			}
 		}
-		
+
+		// Destory projectile if needed
 		if (bDestroyOnImpact)
 		{
 			
@@ -93,14 +96,16 @@ void ABaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor*
 	
 }
 
+// Called when projectile overlaps other objects
 void ABaseProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != nullptr)
 	{
-		
+		// Apply damage to other actore
 		UGameplayStatics::ApplyDamage(OtherActor, CalculateDamage(), OwnerController, this, UDamageType::StaticClass());
 
+		// If Projectile has lifesteal and other actor is an enemy or boss, heal player specified ammount
 		if(LifeSteal > 0.0)
 		{
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor))
@@ -123,6 +128,7 @@ void ABaseProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedCompone
 			}
 		}
 		
+		// Destory projectile if needed
 		if (bDestroyOnImpact)
 		{
 			

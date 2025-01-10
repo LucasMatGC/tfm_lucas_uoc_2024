@@ -34,9 +34,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Ranged Variables")
 	TSubclassOf<ABaseProjectile> ProjectileType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|General Variables")
-	USoundCue* EmptyMagazineSFX;
-
 public:
 	
 	// Sets default values for this actor's properties

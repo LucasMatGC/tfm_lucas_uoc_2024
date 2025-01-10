@@ -6,7 +6,6 @@
 // Sets default values
 ABaseDoor::ABaseDoor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	SetRootComponent(RootScene);
@@ -15,6 +14,7 @@ ABaseDoor::ABaseDoor()
 	DoorMesh->SetupAttachment(RootScene);
 }
 
+// Open all unlocked doors
 void ABaseDoor::OpenDoor()
 {
 
@@ -27,6 +27,7 @@ void ABaseDoor::OpenDoor()
 	
 }
 
+// Close all doors without locking them
 void ABaseDoor::CloseDoor()
 {
 	if (!m_bIsLocked)
@@ -37,11 +38,13 @@ void ABaseDoor::CloseDoor()
 	}
 }
 
+// Check if door is locked
 bool ABaseDoor::IsLocked()
 {
 	return m_bIsLocked;
 }
 
+// Set the door lock. If Locked, door won't open without unlocking it
 void ABaseDoor::SetLocked(bool IsLocked)
 {
 

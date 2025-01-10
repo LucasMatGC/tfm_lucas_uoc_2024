@@ -19,6 +19,7 @@ ABaseWeapon::ABaseWeapon()
 	PrimaryActorTick.bCanEverTick = true;	
 }
 
+// Prepare weapon's common upgrades
 void ABaseWeapon::SetUpWeapon(TArray<FUpgradeStruct> NewCommonUpgrades)
 {
 
@@ -33,11 +34,13 @@ void ABaseWeapon::BeginPlay()
 
 }
 
+// Called every frame
 void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
+// Check if weapon can fire
 bool ABaseWeapon::CanFire() const
 {
 
@@ -45,22 +48,27 @@ bool ABaseWeapon::CanFire() const
 	
 }
 
+// Apply the upgrade
 void ABaseWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 {
 }
 
+// Fire weapon
 void ABaseWeapon::Fire()
 {
 }
 
+// Reload Weapon
 void ABaseWeapon::Reload()
 {
 }
 
+// Update the weapon hud
 void ABaseWeapon::UpdateHUD()
 {
 }
 
+// Disable / Enable weapon
 void ABaseWeapon::DisableWeapon(bool toHide) 
 {
 	// Hides visible components
@@ -74,7 +82,7 @@ void ABaseWeapon::DisableWeapon(bool toHide)
 
 }
 
-
+// Add upgrade to common or own list
 void ABaseWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 

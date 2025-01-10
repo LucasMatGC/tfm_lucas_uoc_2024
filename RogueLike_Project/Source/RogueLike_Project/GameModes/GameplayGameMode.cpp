@@ -13,6 +13,7 @@ AGameplayGameMode::AGameplayGameMode()
 	
 }
 
+// Load the save data
 void AGameplayGameMode::LoadLevelData()
 {
 
@@ -23,6 +24,7 @@ void AGameplayGameMode::LoadLevelData()
 	
 }
 
+// Load next level based on current level
 void AGameplayGameMode::LoadNextLevel()
 {
 
@@ -51,6 +53,7 @@ void AGameplayGameMode::LoadNextLevel()
 	
 }
 
+// Get a random integer from Game Instance
 int AGameplayGameMode::RandomRangeInt(int Min, int Max)
 {
 
@@ -58,6 +61,7 @@ int AGameplayGameMode::RandomRangeInt(int Min, int Max)
 	
 }
 
+// Get a random float from Game Instance
 float AGameplayGameMode::RandomRangeFloat(float Min, float Max)
 {
 	
@@ -65,6 +69,7 @@ float AGameplayGameMode::RandomRangeFloat(float Min, float Max)
 	
 }
 
+// Called when the game starts or when spawned
 void AGameplayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -114,6 +119,7 @@ void AGameplayGameMode::BeginPlay()
 	
 }
 
+// Called every frame
 void AGameplayGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -125,6 +131,7 @@ void AGameplayGameMode::Tick(float DeltaSeconds)
 	}
 }
 
+// Generate the seed of the level
 void AGameplayGameMode::SetSeed()
 {
 
@@ -132,6 +139,7 @@ void AGameplayGameMode::SetSeed()
 	
 }
 
+// Prepare the player spawning it in the proper point and with the save data
 void AGameplayGameMode::PreparePlayer()
 {
 
@@ -147,6 +155,7 @@ void AGameplayGameMode::PreparePlayer()
 			
 			Character->SetActorLocation(spawnPoint[0]->GetComponentLocation());
 
+			// If not the first level, give player saved upgrades to corresponding weapons
 			if (CurrentLevelConfiguration.CurrentLevel > 1)
 			{
 					
@@ -187,6 +196,7 @@ void AGameplayGameMode::PreparePlayer()
 	
 }
 
+// Load result level with game over message
 void AGameplayGameMode::GameOver()
 {
 			
@@ -195,14 +205,17 @@ void AGameplayGameMode::GameOver()
 	
 }
 
+// Check if an item should spawn based on the enemy spawn rate
 void AGameplayGameMode::CheckItemSpawn(float RandomizedItemSpawnRate, FTransform SpawnTransform, bool isMeleeDamage)
 {
 
+	// If spawn rate doesn't pass the consumable threshold, return
 	if (RandomizedItemSpawnRate < ConsumableSpawnThreshold)
 	{
 		return;
 	}
 
+	// If spawn rate doesn't pass the upgrade threshold, spawn consumable
 	if (RandomizedItemSpawnRate < UpgradeSpawnThreshold)
 	{
 
@@ -232,6 +245,7 @@ void AGameplayGameMode::CheckItemSpawn(float RandomizedItemSpawnRate, FTransform
 		newItem->ItemName = itemData->DisplayName;
 		newItem->FinishSpawning(SpawnTransform, false, nullptr);
 	}
+	// If spawn pass upgrade threshold, spawn it
 	else
 	{
 		

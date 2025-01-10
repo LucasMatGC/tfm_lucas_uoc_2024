@@ -35,6 +35,7 @@ void ABaseItem::BeginPlay()
 	
 }
 
+// Called when the game ends or when despawned
 void ABaseItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
@@ -45,15 +46,18 @@ void ABaseItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+// Called every frame
 void ABaseItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 }
 
+// Called when player interacts with the item
 void ABaseItem::PickUpItem(ACharacter* interactor)
 {
 
+	// If consumable, use immediately
 	if (ItemType == EItemType::Consumable)
 	{
 
@@ -77,6 +81,7 @@ void ABaseItem::PickUpItem(ACharacter* interactor)
 		}
 		
 	}
+	// If upgrade, show upgrade UI to select
 	else
 	{
 
@@ -88,10 +93,12 @@ void ABaseItem::PickUpItem(ACharacter* interactor)
 		}
 		
 	}
-	
+
+	//Hide item in world
 	HideItem();
 }
 
+// Hide item in world
 void ABaseItem::HideItem()
 {
 
@@ -100,7 +107,8 @@ void ABaseItem::HideItem()
 
 	// Disables collision components
 	SetActorEnableCollision(false);
-		
+
+	// If item is consumbale, destroy it
 	if (ItemType == EItemType::Consumable)
 	{
 

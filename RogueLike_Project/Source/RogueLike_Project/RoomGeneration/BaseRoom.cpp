@@ -13,7 +13,6 @@
 // Sets default values
 ABaseRoom::ABaseRoom()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	ExitsFolder = CreateDefaultSubobject<USceneComponent>(TEXT("ExitsFolder"));
@@ -37,6 +36,7 @@ ABaseRoom::ABaseRoom()
 
 }
 
+// Prepare the room depending on the room type
 void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 {
 
@@ -79,42 +79,49 @@ void ABaseRoom::PrepareRoom(AGameplayGameMode* GameMode)
 
 	switch (Functionality)
 	{
-	case ERoomFunctionality::RandomEnemies:
-		SpawnEnemies(SpawnPoints.Num());
-		break;
-			
-	case ERoomFunctionality::RandomItems:
-		SpawnItems(ItemSpawnPoints.Num());
-		break;
 		
-	case ERoomFunctionality::RandomBoss:
-		SpawnBoss();
-		break;
-			
-	case ERoomFunctionality::FullyRandom:
-		numberOfEnemiesToSpawn = m_GameMode->RandomRangeInt(0, SpawnPoints.Num());
-		numberOfItemsToSpawn = FMath::Min(SpawnPoints.Num() - numberOfEnemiesToSpawn, ItemSpawnPoints.Num());
-		SpawnEnemies(numberOfEnemiesToSpawn);
-		SpawnItems(numberOfItemsToSpawn);
-		break;
-		
-	case ERoomFunctionality::StartRoom:
-		SpawnItems(ItemSpawnPoints.Num());
-		for (ABaseItem* Item : SpawnedItems)
-		{
-			Item->SetActorHiddenInGame(false);
-		}
-		break;
-			
+		// Spawn all enemies 
+		case ERoomFunctionality::RandomEnemies:
+			SpawnEnemies(SpawnPoints.Num());
+			break;
+
+		// Spawn all items
+		case ERoomFunctionality::RandomItems:
+			SpawnItems(ItemSpawnPoints.Num());
+			break;
+
+		// Spawn Boss
+		case ERoomFunctionality::RandomBoss:
+			SpawnBoss();
+			break;
+
+		// Spawn enemies and items. The number of both is randomized
+		case ERoomFunctionality::FullyRandom:
+			numberOfEnemiesToSpawn = m_GameMode->RandomRangeInt(0, SpawnPoints.Num());
+			numberOfItemsToSpawn = FMath::Min(SpawnPoints.Num() - numberOfEnemiesToSpawn, ItemSpawnPoints.Num());
+			SpawnEnemies(numberOfEnemiesToSpawn);
+			SpawnItems(numberOfItemsToSpawn);
+			break;
+
+		// Spawn the start items
+		case ERoomFunctionality::StartRoom:
+			SpawnItems(ItemSpawnPoints.Num());
+			for (ABaseItem* Item : SpawnedItems)
+			{
+				Item->SetActorHiddenInGame(false);
+			}
+			break;
+				
 		// Customized
-	default:
-		SpawnCustom();
-		break;
+		default:
+			SpawnCustom();
+			break;
 				
 	}
 	
 }
 
+// Creates a door in the specified location. Locks the door if necessary.
 void ABaseRoom::SpawnDoor(FVector DoorLocation, FRotator DoorRotation, bool IsDoorLocked)
 {
 
@@ -144,6 +151,7 @@ void ABaseRoom::BeginPlay()
 	
 }
 
+// Called when the game ends or when despawned
 void ABaseRoom::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -170,12 +178,14 @@ void ABaseRoom::Tick(float DeltaTime)
 
 }
 
+// Trigger logic when player enters the room. 
 void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (ARogueLike_ProjectCharacter* Character = Cast<ARogueLike_ProjectCharacter>(OtherActor))
 	{
-		
+
+		// If Enemies exists in the room, close doors, activate and show them
 		if (SpawnedEnemies.Num() > 0)
 		{
 
@@ -194,6 +204,7 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 		
 		}
 
+		// If Boss exist in the room, close doors, activate and show it
 		if (SpawnedBoss != nullptr)
 		{
 		
@@ -209,7 +220,8 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 			}
 		
 		}
-	
+
+		// Show spawned items
 		for (ABaseItem* Item : SpawnedItems)
 		{
 			Item->SetActorHiddenInGame(false);
@@ -221,6 +233,7 @@ void ABaseRoom::PlayerEnters(UPrimitiveComponent* OverlappedComponent, AActor* O
 	
 }
 
+// Change Level to the next one. Logic handled by GameMode
 void ABaseRoom::ExitLevel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -237,6 +250,7 @@ void ABaseRoom::ExitLevel(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	}
 }
 
+// Spawn enemies in the specified spawn points. Stop logic of enemies until player enters the room
 void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 {
 
@@ -285,6 +299,7 @@ void ABaseRoom::SpawnEnemies(int NumberOfEnemiesToSpawn)
 	
 }
 
+// Spawn items in the specified spawn points. Hides items until player enters the room
 void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 {
 
@@ -321,6 +336,7 @@ void ABaseRoom::SpawnItems(int NumberOfItemsToSpawn)
 	}
 }
 
+// Spawn a boss in the specified spawn point. Stop logic of boss until player enters the room
 void ABaseRoom::SpawnBoss()
 {
 	
@@ -355,10 +371,12 @@ void ABaseRoom::SpawnBoss()
 	
 }
 
+// Logic for custom rooms with special logic
 void ABaseRoom::SpawnCustom()
 {
 }
 
+// Open all unlocked doors
 void ABaseRoom::OpenDoors()
 {
 	
@@ -371,6 +389,7 @@ void ABaseRoom::OpenDoors()
 	
 }
 
+// Close all doors without locking them
 void ABaseRoom::CloseDoors()
 {
 	
@@ -382,6 +401,7 @@ void ABaseRoom::CloseDoors()
 	}
 }
 
+// Called when an enemy is killed. If all enemies are killed, open doors
 void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled, bool isMeleeDamage)
 {
 
@@ -398,6 +418,7 @@ void ABaseRoom::EnemyKilled(ABaseEnemy* enemyKilled, bool isMeleeDamage)
 	
 }
 
+// Called when boss of the room is killed. Spawns loot, open door and enable levels exit
 void ABaseRoom::BossKilled(ABaseBoss* BossKilled)
 {
 
@@ -414,6 +435,7 @@ void ABaseRoom::BossKilled(ABaseBoss* BossKilled)
 	
 }
 
+// Activate the exit of the room
 void ABaseRoom::EnableExitLevel()
 {
 	TArray<USceneComponent*> TeleportPoints;
@@ -434,6 +456,7 @@ void ABaseRoom::EnableExitLevel()
 	}
 }
 
+// Deactivate all player triggers in the room
 void ABaseRoom::DeactivateTriggers()
 {
 	

@@ -7,6 +7,7 @@
 #include "RogueLike_Project/RogueLike_ProjectCharacter.h"
 #include "BaseGameInstance.generated.h"
 
+// Weapon struct to save thought levels
 USTRUCT(BlueprintType)
 struct FWeaponVariables
 {
@@ -22,6 +23,7 @@ public:
 	
 };
 
+// Information struct to save thought levels
 USTRUCT(BlueprintType)
 struct FGameVariables
 {
@@ -50,9 +52,6 @@ public:
 };
 
 
-/**
- * 
- */
 UCLASS()
 class ROGUELIKE_PROJECT_API UBaseGameInstance : public UGameInstance
 {

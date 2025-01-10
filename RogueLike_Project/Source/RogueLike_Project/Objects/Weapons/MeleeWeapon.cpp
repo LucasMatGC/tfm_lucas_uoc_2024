@@ -9,9 +9,6 @@
 // Sets default values
 AMeleeWeapon::AMeleeWeapon()
 {
-
-	
-	
 }
 
 // Called when the game starts or when spawned
@@ -21,15 +18,19 @@ void AMeleeWeapon::BeginPlay()
 	
 }
 
+// Called every frame
 void AMeleeWeapon::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// If a current combo is active
 	if (bIsAttacking)
 	{
 
+		// Decrease attack delay
 		CurrentFireRate -= DeltaSeconds;
 
+		// If attack delay is 0 or less, reset attack and hide collider
 		if (CurrentFireRate < 0)
 		{
 			bIsAttacking = false;
@@ -39,11 +40,13 @@ void AMeleeWeapon::Tick(float DeltaSeconds)
 			HideAttackCollision();
 		}
 
+		// Decrease combo delay if possible
 		if (CurrentComboRate > 0 )
 		{	
 			CurrentComboRate -= DeltaSeconds;
 		}
-		
+
+		// If Delay is 0 or less, hide collision and activate next combo attack
 		if (CurrentComboRate < 0)
 		{
 			
@@ -60,6 +63,7 @@ void AMeleeWeapon::Tick(float DeltaSeconds)
 
 }
 
+// Attack with melee weapon
 void AMeleeWeapon::Fire()
 {
 	Super::Fire();
@@ -68,7 +72,8 @@ void AMeleeWeapon::Fire()
 	{
 		return;
 	}
-	
+
+	// If the player is not attacking or if it's on a combo, activate melee collider
 	if (!bIsAttacking || bCanDoComboAttack)
 	{
 	
@@ -92,6 +97,7 @@ void AMeleeWeapon::Fire()
 	
 }
 
+// Hide Melee collider
 void AMeleeWeapon::HideAttackCollision()
 {
 		
@@ -104,6 +110,7 @@ void AMeleeWeapon::HideAttackCollision()
 	
 }
 
+// Calculate the damage weapon applies
 float AMeleeWeapon::CalculateDamage() const
 {
 
@@ -111,6 +118,7 @@ float AMeleeWeapon::CalculateDamage() const
 	
 }
 
+// Apply damage to collided actor
 void AMeleeWeapon::ApplyDamage(AActor* OtherActor)
 {
 
@@ -129,6 +137,7 @@ void AMeleeWeapon::ApplyDamage(AActor* OtherActor)
 	
 }
 
+// Update Weapon HUD
 void AMeleeWeapon::UpdateHUD()
 {
 	Super::UpdateHUD();
@@ -137,6 +146,7 @@ void AMeleeWeapon::UpdateHUD()
 	
 }
 
+// Add current upgrade to weapon and apply variable changes
 void AMeleeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);

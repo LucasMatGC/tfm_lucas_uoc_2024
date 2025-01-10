@@ -8,7 +8,6 @@
 // Sets default values
 AMapGenerator::AMapGenerator()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootScene->SetupAttachment(RootComponent);
@@ -26,6 +25,7 @@ void AMapGenerator::BeginPlay()
 	
 }
 
+//Initialize variables for the MapGenerator
 void AMapGenerator::Initialize(int maxRooms, AGameplayGameMode* GameMode)
 {
 
@@ -34,7 +34,7 @@ void AMapGenerator::Initialize(int maxRooms, AGameplayGameMode* GameMode)
 	
 }
 
-// Called every frame
+// Generate the rooms for the level
 void AMapGenerator::GenerateRooms()
 {
 	
@@ -61,10 +61,11 @@ void AMapGenerator::GenerateRooms()
 	
 }
 
-// Called every frame
+// Spawn a basic room on an available exit
 void AMapGenerator::SpawnNextRoom()
 {
 
+	//Get Random Room Type and random exit to spawn
 	TSubclassOf<ABaseRoom> roomClass = GetRandomRoomType();
 	USceneComponent* exit = GetRandomExit();
 	FActorSpawnParameters spawnInfo;
@@ -77,34 +78,40 @@ void AMapGenerator::SpawnNextRoom()
 		exit->GetComponentTransform().GetLocation(),
 		exit->GetComponentRotation(),
 		spawnInfo);
-
 	
+	// Check if is overlaping with existing room. If true, destroy room and try with another exit
 	if (IsOverlaping())
 	{
 
 		ExitsLists.Remove(exit);
+		if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
+		{
+			room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), true);
+		}
 		m_LatestRoom->Destroy();
 		SpawnNextRoom();
 		
 	}
-
+	// Creates a door for the room and calls the prepare room function.
 	else
 	{
 
 		m_LatestRoom->PrepareRoom(m_GameMode);
+		if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
+		{
+			room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), false);
+		}
 		CurrentRooms++;
 		AddExits();
+		// If more rooms are needed, spawn next room
 		if (CurrentRooms < MaxRoom && ExitsLists.Num() > 0)
 		{
 
-			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
-			{
-				room->SpawnDoor(exit->GetComponentLocation(), exit->GetComponentRotation(), false);
-			}
 			ExitsLists.Remove(exit);
 			SpawnNextRoom();
 			
 		}
+		// Else spawn boss and item room and close remaining exits
 		else
 		{
 
@@ -119,22 +126,21 @@ void AMapGenerator::SpawnNextRoom()
 	
 }
 
-// Called every frame
+// Add the exits from the last created room to the list.
 void AMapGenerator::AddExits()
 {
 
-	TArray<USceneComponent*> exits = {};
-	exits = m_LatestRoom->ExitsFolder->GetAttachChildren();
+	TArray<USceneComponent*> exits;
+	m_LatestRoom->ExitsFolder->GetChildrenComponents(false, exits);
 	
 	ExitsLists.Append(exits);
 }
 
-// Called every frame
+// Check if last created room overlaps with the already created ones
 bool AMapGenerator::IsOverlaping()
 {
 
 	UBoxComponent* collider = Cast<UBoxComponent>(m_LatestRoom->OverlapFolder->GetChildComponent(0));
-	//Check if collides with any other generated room
 
 	TArray<UPrimitiveComponent*> overlappingComponents = {};
 	collider->GetOverlappingComponents(overlappingComponents);
@@ -143,11 +149,13 @@ bool AMapGenerator::IsOverlaping()
 	
 }
 
+// Spawn a boss room on an available exit
 void AMapGenerator::SpawnBossRoom()
 {
 
 	bool bIsSpawnValid = false;
 
+	//Until the spawn is valid, try to spawn it in the remaining exits
 	while (!bIsSpawnValid)
 	{
 		
@@ -168,6 +176,7 @@ void AMapGenerator::SpawnBossRoom()
 			spawnInfo);
 
 		
+		// Check if is overlaping with existing room. If true, destroy room and try with another exit
 		if (IsOverlaping())
 		{
 
@@ -175,6 +184,7 @@ void AMapGenerator::SpawnBossRoom()
 			m_LatestRoom->Destroy();
 			
 		}
+		// Creates a door for the room and calls the prepare room function.
 		else
 		{
 			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
@@ -191,17 +201,20 @@ void AMapGenerator::SpawnBossRoom()
 	}
 }
 
+// Spawn an item room on an available exit
 void AMapGenerator::SpawnItemRoom()
 {
 
 	bool bIsSpawnValid = false;
 
+	//Until the spawn is valid, try to spawn it in the remaining exits
 	while (!bIsSpawnValid)
 	{
 		
 		USceneComponent* exit = GetRandomExit();
 		FActorSpawnParameters spawnInfo;
 
+		//If no Item room type is defined or no exits are available,
 		if (ItemRoomType == nullptr || exit == nullptr)
 		{
 			UE_LOG(LogSpawn, Error, TEXT("Item Room not defined"));
@@ -215,7 +228,7 @@ void AMapGenerator::SpawnItemRoom()
 			exit->GetComponentRotation(),
 			spawnInfo);
 
-		
+		// Check if is overlaping with existing room. If true, destroy room and try with another exit
 		if (IsOverlaping())
 		{
 
@@ -223,6 +236,7 @@ void AMapGenerator::SpawnItemRoom()
 			m_LatestRoom->Destroy();
 			
 		}
+		// Creates a door for the room and calls the prepare room function.
 		else
 		{
 			if (ABaseRoom* room = Cast<ABaseRoom>(exit->GetAttachParentActor()))
@@ -239,7 +253,7 @@ void AMapGenerator::SpawnItemRoom()
 	}
 }
 
-// Called every frame
+// Closes the remaining exits and locks doors
 void AMapGenerator::CloseRemainingExits()
 {
 	for (USceneComponent* exit : ExitsLists)
@@ -256,7 +270,7 @@ void AMapGenerator::CloseRemainingExits()
 	
 }
 
-// Called every frame
+// Return a random room type to spawn
 TSubclassOf<ABaseRoom> AMapGenerator::GetRandomRoomType()
 {
 
@@ -272,7 +286,7 @@ TSubclassOf<ABaseRoom> AMapGenerator::GetRandomRoomType()
 	
 }
 
-// Called every frame
+// Return a random exit from all available
 USceneComponent* AMapGenerator::GetRandomExit()
 {
 
@@ -284,7 +298,7 @@ USceneComponent* AMapGenerator::GetRandomExit()
 		
 	}
 
-		return ExitsLists[m_GameMode->RandomRangeInt(0, ExitsLists.Num() - 1)];
+	return ExitsLists[m_GameMode->RandomRangeInt(0, ExitsLists.Num() - 1)];
 	
 }
 

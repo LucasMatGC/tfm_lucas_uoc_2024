@@ -13,7 +13,6 @@
 #include "Components/Player/InventoryComponent.h"
 #include "Components/HealthComponent.h"
 #include "GameModes/GameplayGameMode.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -70,8 +69,6 @@ ARogueLike_ProjectCharacter::ARogueLike_ProjectCharacter()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));	
 	GetMesh()->SetCollisionProfileName("Pawn");
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
 void ARogueLike_ProjectCharacter::BeginPlay()
@@ -79,6 +76,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// Setup Inventory Component
 	InventoryComponent->SetupInventory(FirePoint);
 
 	HealthComponent->OnUpdateCurrentHealth.AddDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
@@ -101,7 +99,7 @@ void ARogueLike_ProjectCharacter::BeginPlay()
 
 void ARogueLike_ProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-
+	
 	HealthComponent->OnUpdateCurrentHealth.RemoveDynamic(this, &ARogueLike_ProjectCharacter::TakeDamage);
 	HealthComponent->OnProcessDeath.RemoveDynamic(this, &ARogueLike_ProjectCharacter::KillPlayer);
 	InventoryComponent->OnUpgradeMaxHealth.RemoveDynamic(HealthComponent, &UHealthComponent::UpgradeMaxHealth);
@@ -110,10 +108,12 @@ void ARogueLike_ProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReas
 	Super::EndPlay(EndPlayReason);
 }
 
+// Triggers every frame
 void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// If player currently has invulnerability time, decrease it
 	if (CurrentInvulnerabilityTime > 0.0f)
 	{
 
@@ -122,6 +122,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 		if (CurrentInvulnerabilityTime <= 0.0f && m_IsPlayerAlive)
 		{
 
+			// Reactivate Damage input to health component
 			HealthComponent->SetCanTakeDamage(true);
 			
 		}
@@ -131,8 +132,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 	if (m_IsPlayerAlive && m_CanPlayerMove)
 	{
 
-		
-		//Add Input Mapping Context
+		// Calculate the rotation of the player
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 		{
 
@@ -141,11 +141,11 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 			FVector startTrace;
 			FVector direction;
 			FCollisionQueryParams* params = new FCollisionQueryParams();
-			
+
+			// Get position of cursor on screen
 			PlayerController->GetMousePosition(mousePos.X, mousePos.Y);
 
-			//TODO: Desactivar control de mando. En caso de usarse, Detectar cuando se usa mando para desactivar esta porcion
-			// Y usar joystick dcho para rotar. Usar la funcion "look" y esto solo para alimentar el valor en caso de que sea raton
+			//Proyect cursor position from camera to scene to get point of view of player
 			PlayerController->DeprojectScreenPositionToWorld(mousePos.X, mousePos.Y, startTrace, direction);
 
 			FVector endTrace = direction * (CameraBoom->TargetArmLength * 30) + startTrace;
@@ -156,6 +156,7 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 				if (hit->GetActor() != nullptr)
 				{
 
+					//If Hit, rotate player to hit point
 					SetActorRotation( FRotator(
 						0,
 						UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), hit->Location).Yaw,
@@ -171,15 +172,16 @@ void ARogueLike_ProjectCharacter::Tick(float DeltaTime)
 	
 }
 
+// Apply damage taken to health component
 void ARogueLike_ProjectCharacter::ApplyMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, "Apply Damage!!!!");
 	InventoryComponent->ApplyMeleeDamage(OtherActor);
 	
 }
 
+// Heal player
 void ARogueLike_ProjectCharacter::HealPlayer(float ConsumableHealth)
 {
 
@@ -187,6 +189,7 @@ void ARogueLike_ProjectCharacter::HealPlayer(float ConsumableHealth)
 	
 }
 
+// Add ammo to all weapons
 void ARogueLike_ProjectCharacter::AddAmmo(float ConsumableAmmo)
 {
 
@@ -194,6 +197,7 @@ void ARogueLike_ProjectCharacter::AddAmmo(float ConsumableAmmo)
 	
 }
 
+// Function called after damage logic. Activates invulnerability frames
 void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealth, float maxHealth, float normalizedHealth)
 {
 
@@ -202,6 +206,7 @@ void ARogueLike_ProjectCharacter::TakeDamage(float oldHealth, float currentHealt
 	
 }
 
+// Deactivate player and notifies GameMode of GameOver
 void ARogueLike_ProjectCharacter::KillPlayer(bool isMeleeDamage)
 {
 
@@ -227,6 +232,7 @@ void ARogueLike_ProjectCharacter::KillPlayer(bool isMeleeDamage)
 	
 }
 
+// Add interactable to list
 void ARogueLike_ProjectCharacter::AddInteractable(UInteractComponent* InteractComponent)
 {
 
@@ -240,6 +246,7 @@ void ARogueLike_ProjectCharacter::AddInteractable(UInteractComponent* InteractCo
 	
 }
 
+// Remove interactable from list
 void ARogueLike_ProjectCharacter::RemoveInteractable(UInteractComponent* InteractComponent)
 {
 
@@ -295,6 +302,7 @@ void ARogueLike_ProjectCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	}
 }
 
+// Move player based on camera perspective
 void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 {
 	if (m_IsPlayerAlive && m_CanPlayerMove)
@@ -322,6 +330,7 @@ void ARogueLike_ProjectCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
+// Attack with current weapon
 void ARogueLike_ProjectCharacter::Fire(const FInputActionValue& Value)
 {
 	if (m_IsPlayerAlive)
@@ -331,6 +340,7 @@ void ARogueLike_ProjectCharacter::Fire(const FInputActionValue& Value)
 	
 }
 
+// Change current weapon
 void ARogueLike_ProjectCharacter::ChangeWeapon(const FInputActionValue& Value)
 {
 
@@ -343,6 +353,7 @@ void ARogueLike_ProjectCharacter::ChangeWeapon(const FInputActionValue& Value)
 	
 }
 
+// Reload current weapon if possible
 void ARogueLike_ProjectCharacter::Reload(const FInputActionValue& Value)
 {
 
@@ -357,6 +368,7 @@ void ARogueLike_ProjectCharacter::Reload(const FInputActionValue& Value)
 	
 }
 
+// Change current interatable if possible
 void ARogueLike_ProjectCharacter::ChangeInteractable(const FInputActionValue& Value)
 {
 
@@ -379,6 +391,7 @@ void ARogueLike_ProjectCharacter::ChangeInteractable(const FInputActionValue& Va
 	
 }
 
+// Interact with current item
 void ARogueLike_ProjectCharacter::Interact(const FInputActionValue& Value)
 {
 
@@ -391,6 +404,7 @@ void ARogueLike_ProjectCharacter::Interact(const FInputActionValue& Value)
 	
 }
 
+// Pause / Unpause game
 void ARogueLike_ProjectCharacter::Pause(const FInputActionValue& Value)
 {
 
@@ -398,6 +412,7 @@ void ARogueLike_ProjectCharacter::Pause(const FInputActionValue& Value)
 	
 }
 
+// Activate / Deactivate melee collider
 void ARogueLike_ProjectCharacter::UseMeleeCollider(float ExtraRange, bool isMeleeColliderActive)
 {
 

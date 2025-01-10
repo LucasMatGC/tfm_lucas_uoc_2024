@@ -20,10 +20,12 @@ void ARangeWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
+// Called every frame
 void ARangeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	// Decrease fire delay if possible
 	if (CurrentFireRate > 0)
 	{
 
@@ -33,27 +35,33 @@ void ARangeWeapon::Tick(float DeltaTime)
 	
 }
 
+// Fire weapon
 void ARangeWeapon::Fire()
 {
 	Super::Fire();
 
+	// If Weapon can fire, spawn projectile
 	if (CanFire())
 	{
 
 		CurrentFireRate = MaxFireRate;
 		
 		FActorSpawnParameters spawnInfo;
-		
+
+		// Partially Spawn projectile 
 		newProjectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(
 			ProjectileType,
 			FirePoint->GetComponentTransform(),
 			nullptr,
 			nullptr);
 
+		// Setup projectile with upgrade modifications
 		SetupProjectile();		
-		
+
+		// Finish spawning projectile
 		newProjectile->FinishSpawning(FirePoint->GetComponentTransform(), false, nullptr);
 
+		// Decrease ammo
 		CurrentMagazine--;
 		CurrentAmmo--;
 			
@@ -62,13 +70,14 @@ void ARangeWeapon::Fire()
 		
 		OnWeaponFire.Broadcast(false, 0);
 	}
+	// If no ammo to fire, show feedback
 	else if (CurrentMagazine == 0)
 	{
 		OnEmptyMagazineShoot.Broadcast();
-		UGameplayStatics::SpawnSound2D(this, EmptyMagazineSFX);
 	}
 }
 
+// Reload weapon
 void ARangeWeapon::Reload()
 {
 
@@ -95,6 +104,7 @@ int ARangeWeapon::GetMaxMagazine()
 	
 }
 
+// If current magazine has bullets and theres no fire cooldown, return true
 bool ARangeWeapon::CanFire() const
 {
 	
@@ -102,6 +112,7 @@ bool ARangeWeapon::CanFire() const
 	
 }
 
+// If there are bullets outside of current magazine, return true
 bool ARangeWeapon::CanReload()
 {
 
@@ -123,6 +134,7 @@ int ARangeWeapon::GetCurrentMagazine()
 	
 }
 
+// Add ammo to weapon capped to MaxAmmo value
 void ARangeWeapon::AddAmmo(float ConsumableAmmo)
 {
 
@@ -137,14 +149,15 @@ void ARangeWeapon::UpdateHUD()
 	
 }
 
+// Add upgrade to weapon
 void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 {
 	Super::AddUpgrade(newUpgrade, bIsCommonUpgrade);
 
+	// If upgrade changes base variables, add values
 	if (newUpgrade.UpgradeType == EUpgradeType::BaseVariablesUpgrade || newUpgrade.UpgradeType != EUpgradeType::CustomizedUpgrade)
 	{
 
-		//TODO: Cambiar estas asignaciones. Ahora mismo se esta sumando el maximo de lo que define el upgrade y el valor de corte, cuando lo que deberia de caparse es la suma ya hecha
 		AddedDamage = FMath::Max(AddedDamage + newUpgrade.AddedDamage, (1 - BaseDamage));
 		DamageMultiplier = FMath::Max(DamageMultiplier + newUpgrade.AddedDamageMultiplier, 0.1f);
 		Range = FMath::Max(Range + newUpgrade.AddedRange, 100.0f);
@@ -155,6 +168,7 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 
 	}
 
+	// If upgrade is a modifiear, change modifier values
 	if (newUpgrade.UpgradeType != EUpgradeType::ModifierUpgrade || newUpgrade.UpgradeType != EUpgradeType::CustomizedUpgrade)
 	{
 		LifeSteal += FMath::Max(newUpgrade.LifeSteal, 0.0f);
@@ -162,17 +176,20 @@ void ARangeWeapon::AddUpgrade(FUpgradeStruct newUpgrade, bool bIsCommonUpgrade)
 	
 }
 
+// Apply upgrade to projectile
 void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 {
-	
+	// If upgrade is a modifier or custom
 	if (Upgrade.UpgradeType == EUpgradeType::ModifierUpgrade || Upgrade.UpgradeType == EUpgradeType::CustomizedUpgrade)
 	{
 
+		// If there is a new mesh, apply it
 		if (Upgrade.NewProjectileMesh != nullptr)
 		{
 			newProjectile->ProjectileMesh->SetStaticMesh(Upgrade.NewProjectileMesh);
 		}
 
+		// Change Bounciness if needed
 		if (Upgrade.Bounciness > 0.0f)
 		{
 			
@@ -180,13 +197,14 @@ void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 			newProjectile->ProjectileComponent->bShouldBounce = true;
 			
 		}
-		
+
+		// Change collision profile
 		if (Upgrade.ChangeCollisionProfile)
 		{
 			newProjectile->ProjectileMesh->SetCollisionProfileName(Upgrade.NewCollisionProfile.Name, true);
 		}
-		//If the projectile is already set as not destroy on impact, avoid setting this flag. It will revert it if
-		//the order of upgrades is changed
+		
+		// Change projectile destruction on impcat
 		if (Upgrade.ChangeProjectileDestruction)
 		{
 			newProjectile->bDestroyOnImpact = Upgrade.DestroyOnImpact;
@@ -197,6 +215,7 @@ void ARangeWeapon::ApplyUpgrade(const FUpgradeStruct& Upgrade)
 	
 }
 
+// Setup projectile with upgrades
 void ARangeWeapon::SetupProjectile()
 {
 	
@@ -213,14 +232,16 @@ void ARangeWeapon::SetupProjectile()
 		newProjectile->ProjectileMesh->GetRelativeScale3D().Y + ExtraProjectileScale,
 		newProjectile->ProjectileMesh->GetRelativeScale3D().Z + ExtraProjectileScale);
 	newProjectile->ProjectileMesh->SetRelativeScale3D(NewScale);
-	
+
+	// Apply common upgrades
 	for (FUpgradeStruct commonUpgrade : CommonUpgrades)
 	{
 
 		ApplyUpgrade(commonUpgrade);
 		
 	}
-	
+
+	// Apply weapon upgrades
 	for (FUpgradeStruct upgrade : Upgrades)
 	{
 
